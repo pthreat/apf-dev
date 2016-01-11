@@ -3,7 +3,7 @@
 
 	set_include_path(realpath(sprintf('%s/../../',__DIR__)));
 
-	require	"apf/boot.php";
+	require	"boot.php";
 
 	use apf\core\DI;
 	use apf\core\Log;
