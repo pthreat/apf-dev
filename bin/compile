@@ -33,10 +33,10 @@
 
 		$log				=	new Log();
 		$connection		=	DatabaseConnection::interactiveConfig($log);
-		DatabaseConnectionPool::setLog($log);
-		DatabaseConnectionPool::add($connection);
-		DatabaseConnectionPool::get($connection)->getAdapter($log);
-		echo $connection->getConfig();
+		$dbPool			=	new DatabaseConnectionPool();
+		$dbPool->setLog($log);
+		$dbPool->add($connection);
+		echo $dbPool->get($connection)->getConfig();
 		die();
 		$pluginConfig	=	new PluginConfig();
 		$pluginConfig->setAuthor('jpfstange@gmail.com');
@@ -47,7 +47,6 @@
 		$context	=	new Context();
 
 		define('INTERACTIVE',Cmd::searchOpt('--no-interactive')!=='&');
-
 
 		$projectName	=	Cmd::demandOpt('--project-name');
 		$projectPath	=	Cmd::searchOpt('--project-path',realpath('.'));

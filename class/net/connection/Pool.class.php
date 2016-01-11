@@ -6,11 +6,11 @@
 
 		abstract class Pool{
 
-			use \apf\traits\log\InnerStatik;
+			use \apf\traits\log\Inner;
 
-			private static $connections	=	Array();
+			private $connections	=	Array();
 
-			private static function checkPoolKeyConstant(){
+			private function checkPoolKeyConstant(){
 
 				if(defined('static::POOL_KEY')){
 
@@ -22,7 +22,7 @@
 
 			}
 
-			private static function __getConnectionId($connection){
+			private function __getConnectionId($connection){
 
 				if(is_object($connection)){
 
@@ -52,7 +52,7 @@
 
 			}
 
-			public static function add(NetworkConnection $connection){
+			public function add(NetworkConnection $connection){
 
 				if(!$connection->isValidated()){
 
@@ -64,35 +64,35 @@
 
 				try{
 					
-					self::hasConnection($conConf->getId());
+					$this->hasConnection($conConf->getId());
 					throw new \LogicException("A connection with the id \"{$conConf->getId()}\" already exists.");
 
 				}catch(\Exception $e){
 
-					self::__innerStaticLogInfo("Adding connection \"{$conConf->getId()}\" to the connection pool");
-					self::$connections[static::POOL_KEY][self::__getConnectionId($connection)]	=	$connection;
+					$this->__logInfo("Adding connection \"{$conConf->getId()}\" to the connection pool");
+					$this->connections[static::POOL_KEY][$this->__getConnectionId($connection)]	=	$connection;
 
 				}
 
 			}
 
-			public static function hasAvailableConnections(){
+			public function hasAvailableConnections(){
 
-				self::checkPoolKeyConstant();
+				$this->checkPoolKeyConstant();
 
-				if(!array_key_exists(static::POOL_KEY,self::$connections)){
+				if(!array_key_exists(static::POOL_KEY,$this->connections)){
 
 					return FALSE;
 
 				}
 
-				return sizeof(self::$connections[static::POOL_KEY]);
+				return sizeof($this->connections[static::POOL_KEY]);
 
 			}
 
-			private static function __hasAvailableConnections(){
+			private function __hasAvailableConnections(){
 
-				if(self::hasAvailableConnections()){
+				if($this->hasAvailableConnections()){
 
 					return TRUE;
 
@@ -102,32 +102,32 @@
 
 			}
 
-			public static function get($id){
+			public function get($id){
 
-				self::checkPoolKeyConstant();
-				self::__hasAvailableConnections();
+				$this->checkPoolKeyConstant();
+				$this->__hasAvailableConnections();
 
-				$id	=	self::__getConnectionId($id);
+				$id	=	$this->__getConnectionId($id);
 
-				if(!self::hasConnection($id)){
+				if(!$this->hasConnection($id)){
 
 					$msg	=	sprintf('Invalid %s connection identifier "%s"',static::POOL_KEY,$id);
 					throw new \InvalidArgumentException($msg);
 
 				}
 
-				$connection	=	self::$connections[static::POOL_KEY][$id];
+				$connection	=	$this->connections[static::POOL_KEY][$id];
 
 				return $connection;
 
 			}
 
-			public static function hasConnection($id){
+			public function hasConnection($id){
 
-				self::checkPoolKeyConstant();
-				self::__hasAvailableConnections();
+				$this->checkPoolKeyConstant();
+				$this->__hasAvailableConnections();
 
-				return array_key_exists($id,self::$connections[static::POOL_KEY]);
+				return array_key_exists($id,$this->connections[static::POOL_KEY]);
 
 			}
 
