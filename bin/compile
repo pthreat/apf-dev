@@ -1,0 +1,307 @@
+#!/usr/bin/php
+<?php
+
+	set_include_path(realpath(sprintf('%s/../../',__DIR__)));
+
+	require	"apf/boot.php";
+
+	use apf\core\DI;
+	use apf\core\Log;
+	use apf\core\Kernel;
+	use apf\db\adapter\mysql5\Adapter		as	DatabaseAdapter;
+	use apf\core\Directory						as	Dir;
+	use apf\util\String							as	StringUtil;
+	use apf\core\File;
+	use apf\generator\code\func\Parameters;
+	use apf\core\Config;
+	use apf\core\Context;
+	use \apf\core\Cmd;
+
+	use apf\core\Project;
+	use apf\core\project\Config				as	ProjectConfig;
+
+	use apf\core\project\Plugin;
+	use apf\core\project\plugin\Config		as	PluginConfig;
+
+	use apf\db\Connection						as	DatabaseConnection;
+	use apf\db\connection\Config				as	DatabaseConnectionConfig;
+	use apf\db\connection\Pool					as	DatabaseConnectionPool;
+
+	try{
+
+		Kernel::boot();
+
+		$log				=	new Log();
+		$connection		=	DatabaseConnection::interactiveConfig($log);
+		DatabaseConnectionPool::setLog($log);
+		DatabaseConnectionPool::add($connection);
+		DatabaseConnectionPool::get($connection)->getAdapter($log);
+		echo $connection->getConfig();
+		die();
+		$pluginConfig	=	new PluginConfig();
+		$pluginConfig->setAuthor('jpfstange@gmail.com');
+		$plugin			=	new Plugin($pluginConfig);
+		echo $pluginConfig->export();
+		die();
+
+		$context	=	new Context();
+
+		define('INTERACTIVE',Cmd::searchOpt('--no-interactive')!=='&');
+
+
+		$projectName	=	Cmd::demandOpt('--project-name');
+		$projectPath	=	Cmd::searchOpt('--project-path',realpath('.'));
+		$projectPath	=	new Dir("$projectPath/$projectName");
+
+		//Set the project path, this will be the base path for all operations
+		Kernel::setProjectPath($projectPath,$createIfNotExists=TRUE);
+
+		//Set the applications directory inside the project
+		Kernel::setAppsDir(new Dir(Cmd::searchOpt('--apps-dir','apps')));
+
+		//Set the application name
+		Kernel::setAppName(Cmd::searchOpt('--app-name','default'));
+
+		//Create Project folders
+		$log->info("Creating project folders");
+
+		//HAS TO BE MOVED TO THE PROJECT CLASS!
+		StructureGenerator::generateProjectDirectories(Kernel::getProjectPath(),$log);
+
+		//Configure databases
+		if(Cmd::yesNo('Would you like to configure a database connection?',$log)){
+
+			$dir	=	new Dir(Kernel::getProjectPath());
+			Project::configureDatabases($log,Kernel::makeProjectPath('database'));
+
+		}
+
+		//Parse all base configurations defined in the framework 
+		$baseConfigs	=	new Dir(Kernel::makeFwPath(Array('config','templates','base')));
+		$appConfig		=	new Config();
+
+		foreach($baseConfigs->toArray() as $configFile){
+
+			$configSection	=	substr($configFile,0,strpos($configFile,'.'));
+
+			$log->success("[CONFIGURE $configSection]");
+
+			$configObj		=	new Config(Kernel::makeFwPath(Array('config','templates','base',$configFile)));
+			$values			=	$configObj->getSection('main');
+
+			foreach($values as $key=>&$value){
+
+				$specifiedByArg	=	Cmd::searchOpt("--$configSection-$key");
+
+				if($specifiedByArg){
+
+					$value	=	$specifiedByArg;
+					continue;
+
+				}
+
+				if(trim($value)!=="<<required>>"){
+
+					$value	=	INTERACTIVE ? Cmd::readWithDefault("$key>",$value,$log) : $value;
+					continue;
+
+				}
+
+				$value	=	Cmd::readWhileEmpty("$key>",$log);
+
+			}
+
+			$appConfig->addSection($configSection,$values);
+
+		}
+
+
+		//Configure the kernel with  all the previously parsed configurations 
+		Kernel::configure($appConfig);
+
+		//Generate apps.ini file inside the project directory
+
+		$appsConfigFile	=	new File(Kernel::makeProjectPath(Array('config','apps.ini')));
+		$appsConfig			=	new Config($appsConfigFile->exists() ? $appsConfigFile : NULL);
+
+		$appRoute	=	Cmd::searchOpt('--app-route',Kernel::getAppName());
+
+		$appsConfig->addSection(Kernel::getAppName(),Array(
+																			'route'	=>$appRoute,
+																			'apfPath'=>Kernel::getFwPath()
+													)
+		);
+
+		$appsConfig->save($appsConfigFile);
+
+		$log->info("Saving project configurations");
+
+		foreach($appConfig->getSections() as $section){
+
+			$tmpConfig	=	new Config();
+			$tmpConfig->addSection($section,$appConfig->$section);
+
+			$ini	=	"$section.ini";
+
+			if($section=='database'){
+
+				$ini	=	Array('databases',"{$appConfig->database->name}.ini");
+
+			}
+
+			Kernel::saveProjectConfigFile($tmpConfig,$ini);
+
+		}
+
+		//Generate the directory structure for this application
+		StructureGenerator::generateAppDirectories(Kernel::getAppPath(),$log);
+
+		//Generate data models
+
+		$mainDir	=	Cmd::searchOpt('--directory',"lib");
+		$ns		=	Cmd::searchOpt('--global-namespace',"data");
+		$ds		=	DIRECTORY_SEPARATOR;
+
+		$dbName	=	Adapter::getInstance()->getDatabaseName();
+		$schema	=	StringUtil::toCamelCase($dbName);
+
+		$gen		=	Array('collection','model','factory','table','form','filter');
+
+		$config	=	Array();
+
+		foreach($gen as $generate){
+
+			$config[$generate]	=	Array(
+													'namespace'	=>	Array($ns,$dbName,Cmd::searchOpt("--$generate-namespace",$generate)),
+													'directory'	=>	Cmd::searchOpt("--$generate-directory",$generate),
+													'method'		=>	sprintf('exportAs%s',$generate == 'table' ? 'Class' : $generate)
+			);
+
+		}
+
+		foreach($config as $type=>$dir){
+
+			$log->info("Checking if \"$type\" directory exists ...");
+
+			$dir									=	$dir['directory'];
+			$config[$type]['directory']	=	new Dir(sprintf('%s%s%s%s%s',$mainDir,$ds,$schema,$ds,$dir));
+			$dir									=	new Dir(sprintf('%s%s%s%s%s%s%s',$mainDir,$ds,$schema,$ds,$dir,$ds,'base'));
+			$config[$type]['baseDir']		=	$dir;
+
+			if(!$dir->isDir()){
+
+				$log->warning('Directory did not exist, creating ...');
+
+				try{
+
+					$dir->create();
+					continue;
+
+				}catch(\Exception $e){
+
+					$log->error("There was a problem while creating directory: $dir, please check your permissions");
+					exit(1);
+
+				}
+
+			}
+
+			$log->success("Found directory \"$dir\"");
+
+		}
+
+
+		$log->info("Begin class generation");
+
+		$tables	=	Adapter::getInstance()->listTables();
+
+		$log->info(sprintf('Found %d tables in schema %s',count($tables),Adapter::getInstance()->getDatabaseName()));
+
+		foreach($tables as $table){
+
+			$generator	=	new DataGenerator($table);
+
+			try{
+
+				$className		=	sprintf('%s',StringUtil::toUpperCamelCase($table->getName($includeSchema=FALSE)));
+				$classFileName	=	sprintf('%s.class.php',$className);
+
+				foreach($config as $generate=>$entry){
+
+					$baseClassFile	=	new File("$entry[baseDir]/$classFileName");
+					$mockClassFile	=	new File("$entry[directory]/$classFileName");
+
+					$log->info(sprintf('Exporting %s as a %s',$table,$generate));
+
+					$method	=	$entry['method'];
+					$ns		=	$entry['namespace'];
+
+					if(!$mockClassFile->exists()){
+
+						$extendsTo		=	$ns;
+						$extendsTo[]	=	'base';
+						$extendsTo[]	=	$className;
+
+						$mockClassFile->write(sprintf("<?php\n%s",$table->exportMockup($ns,$className,$extendsTo)));
+
+					}else{
+
+						$log->warning("Child class $mockClassFile already exists, not modifying");
+
+					}
+
+					$ns[]	=	'base';
+
+					switch(strtolower($generate)){
+
+						case 'filter':
+								$baseClassFile->write(sprintf("<?php\n%s\n",$generator->$method($config['model']['namespace'],$ns)));
+						break;
+
+						default:
+							$baseClassFile->write("<?php\n{$generator->$method($ns)}\n");
+						break;
+
+					}
+
+				}
+
+				$log->info("Generating namespace ini file ...");
+
+				$iniFile	=	new File(
+											Kernel::makeProjectPath(
+																			Array(
+																					'config',
+																					'namespaces',
+																					sprintf('00_autogen_%s_data.ini',$dbName)
+																			)
+											)
+				);
+
+				foreach($config as $generate=>$entry){
+
+					$namespace	=	implode('\\',$entry['namespace']);
+					$log->info("Mapping \"$generate\" to namespace \"$namespace\"");
+					$iniFile->write(sprintf('[%s]%smapToDirectory=%s',$namespace,"\n","$entry[directory]\n\n"));
+
+				}
+
+				$iniFile->close();
+
+			}catch(\Exception $e){
+
+				$log->error($e->getMessage());
+				$log->debug($e->getTraceAsString());
+				$log->debug(debug_backtrace());
+
+			}
+
+		}
+
+	}catch(\Exception $e){
+
+		echo $e->getMessage()."\n";
+		echo $e->getTraceAsString()."\n";
+
+	}
+
