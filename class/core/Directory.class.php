@@ -55,9 +55,17 @@
 
 			}
 
+			public function addPath($path){
+
+				$this->_directory	=	sprintf('%s%s%s',$this->directory,DIRECTORY_SEPARATOR,$path);
+				return $this;
+
+			}
+
 			public function setDirectory($directory){
 		
 				$this->_directory	=	$directory;
+				return $this;
 
 			}
 
