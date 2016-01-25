@@ -2,6 +2,8 @@
 
 	namespace apf\core{
 
+		use \apf\util\String	as	StringUtil;
+
 		class Directory{
 
 			private	$_directory	=	NULL;
@@ -9,6 +11,36 @@
 			public function __construct($directory){
 
 				$this->setDirectory($directory);
+
+			}
+
+			public function getIterator(){
+
+				return new \DirectoryIterator($this->_directory);
+
+			}
+
+			public function exists(){
+
+				return is_dir($this->_directory);
+
+			}
+
+			public function basename(){
+
+				return basename($this->_directory);
+
+			}
+
+			public function realpath(){
+
+				return realpath($this->_directory);
+
+			}
+
+			public function pathInfo(){
+
+				return pathinfo($this->_directory);
 
 			}
 
@@ -57,7 +89,7 @@
 
 			public function addPath($path){
 
-				$this->_directory	=	sprintf('%s%s%s',$this->directory,DIRECTORY_SEPARATOR,$path);
+				$this->_directory	=	sprintf('%s%s%s',$this->_directory,DIRECTORY_SEPARATOR,$path);
 				return $this;
 
 			}
@@ -66,6 +98,18 @@
 		
 				$this->_directory	=	$directory;
 				return $this;
+
+			}
+
+			public function isWritable(){
+
+				if(!file_exists($this->_directory)){
+
+					return is_writable(dirname($this->_directory));
+
+				}
+
+				return is_writable($this->_directory);
 
 			}
 

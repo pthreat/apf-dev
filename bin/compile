@@ -32,6 +32,10 @@
 		Kernel::boot();
 
 		$log				=	new Log();
+		$config			=	Project::interactiveConfig(Array('log'=>$log));
+		echo $config;
+		die();
+
 		$connection		=	DatabaseConnection::interactiveConfig($log);
 		$dbPool			=	new DatabaseConnectionPool();
 		$dbPool->setLog($log);

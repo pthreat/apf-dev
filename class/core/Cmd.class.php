@@ -80,6 +80,50 @@
 
 			}
 
+			public static function selectWithKeys(Array $options,$prompt='SELECT>',\apf\core\Log $log=NULL){
+
+				\apf\validate\String::mustBeString($prompt,'Given prompt must be a string');
+
+				$amountOfOptions	=	sizeof($options);
+
+				if(is_null($log)){
+
+					$log	=	new \apf\core\Log();
+
+				}
+
+				$len	=	0;
+
+				foreach($options as $key=>$opt){
+
+					$len	=	strlen($key) > $len ? strlen($key) : $len;
+						
+				}
+
+				$len+=3;
+
+				while(TRUE){
+
+					foreach($options as $key=>$opt){
+
+						$log->info(sprintf('%s)%s%s',$key,str_repeat(' ',$len),$opt));
+
+					}
+
+					$selected	=	strtolower(trim(self::readInput($prompt,$log),"\r\n"));
+
+					foreach($options as $key=>$opt){
+
+						if(strtolower($key)==$selected){
+							return $key;	
+						}
+
+					}
+
+				}
+
+			}
+
 			public static function yesNo($msg,\apf\core\Log $log=NULL){
 
 				\apf\validate\String::mustBeString($msg);

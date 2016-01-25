@@ -3,10 +3,53 @@
 	namespace apf\core\project{
 
 		use apf\core\Cmd;
-		use apf\core\Config as BaseConfig;
-		use apf\core\Dir;
+		use apf\core\Directory	as	Dir;
+		use apf\core\Config		as BaseConfig;
 
 		class Config extends BaseConfig{
+
+			public static function getDefaultInstance(){
+			}
+
+			public function setCommonFragmentsDirectory(Dir $dir){
+
+				if($dir->exists() && !$dir->isWritable()){
+
+					throw new \InvalidArgumentException("Directory \"$dir\" is not writable");
+
+				}
+
+				$this->commonFragmentsDirectory	=	$dir;
+
+				return $this;
+
+			}
+
+			public function getCommonFragmentsDirectory(){
+
+				return parent::getCommonFragmentsDirectory();
+
+			}
+
+			public function setCommonTemplatesDirectory(Dir $dir){
+
+				if($dir->exists() && !$dir->isWritable()){
+
+					throw new \InvalidArgumentException("Directory \"$dir\" is not writable");
+
+				}
+
+				$this->commonTemplatesDirectory	=	$dir;
+
+				return $this;
+
+			}
+
+			public function getCommonTemplatesDirectory(){
+
+				return parent::getCommonTemplatesDirectory();
+
+			}
 
 			public function setName($name){
 
@@ -32,7 +75,7 @@
 
 			public function setDirectory(Dir $dir){
 
-				if(!$dir->isWritable()){
+				if($dir->exists() && !$dir->isWritable()){
 
 					throw new \InvalidArgumentException("Directory \"$dir\" is not writable");
 
@@ -52,7 +95,7 @@
 
 			public function setModulesDirectory(Dir $dir){
 
-				if(!$dir->isWritable()){
+				if($dir->exists() && !$dir->isWritable()){
 
 					throw new \InvalidArgumentException("Modules directory \"$dir\" is not writable");
 

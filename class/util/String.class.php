@@ -28,6 +28,27 @@
 
 			}
 
+			public static function tokenizeCallback($string,$delimiter,Callable $callBack){
+
+				StringValidate::mustBeNotEmpty($string,$trim=TRUE,"Must provide a string to find");
+				StringValidate::mustBeNotEmpty($delimiter,$trim=TRUE,"Must provide a delimiter");
+
+				$tok = strtok($string,$delimiter);
+
+				$cnt	=	0;
+
+				while ($tok !== FALSE) {
+
+					if($callBack($tok) === FALSE){
+						break;
+					}
+
+					$tok = strtok($delimiter);
+
+				}
+
+			}
+
 			public static function tabs($num=1){
 
 				return str_repeat("\t",$num);
