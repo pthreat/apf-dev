@@ -6,42 +6,25 @@
 
 	namespace apf\core{
 
-		use apf\core\config\Value as ConfigValue;
+		use \apf\core\config\Value as ConfigValue;
 
 		abstract class Config implements \Iterator{
 
 			private	$values					=	Array();
 			private	$securedAttributes	=	Array();
 
-			public function __construct(Array $values=Array(),Array $securedAttributes=Array()){
 
-				if(sizeof($values)){
+			public function __construct(Config $config=NULL,Array $securedAttributes=Array()){
 
-					$this->initFromArray($values);
-					$this->setSecuredAttributes($securedAttributes);
+				if($config){
+
+					$this->merge($config);
 
 				}
 
-			}
+				if(sizeof($securedAttributes)){
 
-			//Initializes this configuration object with a $values array.
-
-			private function initFromArray(Array $values){
-
-				foreach($values as $key=>$value){
-
-					$attribute	=	ucwords(substr($method,3));
-					$setter		=	"set$attribute";
-
-					if(!method_exists($setter)){
-
-						$msg	=	"This configuration class has no setter method for attribute \"$attribute\"";
-
-						throw new \InvalidArgumentException($msg);
-
-					}
-
-					$this->$setter($value);
+					$this->setSecuredAttributes($securedAttributes);
 
 				}
 
@@ -136,6 +119,14 @@
 
 			public function addValue(ConfigValue $value){
 
+				$setter		=	"set{$value->getName()}";
+
+				if(!method_exists($this,$setter)){
+
+					throw new \InvalidArgumentException("No setter method named \"$setter\" was found in this configuration class");
+
+				}
+
 				if($this->attributeIsSecured($value->getName())){
 
 					$value->setSecure(TRUE);
@@ -200,6 +191,9 @@
 				return $this;
 
 			}
+
+			//A configuration adapter is basically a configuration format
+			//Say ... JSON, XML, INI, YML
 
 			private static function __getAdapter($adapter){
 

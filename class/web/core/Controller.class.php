@@ -2,10 +2,11 @@
 
 	namespace apf\web\core{
 
-		use apf\core\DI;
-		use apf\web\core\Request;
+		use \apf\core\DI;
+		use \apf\web\core\Request;
+		use \apf\core\Configurable;
 
-		class Controller{
+		class Controller extends Configurable{
 
 			protected	$js				=	Array();
 			protected	$css				=	Array();
@@ -73,6 +74,10 @@
 				$view->setVar("action",$this->request->getAction());
 
 				return $view;
+
+			}
+
+			public function __interactiveConfig(LogInterface $log,Config $config=NULL,Array $extraArguments=Array()){
 
 			}
 

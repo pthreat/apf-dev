@@ -3,10 +3,10 @@
 	namespace apf\core{
 
 		use \apf\iface\Log						as	LogInterface;
-		use \apf\core\project\Config			as	ProjectConfig;
+		use \apf\core\project\Config;
 		use \apf\core\project\Module			as	ProjectModule;
 		use \apf\core\project\module\Config	as	ModuleConfig;
-		use \apf\core\Config;
+		use \apf\core\project\Config			as	ProjectConfig;
 		use \apf\core\Cmd;
 		use \apf\core\Directory					as	Dir;
 
@@ -15,8 +15,6 @@
 			const CONFIG_DIRECTORY	=	'config';
 
 			public function create(LogInterface $log){
-
-				$this->validateConfig();
 
 				$log->info("Creating project {$config->getName()}");
 			
@@ -38,16 +36,86 @@
 
 			}
 
-			public function __validateConfig(){
+			protected static function __softConfigValidation(Config $config){
+
+				//Validate project name
+
+				if(!$config->getName()){
+
+					throw new \LogicException("The project name is invalid");
+
+				}
+
+				//Validate modules directory
+
+				if(!$config->getModulesDirectory()){
+
+					throw new \LogicException("The project modules directory has not been set");
+
+				}
+
+				if(!$config->getModulesDirectory()->exists()){
+
+					throw new \LogicException("The project modules directory does not exists.");
+
+				}
+
+				//Validate project directory
+
+				if(!$config->getDirectory()){
+
+					throw new \LogicException("The project directory has not been set");
+
+				}
+
+				if(!$config->getDirectory()->exists()){
+
+					throw new \LogicException("The project directory does not exists");
+
+				}
+
+				//Validate common fragments directory
+
+				if(!$config->getCommonFragmentsDirectory()){
+
+					throw new \LogicException("The project common fragments directory has not been set");
+
+				}
+
+				if(!$config->getCommonFragmentsDirectory()->exists()){
+
+					throw new \LogicException("The project common fragments directory does not exists.");
+
+				}
+
+				//Validate templates directory
+
+				if(!$config->getTemplatesDirectory()->exists()){
+
+					throw new \LogicException("The project templates directory does not exists.");
+
+				}
+
 			}
 
-			protected static function __interactiveConfig(Array $arguments){
+			protected static function __hardConfigValidation(Config $config){
 
-				$log	=	$arguments['log'];
+				if($config->getModulesDirectory()->isWritable()){
+
+					throw new \LogicException("The project modules directory has not been set");
+
+				}
+
+			}
+
+			protected static function __finalConfigValidation($config){
+			}
+
+			protected static function __interactiveConfig($config=NULL,$log=NULL){
 
 				$log->success('[New project configuration]');
 
-				$config	=	new ProjectConfig(is_null($config) ? Array() : $config->toArray());
+				$config	=	new ProjectConfig($config);
 
 				do{
 
@@ -187,7 +255,10 @@
 
 					}
 
-					$config->addModule(ProjectModule::interactiveConfig(Array('log'=>$log,'project'=>$project)));
+					$moduleConfig	=	new ModuleConfig();
+					$moduleConfig->setProject($project);
+
+					$config->addModule(ProjectModule::interactiveConfig($moduleConfig,$log));
 
 				}while(TRUE);
 

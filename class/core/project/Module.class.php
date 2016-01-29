@@ -15,9 +15,24 @@
 
 			private	$project	=	NULL;
 
-			public function create(){
+			public function setProject(Project $project){
 
-				$this->validateConfig();
+				if(!$project->getConfig()->isValidated()){
+
+					throw new \InvalidArgumentException("A properly configured project is needed");
+
+				}
+
+				$this->project	=	$project;
+
+				return $this;
+
+			}
+
+
+			public function getProject(){
+
+				return parent::getProject();
 
 			}
 
@@ -36,33 +51,10 @@
 
 			}
 
-			protected static function __interactiveConfig(Array $arguments){
+			protected static function __interactiveConfig(ModuleConfig $config=NULL,LogInterface $log=NULL){
 
-				if(!array_key_exists('project',$arguments)){
-
-					throw new \LogicException('Must pass a project object through a key named projectConfig');
-
-				}
-
-				if(!($arguments['project'] instanceof Project)){
-
-					throw new \InvalidArgumentException('Passed project must be an instance of \\apf\\core\\Project');
-
-				}
-
-				if(!$arguments['project']->isConfigured()){
-
-					throw new \InvalidArgumentException('Passed project object is not configured');
-
-				}
-
-				$log	=	$arguments['log'];
-
-				$projectConfig	=	$arguments['project']->getConfig();
-
-				$log->success('[Module configuration]');
-
-				$config	=	new ModuleConfig();
+				$config			=	$config	?	$config	:	new ModuleConfig();
+				$projectConfig	=	$config->getProjectConfig();
 
 				do{
 
@@ -114,7 +106,7 @@
 
 				do{
 
-					$opt	=	Cmd::select(Array('N'=>'New sub','E'=>'End adding subs'),'>',$log);
+					$opt	=	Cmd::selectWithKeys(Array('N'=>'New sub','E'=>'End adding subs'),'>',$log);
 
 					if(strtolower($opt)=='e'){
 

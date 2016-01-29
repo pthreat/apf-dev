@@ -27,12 +27,6 @@
 
 			public function setDirectory(Dir $dir){
 
-				if($dir->exists() && !$dir->isWritable()){
-
-					throw new \InvalidArgumentException("Directory \"$dir\" is not writable");
-
-				}
-
 				$this->directory	=	$dir;
 
 				return $this;
@@ -42,6 +36,46 @@
 			public function getDirectory(){
 
 				return $this->directory;
+
+			}
+
+			public function setControllersDirectory(Dir $dir){
+
+				$this->controllersDirectory	=	$dir;
+				return $this;
+
+			}
+
+			public function getControllersDirectory(){
+
+				return parent::getControllersDirectory();
+
+			}
+
+			public function setTemplatesDirectory(Dir $dir){
+
+				$this->directory	=	$dir;
+
+				return $this;
+
+			}
+
+			public function getTemplatesDirectory(){
+
+				return parent::getTemplatesDirectory();
+
+			}
+
+			public function setFragmentsDirectory(Dir $dir){
+
+				$this->fragmentsDirectory	=	$dir;
+				return $this;
+
+			}
+
+			public function getFragmentsDirectory(){
+
+				return parent::getFragmentsDirectory();
 
 			}
 

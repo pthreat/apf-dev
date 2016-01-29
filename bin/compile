@@ -32,7 +32,7 @@
 		Kernel::boot();
 
 		$log				=	new Log();
-		$config			=	Project::interactiveConfig(Array('log'=>$log));
+		$config			=	Project::interactiveConfig(NULL,$log);
 		echo $config;
 		die();
 
