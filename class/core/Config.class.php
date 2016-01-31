@@ -145,6 +145,16 @@
 
 			}
 
+			/**
+			* Returns an array with NON exportable configuration attributes. 
+			* i.e those attributes/properties that will *NOT* be exported when exporting this configuration to any format
+			* This is provided due to the fact that some attributes are part of run time code and not configuration
+			* For instance, say the injected Project attribute on a project Module "project" is not something that 
+			* you would export into a module configuration file.
+			 */
+
+			abstract public function getNonExportableAttributes();
+
 			//////////////////////////////////////
 			//Iterator interface
 			/////////////////////////////////////

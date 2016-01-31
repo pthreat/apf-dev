@@ -15,33 +15,9 @@
 
 			private	$project	=	NULL;
 
-			public function setProject(Project $project){
-
-				if(!$project->getConfig()->isValidated()){
-
-					throw new \InvalidArgumentException("A properly configured project is needed");
-
-				}
-
-				$this->project	=	$project;
-
-				return $this;
-
-			}
-
-
-			public function getProject(){
-
-				return parent::getProject();
-
-			}
-
-			public function __validateConfig(){
-			}
-
 			public function listSubs(){
 
-				if(!$this->config->getDirectory()){
+				if(!$this->isValidated()){
 
 					throw new \LogicException('Can not list subs without a valid directory for this module');
 
@@ -51,16 +27,30 @@
 
 			}
 
-			protected static function __interactiveConfig(ModuleConfig $config=NULL,LogInterface $log=NULL){
+			protected static function __interactiveConfig($config,$log){
+				
+				$config	=	new ModuleConfig($config);
+				$project	=	$config->getProject();
 
-				$config			=	$config	?	$config	:	new ModuleConfig();
-				$projectConfig	=	$config->getProjectConfig();
+				if(!$project){
+
+					throw new \LogicException("Given module configuration has no assigned project");
+
+				}
+
+				if(!$project->getConfig()){
+
+					throw new \LogicException("Passed project has not been properly configured");
+
+				}
+
+				$projectConfig	=	$project->getConfig();
 
 				do{
 
 					$config->setName(Cmd::readInput('Module name:',$log));
 
-				}while(empty($config->getName()));
+				}while(!$config->getName());
 
 				do{
 
@@ -100,7 +90,47 @@
 
 				}while(!$config->getSubsDirectory());
 
-				$module	=	new Module($config);
+				do{
+
+					$log->info('Please specify the templates directory for this module');
+
+					$dir	=	clone($config->getDirectory());
+					$dir->addPath('templates');
+
+					$config->setTemplatesDirectory(
+													new Dir(
+																Cmd::readWithDefault(
+																							'directory>',
+																							$dir,
+																							$log
+																)
+													)
+					);
+
+
+				}while(!$config->getTemplatesDirectory());
+
+				do{
+
+					$log->info('Please specify the fragments directory for this module');
+
+					$dir	=	clone($config->getDirectory());
+					$dir->addPath('fragments');
+
+					$config->setFragmentsDirectory(
+													new Dir(
+																Cmd::readWithDefault(
+																							'directory>',
+																							$dir,
+																							$log
+																)
+													)
+					);
+
+
+				}while(!$config->getFragmentsDirectory());
+
+				$module	=	new Module($config,$validate='soft');
 
 				$log->info('Please specify which subs would you like to create for this module');
 
@@ -116,9 +146,14 @@
 
 					$subArguments	=	array_merge(Array('log'=>$log,'module'=>$module));
 
-					$config->addSub(Sub::interactiveConfig($subArguments));
+					$subConfig	=	new SubConfig();
+					$subConfig->setModule($module);
+
+					$config->addSub(Sub::interactiveConfig($subConfig,$log));
 
 				}while(TRUE);
+
+				return $module;
 
 			}
 

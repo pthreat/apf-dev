@@ -60,29 +60,11 @@
 			*Returns an interactively configured Sub (Module) class
 			*/
 
-			protected static function __interactiveConfig(ModuleConfig $config=NULL,LogInterface $log=NULL){
-
-				if(!array_key_exists('module',$arguments)){
-
-					throw new \LogicException('Must pass a Module object through a key named module');
-
-				}
-
-				if(!($arguments['module'] instanceof Module)){
-
-					throw new \InvalidArgumentException('Passed module must be an instance of \\apf\\core\\project\\Module');
-
-				}
-
-				if(!$arguments['module']->isConfigured()){
-
-					throw new \InvalidArgumentException('Passed module object is not configured');
-
-				}
+			protected static function __interactiveConfig($config,$log){
 
 				$log->success('[Sub configuration]');
 
-				$config	=	new SubConfig();
+				$config	=	new SubConfig($config);
 
 				do{
 

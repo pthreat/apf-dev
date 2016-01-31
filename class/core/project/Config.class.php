@@ -11,46 +11,6 @@
 			public static function getDefaultInstance(){
 			}
 
-			public function setCommonFragmentsDirectory(Dir $dir){
-
-				if($dir->exists() && !$dir->isWritable()){
-
-					throw new \InvalidArgumentException("Directory \"$dir\" is not writable");
-
-				}
-
-				$this->commonFragmentsDirectory	=	$dir;
-
-				return $this;
-
-			}
-
-			public function getCommonFragmentsDirectory(){
-
-				return parent::getCommonFragmentsDirectory();
-
-			}
-
-			public function setCommonTemplatesDirectory(Dir $dir){
-
-				if($dir->exists() && !$dir->isWritable()){
-
-					throw new \InvalidArgumentException("Directory \"$dir\" is not writable");
-
-				}
-
-				$this->commonTemplatesDirectory	=	$dir;
-
-				return $this;
-
-			}
-
-			public function getCommonTemplatesDirectory(){
-
-				return parent::getCommonTemplatesDirectory();
-
-			}
-
 			public function setName($name){
 
 				$name	=	trim($name);
@@ -73,13 +33,41 @@
 
 			}
 
+			public function setFragmentsDirectory(Dir $dir){
+
+				$this->fragmentsDirectory	=	$dir;
+
+				return $this;
+
+			}
+
+			public function getFragmentsDirectory(){
+
+				return parent::getFragmentsDirectory();
+
+			}
+
+			public function setTemplatesDirectory(Dir $dir){
+
+				$this->templatesDirectory	=	$dir;
+
+				return $this;
+
+			}
+
+			public function getTemplatesDirectory(){
+
+				return parent::getTemplatesDirectory();
+
+			}
+
+			public function getNonExportableAttributes(){
+
+				return Array();
+
+			}
+
 			public function setDirectory(Dir $dir){
-
-				if($dir->exists() && !$dir->isWritable()){
-
-					throw new \InvalidArgumentException("Directory \"$dir\" is not writable");
-
-				}
 
 				$this->directory	=	$dir;
 
@@ -94,12 +82,6 @@
 			}
 
 			public function setModulesDirectory(Dir $dir){
-
-				if($dir->exists() && !$dir->isWritable()){
-
-					throw new \InvalidArgumentException("Modules directory \"$dir\" is not writable");
-
-				}
 
 				$this->modulesDirectory	=	$dir;
 				return $this;

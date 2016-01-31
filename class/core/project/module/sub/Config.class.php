@@ -10,7 +10,11 @@
 
 		class Config extends BaseConfig{
 
-			private	$module	=	NULL;
+			public function getExportableAttributes(){
+
+				return Array();
+
+			}
 
 			public function setModule(Module $module){
 
