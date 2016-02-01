@@ -5,6 +5,8 @@
 		use \apf\core\DI;
 		use \apf\web\core\Request;
 		use \apf\core\Configurable;
+		use \apf\web\core\controller\Config	as	ControllerConfig;
+		use \apf\core\Cmd;
 
 		class Controller extends Configurable{
 
@@ -77,7 +79,14 @@
 
 			}
 
-			public function __interactiveConfig(LogInterface $log,Config $config=NULL,Array $extraArguments=Array()){
+			public function __interactiveConfig($config,$log){
+
+				$config	=	new ControllerConfig($config);
+
+				$log->info('[ Controller configuration ]');
+
+				do{
+				}while(!$config->getName());
 
 			}
 

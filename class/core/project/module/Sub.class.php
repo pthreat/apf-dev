@@ -9,6 +9,7 @@
 		use \apf\iface\Log								as	LogInterface;
 		use \apf\iface\Crud								as	CrudInterface;
 		use \apf\web\core\Controller					as	WebController;
+		use \apf\web\core\controller\Config			as	ControllerConfig;
 
 		class Sub extends Configurable{
 
@@ -110,11 +111,14 @@
 
 					}
 
-					$config->addController(WebController::interactiveConfig(Array('log'=>$log,'sub'=>$sub)));
+					$controllerConfig	=	new ControllerConfig();
+					$controllerConfig->setSub($config);
+
+					$config->addController(WebController::interactiveConfig($controllerConfig,$log));
 
 				}while(TRUE);
 
-				return new Sub($config);
+				return new Sub($config,$validate='soft');
 
 			}
 
