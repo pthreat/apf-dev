@@ -22,6 +22,12 @@
 
 			}
 
+			public function getType(){
+
+				return strtolower(basename(get_class($this)));
+
+			}
+
 			public function minify(){
 
 				return StringUtil::minify(file_get_contents($this->getContents()));
@@ -29,6 +35,12 @@
 			}
 
 			public function downloadIn(Dir $dir){
+
+				if($this->isLocal()){
+
+					throw new \LogicException("Can not download a local asset");
+
+				}
 				
 			}
 
@@ -58,6 +70,12 @@
 				}while(!$config->getName());
 
 				return $config;
+
+			}
+
+			public function __toString(){
+
+				return sprintf('%s',$this->config->getURI());
 
 			}
 

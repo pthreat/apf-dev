@@ -9,6 +9,9 @@
 
 		class Config extends BaseConfig{
 
+			//Adds assets method such as addAsset, getAsset, addJavascript, addCss, etc
+			use \apf\trait\web\Assetable;
+
 			public static function getDefaultInstance(){
 			}
 
@@ -50,35 +53,6 @@
 				}
 
 				return $this->actions[$name];
-
-			}
-
-			public function addAsset($type,$uri,$name=NULL){
-
-				if(is_null($name)){
-
-					$name	=	basename($uri);
-
-				}
-
-				$this->assets[$type][]	=	Array(
-													'name'	=>	$assetName,
-													'uri'		=>	$uri
-				);
-
-				return $this;
-
-			}
-
-			public function addJavascript($uri,$name=NULL){
-
-				return $this->addAsset('javascript',$uri,$name);
-
-			}
-
-			public function addCSS($uri,$name=NULL){
-
-				return $this->addAsset('css',$uri,$name);
 
 			}
 

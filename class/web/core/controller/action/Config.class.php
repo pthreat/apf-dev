@@ -12,6 +12,12 @@
 
 		class Config extends BaseConfig{
 
+			//Adds assets method such as addAsset, getAsset, addJavascript, addCss, etc
+			use \apf\trait\web\Assetable;
+
+			//Adds routeable methods such as setRouter, getRouter
+			use \apf\trait\web\Routeable;
+
 			public static function getDefaultInstance(){
 			}
 
@@ -34,57 +40,6 @@
 			public function getName(){
 
 				return parent::getName();
-
-			}
-
-			public function addAction(Action $action){
-
-				$this->actions[$action->getName()]	=	$action;
-				return $this;
-
-			}
-
-			public function getAction($name){
-
-				if(!$this->hasAction($name)){
-
-					throw new \InvalidArgumentException("No action named \"$name\" could be found in this controller");
-
-				}
-
-				return $this->actions[$name];
-
-			}
-
-			public function addRouter(Router $router){
-
-				$this->router	=	$router;
-				return $this;
-
-			}
-
-			public function getRouter(){
-
-				return parent::getRouter();
-
-			}
-
-			public function addAsset(Asset $asset){
-
-				$this->assets[]	=	$asset;
-				return $this;
-
-			}
-
-			public function addJavascript(JavascriptAsset $asset){
-
-				return $this->addAsset($asset);
-
-			}
-
-			public function addCSS(CSSAsset $asset){
-
-				return $this->addAsset($asset);
 
 			}
 
