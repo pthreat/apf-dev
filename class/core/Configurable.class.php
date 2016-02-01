@@ -13,7 +13,7 @@
 			private	$isValidatedHard	=	FALSE;
 			private	$isValidatedExtra	=	FALSE;
 
-			final public function __construct(Config $config=NULL,$validateMode='hard',$reValidate=FALSE){
+			final public function __construct(Config $config,$validateMode='hard',$reValidate=FALSE){
 
 				$this->configure($config,$validateMode,$reValidate);
 

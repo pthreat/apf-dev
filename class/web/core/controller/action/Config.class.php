@@ -12,10 +12,10 @@
 
 		class Config extends BaseConfig{
 
-			//Adds assets method such as addAsset, getAsset, addJavascript, addCss, etc
+			//Adds asset methods such as addAsset, getAsset, addJavascript, addCss, etc
 			use \apf\trait\web\Assetable;
 
-			//Adds routeable methods such as setRouter, getRouter
+			//Adds route methods such as setRoute, getRoute
 			use \apf\trait\web\Routeable;
 
 			public static function getDefaultInstance(){

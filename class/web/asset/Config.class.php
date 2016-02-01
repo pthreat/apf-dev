@@ -2,13 +2,14 @@
 
 	namespace apf\web\core\asset{
 
-		use apf\core\Config	as	BaseConfig;
+		use apf\core\Config			as	BaseConfig;
+		use \apf\validate\String	as	StringValidate;
 
 		abstract class Config extends BaseConfig{
 
 			public function setName($name){
 
-				$this->name	=	$name;
+				$this->name	=	StringValidate::mustBeNotEmpty($name,$trim=TRUE,'Asset name can not be empty');
 				return $this;
 
 			}
@@ -19,10 +20,22 @@
 
 			}
 
+			public function setDescription($description){
+
+				$this->description	=	StringValidate::mustBeNotEmpty($name,$trim=TRUE,'Asset description can not be empty');
+				return $this;
+
+			}
+
+			public function getDescription(){
+
+				return parent::getDescription();
+
+			}
+
 			public function setURI($uri){
 
-				$this->uri	=	$uri;
-
+				$this->uri	=	StringValidate::mustBeNotEmpty($uri,$trim=TRUE,'Asset URI must be not empty');;
 				return $this;
 
 			}

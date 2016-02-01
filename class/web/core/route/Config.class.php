@@ -14,7 +14,16 @@
 			*/
 			public function setName($name){
 
+				$name	=	trim($name);
+
+				if(empty($name)){
+
+					throw new \InvalidArgumentException("Route name can not be empty");
+
+				}
+
 				$this->name	=	$name;
+
 				return $this;
 
 			}
@@ -32,7 +41,16 @@
 
 			public function setDescription($description){
 
+				$description	=	trim($description);
+
+				if(empty($description)){
+
+					throw new \InvalidArgumentException("Route description can not be empty");
+
+				}
+
 				$this->description	=	$description;
+
 				return $this;
 
 			}
@@ -51,6 +69,14 @@
 			*/
 
 			public function setPath($path){
+
+				$path	=	trim($path);
+
+				if(empty($path)){
+
+					throw new \InvalidArgumentException("Route path can not be empty");
+
+				}
 
 				$this->path	=	$path;
 
@@ -73,6 +99,7 @@
 			public function setAction(Action $action){
 
 				$this->action	=	$action;
+				return $this;
 
 			}
 
