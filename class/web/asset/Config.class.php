@@ -4,7 +4,7 @@
 
 		use apf\core\Config	as	BaseConfig;
 
-		class Config extends BaseConfig{
+		abstract class Config extends BaseConfig{
 
 			public function setName($name){
 

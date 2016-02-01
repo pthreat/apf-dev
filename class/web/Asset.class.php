@@ -1,12 +1,12 @@
 <?php
 
-	namespace apf\web\core{
+	namespace apf\web{
 
 		use \apf\core\Configurable;
 		use \apf\core\Cmd;
-		use \apf\core\Directory				as	Dir;
-		use \apf\util\String					as	StringUtil;
-		use \apf\web\core\asset\Config	as	AssetConfig;
+		use \apf\core\Directory		as	Dir;
+		use \apf\util\String			as	StringUtil;
+		use \apf\web\asset\Config	as	AssetConfig;
 
 		abstract class Asset extends Configurable{
 
@@ -32,14 +32,18 @@
 				
 			}
 
-			abstract public function __assetConfiguration($config,$log){
+			public function copyTo(Dir $dir){
 			}
 
-			public static function __interactiveConfig($config,$log){
+			/**
+			 *
+			 * The basic asset configuration method will be called by the child classes
+			 * This method provides a common way of configure common asset configuration
+			 * properties allowing the child classes to add more specific configurations.
+			 *
+			 */
 
-				$log->info('[ Javascript asset configuration ]');
-
-				$config	=	new AssetConfig($config);
+			protected static function basicAssetConfiguration($config,$log){
 
 				do{
 
@@ -52,6 +56,8 @@
 					$config->setName(Cmd::readInput('name>',$log));
 
 				}while(!$config->getName());
+
+				return $config;
 
 			}
 
