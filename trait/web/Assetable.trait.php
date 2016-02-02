@@ -2,6 +2,8 @@
 
 	namespace apf\traits\web{
 
+		use \apf\web\Asset;
+
 		trait Assetable{
 
 			public function addAsset(Asset $asset){
@@ -14,19 +16,39 @@
 
 			public function getAsset($type,$name){
 
-				if(!array_key_exists($type,$this->assets)){
+				$hasAsset	=	$this->hasAsset($type,$name);
+
+				if($hasAsset===NULL){
 
 					throw new \LogicException("No \"$name\" assets have been found");
 
 				}
 
-				if(!array_key_exists($name,$this->assets[$type])){
+				if(!$hasAsset){
 
 					throw new \InvalidArgumentException("No asset with name \"$name\" could be found");
 
 				}
 
 				return $this->assets[$type][$name];
+
+			}
+
+			public function hasAsset($type,$name){
+
+				if(!array_key_exists($type,$this->assets)){
+
+					return NULL;
+
+				}
+
+				if(!array_key_exists($name,$this->assets[$type])){
+
+					return FALSE;
+
+				}
+
+				return TRUE;
 
 			}
 

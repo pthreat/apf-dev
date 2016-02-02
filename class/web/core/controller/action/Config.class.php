@@ -46,7 +46,6 @@
 			public function getNonExportableAttributes(){
 
 				return Array(
-									'router',
 									'name'
 				);
 

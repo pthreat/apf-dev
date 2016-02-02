@@ -34,7 +34,6 @@
 			public function setDirectory(Dir $dir){
 
 				$this->directory	=	$dir;
-
 				return $this;
 
 			}
@@ -58,9 +57,6 @@
 
 			}
 
-			public static function getDefaultInstance(){
-			}
-
 			public function getNonExportableAttributes(){
 
 				return Array(
@@ -81,6 +77,7 @@
 				return parent::getTemplatesDirectory();
 
 			}
+
 			public function setFragmentsDirectory(Dir $dir){
 
 				$this->fragmentsDirectory	=	$dir;

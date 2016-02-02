@@ -60,11 +60,6 @@
 
 			}
 
-			//Every class extending to this class must implement the following method
-			//This method must return a configuration object with defaults.
-
-			abstract public static function getDefaultInstance();
-
 			public function toArray(){
 
 				$default	=	self::getDefaultInstance();

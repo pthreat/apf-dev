@@ -2,14 +2,14 @@
 
 	namespace apf\core\project{
 
-		use apf\core\Cmd;
-		use apf\core\Directory	as	Dir;
-		use apf\core\Config		as BaseConfig;
+		use \apf\core\Cmd;
+		use \apf\core\Directory			as	Dir;
+		use \apf\core\Config				as BaseConfig;
+		use \apf\iface\web\Assetable	as	AssetableInterface;
 
-		class Config extends BaseConfig{
+		class Config extends BaseConfig implements AssetableInterface{
 
-			public static function getDefaultInstance(){
-			}
+			use \apf\traits\web\Assetable;
 
 			public function setName($name){
 

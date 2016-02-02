@@ -3,6 +3,9 @@
 	namespace apf\core\project\module{
 
 		use \apf\core\Cmd;
+
+		use \apf\core\Directory							as	Dir;
+		use \apf\core\Configurable;
 		use \apf\core\project\module\Config			as ModuleConfig;
 		use \apf\core\project\Module;
 		use \apf\core\project\module\sub\Config	as	SubConfig;
@@ -32,24 +35,6 @@
 			public function validateConfig(){
 			}
 
-			public function addController(Controller $controller){
-
-				$this->controllers[$controller->getName()]	=	$controller;
-				return $this;
-
-			}
-
-			public function getController($name){
-
-				if(!array_key_exists($name,$this->controllers)){
-
-					throw new \InvalidArgumentException("Controllers \"$name\" does not exists in this sub");
-
-				}
-
-				return $this->controllers[$name];
-
-			}
 
 			public function listControllers(){
 
@@ -81,11 +66,16 @@
 
 				}while(empty($config->getName()));
 
+				$log->repeat('-',60,'white');
+
 				do{
 
 					$log->info('Please specify the directory for this sub');
 
-					$dir	=	$config->getDirectory()->addPath($config->getName());
+					$dir	=	$config->getModule()
+					->getConfig()
+					->getDirectory()
+					->addPath($config->getName());
 
 					$config->setDirectory(
 													new Dir(

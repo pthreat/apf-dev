@@ -1,18 +1,35 @@
 <?php
 
-	namespace apf\core\project\module{
+	namespace apf\core\project\module\sub{
 
 		use \apf\core\Cmd;
-		use \apf\core\Config							as	BaeConfig;
+		use \apf\core\Config							as	BaseConfig;
+		use \apf\core\Directory						as	Dir;
 		use \apf\core\project\Module;
 		use \apf\core\project\module\Config		as	ModuleConfig;
-		use \apf\iface\Log							as	LogInterface
+		use \apf\iface\Log							as	LogInterface;
 
 		class Config extends BaseConfig{
 
-			public function getExportableAttributes(){
+			public function setName($name){
 
-				return Array();
+				$name	=	trim($name);
+
+				if(empty($name)){
+
+					throw new \InvalidArgumentException("Sub (module) name can not be empty");
+
+				}
+
+				$this->name	=	$name;
+
+				return $this;
+
+			}
+
+			public function getName(){
+
+				return parent::getName();
 
 			}
 
@@ -39,7 +56,7 @@
 
 			public function getDirectory(){
 
-				return $this->directory;
+				return parent::getDirectory();
 
 			}
 
@@ -80,6 +97,33 @@
 			public function getFragmentsDirectory(){
 
 				return parent::getFragmentsDirectory();
+
+			}
+
+			public function addController(Controller $controller){
+
+				$this->controllers[$controller->getName()]	=	$controller;
+				return $this;
+
+			}
+
+			public function getController($name){
+
+				if(!array_key_exists($name,$this->controllers)){
+
+					throw new \InvalidArgumentException("Controllers \"$name\" does not exists in this sub");
+
+				}
+
+				return $this->controllers[$name];
+
+			}
+
+			public function getNonExportableAttributes(){
+
+				return Array(
+									'controllers'
+				);
 
 			}
 

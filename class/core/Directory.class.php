@@ -14,6 +14,18 @@
 
 			}
 
+			public static function factory($directory){
+
+				if($directory instanceof \apf\core\Directory){
+
+					return $directory;
+
+				}
+
+				return new static($directory);
+
+			}
+
 			public function getIterator(){
 
 				return new \DirectoryIterator($this->_directory);

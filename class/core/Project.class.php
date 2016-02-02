@@ -7,6 +7,12 @@
 		use \apf\core\project\Module			as	ProjectModule;
 		use \apf\core\project\module\Config	as	ModuleConfig;
 		use \apf\core\project\Config			as	ProjectConfig;
+
+		use \apf\web\asset\Javascript			as	JSAsset;
+		use \apf\web\asset\Css					as	CSSAsset;
+
+		use \apf\web\Asset;
+
 		use \apf\core\Cmd;
 		use \apf\core\Directory					as	Dir;
 
@@ -168,6 +174,13 @@
 				}while(!$config->getFragmentsDirectory());
 
 				$project	=	new static($config,$validateMode='soft');
+
+				Asset::addAssetsToObject(
+													$config,
+													'Add project assets',
+													'Add assets at a project level. This means that every asset you add here will be present in each controller or action',
+													$log
+				);
 
 				do{
 

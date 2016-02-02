@@ -2,18 +2,20 @@
 
 	namespace apf\web\core{
 
-		use \apf\core\DI;
 		use \apf\web\core\Request;
 		use \apf\core\Configurable;
-		use \apf\web\core\controller\Config	as	ControllerConfig;
+		use \apf\web\core\controller\Config				as	ControllerConfig;
+		use \apf\web\core\controller\Action;
+		use \apf\web\core\controller\action\Config	as	ActionConfig;
+
+		use \apf\web\asset\Css								as	CssAsset;
+		use \apf\web\asset\Javascript						as	JSAsset;
+		use \apf\web\asset\css\Config						as	CssAsset;
+		use \apf\web\asset\javascript\Config			as	JSAsset;
+
 		use \apf\core\Cmd;
 
 		class Controller extends Configurable{
-
-			protected	$js				=	Array();
-			protected	$css				=	Array();
-			protected	$raw				=	Array();
-			protected	$request			=	NULL;
 
 			public function setRequest(Request $request){
 
@@ -40,43 +42,6 @@
 			 */
 			public function getViewInstance(Array $templates=Array(),$useActionNameAsTpl=TRUE){
 
-				$controller	=	get_class($this);
-				$controller	=	substr($controller,strrpos($controller,"\\")+1);
-				$controller	=	strtolower(substr($controller,0,strpos($controller,"Controller")));
-
-				if(empty($templates)&&$useActionNameAsTpl){
-
-					$templates	=	Array(
-												sprintf("%s%s%s.tpl",$controller,DIRECTORY_SEPARATOR,$this->request->getAction())
-					);
-
-				}
-
-
-				$view			=	new View($templates);
-
-				//Additional files
-				$view->setVar("js",$this->js);
-				$view->setVar("css",$this->css);
-				$view->setVar("raw",$this->raw);
-
-				foreach(DI::get("config") as $section=>$values){
-
-					if($section=="database"){
-						continue;
-					}
-
-					$view->setVar($section,$values);
-
-				}
-
-				$view->setVar("req",$this->request);
-				//Fix this ... the controller should be accessed from the REQUEST!!!
-				$view->setVar("controller",$controller);
-				$view->setVar("action",$this->request->getAction());
-
-				return $view;
-
 			}
 
 			public function __interactiveConfig($config,$log){
@@ -86,7 +51,43 @@
 				$log->info('[ Controller configuration ]');
 
 				do{
+
+					try{
+
+						$config->setName(Cmd::readInput('name>',$log));
+
+					}catch(\Exception $e){
+
+						$log->error($e->getMessage());
+
+					}
+
 				}while(!$config->getName());
+
+				$controller	=	new Controller($config,$validate='soft')
+
+				Asset::addAssetsToObject($controller,'Add controller assets',
+
+				do{
+
+					$log->info('Add actions to your controller.');
+
+					$opt	=	Cmd::selectWithKeys(Array('N'=>'New Action','E'=>'End adding actions'),'>',$log);
+
+					if(strtolower($opt)=='e'){
+
+						break;
+
+					}
+
+					$actionConfig	=	new ActionConfig();
+					$actionConfig->setController($controller);
+
+					$config->addAction(Action::interactiveConfig($actionConfig,$log));
+
+				}while(TRUE);
+
+				return $controller;
 
 			}
 

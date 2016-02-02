@@ -1,6 +1,6 @@
 <?php
 
-	namespace apf\web\core\asset{
+	namespace apf\web\asset{
 
 		use apf\core\Config			as	BaseConfig;
 		use \apf\validate\String	as	StringValidate;
@@ -81,6 +81,12 @@
 			public function getLoadInFooter(){
 
 				return parent::loadInFooter();
+
+			}
+
+			public function getNonExportableAttributes(){
+
+				return Array();
 
 			}
 

@@ -10,7 +10,9 @@
 			protected static function __interactiveConfig($config,$log){
 
 				$config	=	new CssAssetConfig($config);
-				return parent::baseAssetConfiguration($config);
+				$config	=	parent::baseAssetConfiguration($config);
+
+				return new static($config);
 
 			}
 

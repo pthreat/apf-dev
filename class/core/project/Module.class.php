@@ -3,13 +3,14 @@
 	namespace apf\core\project{
 
 		use \apf\core\Project;
-		use \apf\core\Config							as	Cfg;
+		use \apf\core\Config								as	Cfg;
 		use \apf\core\Cmd;
 		use \apf\core\Configurable;
-		use \apf\iface\Log							as	LogInterface;
-		use \apf\core\project\module\Config		as	ModuleConfig;
+		use \apf\iface\Log								as	LogInterface;
+		use \apf\core\project\module\Config			as	ModuleConfig;
 		use \apf\core\project\module\Sub;
-		use \apf\core\Directory						as	Dir;
+		use \apf\core\project\module\sub\Config	as	SubConfig;
+		use \apf\core\Directory							as	Dir;
 
 		class Module extends Configurable{
 
@@ -136,6 +137,8 @@
 
 				do{
 
+					$log->repeat('-',80,'white');
+
 					$opt	=	Cmd::selectWithKeys(Array('N'=>'New sub','E'=>'End adding subs'),'>',$log);
 
 					if(strtolower($opt)=='e'){
@@ -143,8 +146,6 @@
 						break;
 
 					}
-
-					$subArguments	=	array_merge(Array('log'=>$log,'module'=>$module));
 
 					$subConfig	=	new SubConfig();
 					$subConfig->setModule($module);

@@ -161,6 +161,12 @@
 
 			}
 
+			public function repeat($string,$times,$color){
+
+				return $this->log(str_repeat($string,$times),$color);
+
+			}
+
 			public function log($msg=NULL,$type=0,$color=NULL){
 
 				if(is_null($msg)){

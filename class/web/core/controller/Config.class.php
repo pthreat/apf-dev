@@ -10,10 +10,7 @@
 		class Config extends BaseConfig{
 
 			//Adds assets method such as addAsset, getAsset, addJavascript, addCss, etc
-			use \apf\trait\web\Assetable;
-
-			public static function getDefaultInstance(){
-			}
+			use \apf\traits\web\Assetable;
 
 			public function setName($name){
 

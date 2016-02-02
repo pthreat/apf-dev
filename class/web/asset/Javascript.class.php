@@ -10,7 +10,11 @@
 			protected static function __interactiveConfig($config,$log){
 
 				$config	=	new JavascriptAssetConfig($config);
-				return parent::baseAssetConfiguration($config);
+				$config	=	parent::baseAssetConfiguration($config);
+
+				$jsAsset	=	new static($config);
+
+				return $jsAsset;
 
 			}
 
