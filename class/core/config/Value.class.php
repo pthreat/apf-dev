@@ -69,7 +69,7 @@
 
 			public function toArray(){
 
-				return Array($this->name=>$this->__debugInfo());
+				return Array($this->name=>$this->getvalue());
 
 			}
 
@@ -81,7 +81,7 @@
 
 			public function getValue(){
 
-				return $this->__debugInfo();
+				return $this->isSecured	?	'(secured attribute) xxxxxxx'	:	$this->value;
 
 			}
 
@@ -89,13 +89,13 @@
 
 			public function __debugInfo(){
 
-				return $this->isSecured	?	'(secured attribute) xxxxxxx'	:	$this->value;
+				return $this->toArray();
 
 			}
 
 			public function __toString(){
 
-				return sprintf('%s',$this->__debugInfo());
+				return sprintf('%s',$this->getValue());
 
 			}
 

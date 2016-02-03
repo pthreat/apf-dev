@@ -186,7 +186,7 @@
 
 				}
 
-				$fp	=	fopen("/dev/stdin",'r');
+				$fp	=	fopen("php://stdin",'r');
 				$ret	=	fgets($fp,1024);
 
 				fclose($fp);

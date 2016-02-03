@@ -30,12 +30,6 @@
 
 			}
 
-			public function getType(){
-
-				return strtolower(basename(get_class($this)));
-
-			}
-
 			public function minify(){
 
 				return StringUtil::minify(file_get_contents($this->getContents()));
@@ -55,6 +49,19 @@
 			public function copyTo(Dir $dir){
 			}
 
+			public function requires(Asset $asset){
+
+				$this->requires[$asset->getName()]	=	$asset;
+				return $this;
+
+			}
+
+			public function getRequirements(){
+
+				return $this->requires;
+
+			}
+
 			/**
 			 *
 			 * The basic asset configuration method will be called by the child classes
@@ -63,17 +70,33 @@
 			 *
 			 */
 
-			protected static function basicAssetConfiguration($config,$log){
+			protected static function baseAssetConfiguration($config,$log){
 
 				do{
 
-					$config->setName(Cmd::readInput('name>',$log));
+					try{
+
+						$config->setName(Cmd::readInput('name>',$log));
+
+					}catch(\Exception $e){
+
+						$log->error($e->getMessage());
+
+					}
 
 				}while(!$config->getName());
 
 				do{
 
-					$config->setUri(Cmd::readInput('uri>',$log));
+					try{
+
+						$config->setUri(Cmd::readInput('uri>',$log));
+
+					}catch(\Exception $e){
+
+						$log->error($e->getMessage());
+
+					}
 
 				}while(!$config->getURI());
 

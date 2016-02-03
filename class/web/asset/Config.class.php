@@ -20,6 +20,8 @@
 
 			}
 
+			abstract public function getType();
+
 			public function setDescription($description){
 
 				$this->description	=	StringValidate::mustBeNotEmpty($name,$trim=TRUE,'Asset description can not be empty');

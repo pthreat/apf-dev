@@ -120,11 +120,15 @@
 
 			public static function trim($str,$chars=NULL){
 
-				$encoding	=	mb_detect_encoding($str);
+				if(function_exists('mb_detect_encoding')){
 
-				if($encoding=='ASCII'){
+					$encoding	=	mb_detect_encoding($str);
 
-					return $chars ? trim($str,$chars) : trim($str);
+					if($encoding=='ASCII'){
+
+						return $chars ? trim($str,$chars) : trim($str);
+
+					}
 
 				}
 
