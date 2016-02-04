@@ -2,7 +2,8 @@
 
 	namespace apf\core{
 
-		use \apf\iface\Log	as	LogInterface;
+		use \apf\iface\Log			as	LogInterface;
+		use \apf\iface\config\Cli	as	CliConfigInterface;
 		use \apf\core\Config;
 
 		abstract class Configurable{
@@ -79,7 +80,7 @@
 
 			}
 
-			public static function interactiveConfig(Config $config=NULL,LogInterface $log=NULL){
+			public static function cliConfig(Config $config=NULL,LogInterface $log=NULL){
 
 				if(!is_null($config)){
 
@@ -87,11 +88,35 @@
 
 				}
 
-				return static::__interactiveConfig($config,$log);
+				$calledClass		=	get_called_class();
+				$childClass			=	strtolower($calledClass);
+				$cliConfigClass	=	sprintf('%s\\config\\Cli',$childClass);
+
+				if(!class_exists($cliConfigClass)){
+
+					$msg	=	"$childClass class has no CLI configuration class \"$cliConfigClass\"";
+					sprintf("%s. If you really meant to interactively configure this class, please create \"$cliConfigClass\"",$msg);
+					throw new \BadMethodCallException($msg);
+
+				}
+
+				if(!in_array('apf\iface\config\Cli',class_implements($cliConfigClass))){
+
+					throw new \LogicException("$cliConfigClass must implement \\apf\\iface\\config\\Cli interface");
+
+				}
+
+				$return	=	$cliConfigClass::configure($config,$log);
+
+				if(!($return instanceof $calledClass)){
+
+					throw new \InvalidArgumentException("Returned value by cli configuration must be an instance of $calledClass");
+
+				}
+
+				return $return;
 
 			}
-
-			abstract protected static function __interactiveConfig($config,$log);
 
 			public function isConfigured(){
 

@@ -3,11 +3,12 @@
 	namespace apf\web\core\controller{
 
 		use apf\core\Cmd;
-		use apf\core\Directory	as	Dir;
-		use apf\core\Config		as BaseConfig;
 		use apf\web\core\controller\Action;
+		use apf\core\Directory					as	Dir;
+		use apf\core\Config						as BaseConfig;
+		use \apf\iface\web\Assetable			as	AssetableInterface;
 
-		class Config extends BaseConfig{
+		class Config extends BaseConfig implements AssetableInterface{
 
 			//Adds assets method such as addAsset, getAsset, addJavascript, addCss, etc
 			use \apf\traits\web\Assetable;

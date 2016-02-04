@@ -1,4 +1,4 @@
-#!/c/php/php
+#!/usr/bin/php
 <?php
 
 	set_include_path(realpath(sprintf('%s/../../',__DIR__)));
@@ -32,7 +32,7 @@
 		Kernel::boot();
 
 		$log				=	new Log();
-		$config			=	Project::interactiveConfig(NULL,$log);
+		$config			=	Project::cliConfig(NULL,$log);
 		echo $config;
 		die();
 

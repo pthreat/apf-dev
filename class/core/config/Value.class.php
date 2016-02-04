@@ -95,7 +95,7 @@
 
 			public function __toString(){
 
-				return sprintf('%s',$this->getValue());
+				return sprintf('%s',is_array($this->getValue()) ? implode(',',$this->getValue()) : $this->getValue());
 
 			}
 

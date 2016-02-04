@@ -1,6 +1,6 @@
 <?php
 
-	namespace apf\core\project\config{
+	namespace apf\web\core\controller\config{
 
 		use \apf\core\config\Validator	as	BaseValidator;
 
@@ -8,21 +8,7 @@
 
 			protected static function __softConfigValidation($config){
 
-				//Validate project name
-
-				if(!$config->getName()){
-
-					throw new \LogicException("The controller name is invalid");
-
-				}
-
-				//Validate project directory
-
-				if(!$config->getSub()){
-
-					throw new \LogicException("No sub (module) has been specified for this controller");
-
-				}
+				$config->setName($config->getName());
 
 				return TRUE;
 

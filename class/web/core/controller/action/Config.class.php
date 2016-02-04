@@ -7,16 +7,15 @@
 		use apf\core\Config				as BaseConfig;
 		use apf\web\core\Router;
 		use apf\web\core\Asset;
-		use apf\web\asset\Javascript	as	JavascriptAsset;
-		use apf\web\asset\CSS			as	CSSAsset;
+		use \apf\iface\web\Assetable;
 
 		class Config extends BaseConfig{
 
 			//Adds asset methods such as addAsset, getAsset, addJavascript, addCss, etc
-			use \apf\trait\web\Assetable;
+			use \apf\traits\web\Assetable;
 
-			//Adds route methods such as setRoute, getRoute
-			use \apf\trait\web\Routeable;
+			//Adds route methods such as addRoute, getRoute, hasRoute
+			use \apf\traits\web\Routeable;
 
 			public static function getDefaultInstance(){
 			}
@@ -48,12 +47,6 @@
 				return Array(
 									'name'
 				);
-
-			}
-
-			public function hasAction($name){
-
-				return array_key_exists($name,$this->actions);
 
 			}
 

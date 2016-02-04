@@ -6,35 +6,68 @@
 
 		trait Assetable{
 
-			public function setAsset(Asset $asset){
+			public function setAssets(Array $assets){
 
-				if(empty($this->asset)){
-					$this->asset	=	Array();
+				if(!parent::hasKey('assets')){
+
+					$this->assets	=	new \stdClass();
+
 				}
 
-				$this->asset[]	=	$asset;
-				return $this;
+				foreach($assets as $key=>$asset){
+
+					if(!is_a($asset,'\\apf\\web\\Asset')){
+
+						throw new \InvalidArgumentException("Given array element ($key) is not an Asset");
+
+					}
+
+					$this->assets->{$asset->getConfig()->getName()}	=	$asset;
+
+				}
 
 			}
 
 			public function addAsset(Asset $asset){
 
-				return $this->setAsset($asset);
+				return $this->setAssets(Array($asset));
+
+			}
+
+			public function getAssets(){
 
 			}
 
 			public function getAsset($type,$name){
-
-				return parent::getAsset();
-
 			}
 
 			public function hasAsset($type,$name){
 
 			}
 
+			public function getAssetsOrderedByType(){
+
+				$assets			=	parent::getAssets();
+
+				if(!sizeof($assets)){
+
+					return Array();
+
+				}
+
+				$orderedAssets	=	Array();
+
+				foreach($assets as $asset){
+
+					$orderedAssets[$asset->getConfig()->getType()][]	=	$asset;
+
+				}
+
+				return $orderedAssets;
+
+			}
+
 
 		}
-
 
 	}

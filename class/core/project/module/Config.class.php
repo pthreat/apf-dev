@@ -4,8 +4,9 @@
 
 		use \apf\core\Cmd;
 		use \apf\core\Project;
-		use \apf\core\Directory	as	Dir;
-		use \apf\core\Config 	as BaseConfig;
+		use \apf\core\project\module\Sub;
+		use \apf\core\Directory					as	Dir;
+		use \apf\core\Config 					as BaseConfig;
 
 		class Config extends BaseConfig{
 
@@ -15,7 +16,7 @@
 
 				if(empty($name)){
 
-					throw new \InvalidArgumentException("Project name can not be empty");
+					throw new \InvalidArgumentException("Module name can not be empty");
 
 				}
 

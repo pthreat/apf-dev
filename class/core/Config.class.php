@@ -13,7 +13,6 @@
 			private	$values					=	Array();
 			private	$securedAttributes	=	Array();
 
-
 			public function __construct(Config $config=NULL,Array $securedAttributes=Array()){
 
 				if($config){
@@ -94,9 +93,15 @@
 
 			}
 
+			public function hasKey($key){
+
+				return array_key_exists($key,$this->values);
+
+			}
+
 			public function __get($key){
 
-				if(!array_key_exists($key,$this->values)){
+				if(!$this->hasKey($key)){
 
 					throw new \InvalidArgumentException("Parameter \"$key\" not found in section \"{$this->name}\"");
 
