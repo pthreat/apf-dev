@@ -42,6 +42,12 @@
 
 			}
 
+			public static function clear(){
+
+				return print("\033[2J\033[;H");
+
+			}
+
 			public static function select(Array $options,$prompt='SELECT>',\apf\core\Log $log=NULL){
 
 				\apf\validate\String::mustBeString($prompt,'Given prompt must be a string');

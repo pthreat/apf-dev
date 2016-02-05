@@ -23,7 +23,7 @@
 
 					}
 
-					array_push($this->assets,$asset);
+					$this->assets->append($asset);
 
 				}
 

@@ -91,11 +91,15 @@
 
 				if(is_array($value)){
 
-					$this->initMultipleAttribute($key);
+					if(!$this->hasKey($key)){
 
-					foreach($value as $k=>$val){
-		
-						$this->values[$key][$k]	=	new ConfigValue($k,$val);
+						$this->values[$key]	=	new \ArrayObject();
+
+						foreach($value as $k=>$val){
+			
+							$this->values[$key]->append(new ConfigValue($k,$val));
+
+						}
 
 					}
 
@@ -268,7 +272,7 @@
 
 			}
 
-			public function &__call($method,$values){
+			public function __call($method,$values){
 
 				$isGetter	=	strtolower(substr($method,0,3)) === 'get';
 
@@ -278,7 +282,7 @@
 
 					if(array_key_exists($attribute,$this->values)){
 
-						return $this->values[$attribute];
+						return ($this->values[$attribute] instanceof \ArrayObject)	?	$this->values[$attribute]	:	$this->values[$attribute]->getValue();
 
 					}
 

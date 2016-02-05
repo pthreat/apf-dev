@@ -23,34 +23,33 @@
 
 		class Cli implements CliConfigInterface{
 
-			public static function configure($config=NULL,LogInterface $log){
+			public static function configureDirectories(ProjectConfig &$config,LogInterface $log){
 
-				$log->success('[New project configuration]');
+				if(!$config->getName()){
 
-				$config	=	new ProjectConfig($config);
+					throw new \InvalidArgumentException("Project name has to be configured first");
 
-				do{
+				}
 
-					try{
+				Cmd::clear();
 
-						$config->setName(Cmd::readInput('Project name:',$log));
-
-					}catch(\Exception $e){
-
-						$log->error($e->getMessage());
-
-					}
-
-				}while(!$config->getName());
+				$log->info('Configure project directories');
+				$log->repeat('-',80,'light_purple');
 
 				do{
 
 					try{
 
-						$log->info('Please specify the project directory');
+						$log->info('Please specify the project main directory');
 
-						$dir	=	new Dir(realpath(getcwd()));
-						$dir->addPath($config->getName());
+						$dir	=	$config->getDirectory();
+
+						if(!$dir){
+
+							$dir	=	new Dir(realpath(getcwd()));
+							$dir->addPath($config->getName());
+
+						}
 
 						$config->setDirectory(
 														new Dir(
@@ -76,8 +75,14 @@
 
 						$log->info('Please specify where your modules will be created');
 
-						$dir	=	clone($config->getDirectory());
-						$dir->addPath('modules');
+						$dir	=	$config->getModulesDirectory();
+
+						if(!$dir){
+
+							$dir	=	clone($config->getDirectory());
+							$dir->addPath('modules');
+
+						}
 
 						$config->setModulesDirectory(
 																new Dir(
@@ -101,11 +106,18 @@
 
 					try{
 
+
 						$log->info('Specify a common templates directory');
 
-						$dir	=	clone($config->getDirectory());
-						$dir->addPath('resources')
-						->addPath('templates');
+						$dir	=	$config->getTemplatesDirectory();
+
+						if(!$dir){
+
+							$dir	=	clone($config->getDirectory());
+							$dir->addPath('resources')
+							->addPath('templates');
+
+						}
 
 						$config->setTemplatesDirectory(
 																		new Dir(
@@ -131,10 +143,16 @@
 
 						$log->info('Specify a common fragments directory');
 
-						$dir	=	clone($config->getDirectory());
+						$dir	=	$config->getFragmentsDirectory();
 
-						$dir->addPath('resources')
-						->addPath('fragments');
+						if(!$dir){
+
+							$dir	=	clone($config->getDirectory());
+
+							$dir->addPath('resources')
+							->addPath('fragments');
+
+						}
 
 						$config->setFragmentsDirectory(
 																	new Dir(
@@ -154,66 +172,121 @@
 
 				}while(!$config->getFragmentsDirectory());
 
-				$project	=	new Project($config,$validateMode='soft');
+			}
 
+			public static function configureProjectName(ProjectConfig &$config,LogInterface $log){
+
+				Cmd::clear();
+
+				$log->info('Configure project name');
+				$log->repeat('-',80,'light_purple');
+
+				do{
+
+					try{
+
+						$config->setName(Cmd::readWithDefault('name>',$config->getName(),$log));
+
+					}catch(\Exception $e){
+
+						$log->error($e->getMessage());
+
+					}
+
+				}while(!$config->getName());
+
+			}
+
+			public static function configure($config=NULL,LogInterface $log){
+
+				Cmd::clear();
+
+				$log->success('[New project configuration]');
+
+				$config	=	new ProjectConfig($config);
 
 				$options	=	Array(
+										'N'	=>	'Configure name',
+										'D'	=>	'Configure directories',
 										'A'	=>	'Add assets',
 										'M'	=>	'Create module',
 										'F'	=>	'Finish'
 				);
 
-				$options	=	Cmd::selectWithKeys($options,'>',$log);
-
 				do{
 
-					switch(strtolower($options)){
+					try{
 
-						case 'a':
+						Cmd::clear();
 
-								$help	=	'Add assets at a project level. This means that every asset you add here will be ';
-								$help	=	sprintf('%s present in each controller or action',$help);
+						$log->debug("Project {$config->getName()}>");
+						$log->repeat('-','80','light_purple');
 
-								AssetCli::addAssetsToObject(
-																	$config,
-																	'Add project assets',
-																	$help,
-																	$log
-								);
+						$option	=	Cmd::selectWithKeys($options,'>',$log);
 
-						break;
+						switch(strtolower($option)){
 
-						case 'm':
+							case 'n':
+								self::configureProjectName($config,$log);
+							break;
 
-							do{
+							case 'a':
 
-								$log->info('Specify which modules will be created');
-								$opt	=	Cmd::selectWithKeys(Array('N'=>'New module','E'=>'End adding modules'),'>',$log);
+									$help	=	'Add assets at a project level. This means that every asset you add here will be ';
+									$help	=	sprintf('%s present in each controller or action',$help);
 
-								if(strtolower($opt)=='e'){
+									AssetCli::addAssetsToObject(
+																		$config,
+																		'Add project assets',
+																		$help,
+																		$log
+									);
+							break;
 
-									break;
+							case 'm':
 
-								}
+								do{
 
-								$moduleConfig	=	new ModuleConfig();
-								$moduleConfig->setProject($project);
+									$log->info('Specify which modules will be created');
+									$opt	=	Cmd::selectWithKeys(Array('N'=>'New module','E'=>'End adding modules'),'>',$log);
 
-								$config->addModule(ProjectModule::cliConfig($moduleConfig,$log));
+									if(strtolower($opt)=='e'){
 
-							}while(TRUE);
+										break;
 
-						break;
+									}
 
-						case 'f':
+									$moduleConfig	=	new ModuleConfig();
+									$moduleConfig->setProject($project);
 
-							break 2;
+									$config->addModule(ProjectModule::cliConfig($moduleConfig,$log));
 
-						break;
+								}while(TRUE);
+
+							break;
+
+							case 'd':
+								self::configureDirectories($config,$log);
+							break;
+
+							case 'f':
+
+								break 2;
+
+							break;
+
+						}
+
+					}catch(\Exception $e){
+
+						$log->error($e->getMessage());
+						Cmd::readInput('Press enter to continue ...',$log);
 
 					}
 
 				}while(TRUE);
+
+				$project	=	new Project($config,$validateMode='soft');
 
 				$log->info("Select default module");
 				$log->info("Select default sub");
