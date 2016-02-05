@@ -89,6 +89,20 @@
 
 			public function  __set($key,$value){
 
+				if(is_array($value)){
+
+					$this->initMultipleAttribute($key);
+
+					foreach($value as $k=>$val){
+		
+						$this->values[$key][$k]	=	new ConfigValue($k,$val);
+
+					}
+
+					return;
+
+				}
+
 				return $this->addValue(new ConfigValue($key,$value));
 
 			}
@@ -99,7 +113,7 @@
 
 			}
 
-			public function __get($key){
+			public function &__get($key){
 
 				if(!$this->hasKey($key)){
 
@@ -107,7 +121,7 @@
 
 				}
 
-				return $this->values[$key]->getValue();
+				return $this->values[$key];
 
 			}
 
@@ -127,14 +141,31 @@
 
 				}
 
+				//////////////////////////////////////////////////////////////////////////////////////////////
+				//If the attribute is secured, set it as secure, this will avoid certain values be printed 
+				//by accident in var_dump, remember that you need PHP 5.6 for this feature to work properly!
+				//////////////////////////////////////////////////////////////////////////////////////////////
+
 				if($this->attributeIsSecured($value->getName())){
 
 					$value->setSecure(TRUE);
 
 				}
 
+
 				$this->values[strtolower($value->getName())]	=	$value;
 
+				return $this;
+
+			}
+
+			protected function initMultipleAttribute($name){
+
+				if($this->hasKey($name)){
+					return;
+				}
+
+				$this->values[$name]	=	Array();
 				return $this;
 
 			}
@@ -237,7 +268,7 @@
 
 			}
 
-			public function __call($method,$values){
+			public function &__call($method,$values){
 
 				$isGetter	=	strtolower(substr($method,0,3)) === 'get';
 
@@ -247,7 +278,7 @@
 
 					if(array_key_exists($attribute,$this->values)){
 
-						return $this->values[$attribute]->getValue();
+						return $this->values[$attribute];
 
 					}
 

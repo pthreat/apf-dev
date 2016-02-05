@@ -95,7 +95,7 @@
 					$options['F']	=	'Finish adding assets';
 					$options['H']	=	'Help';
 
-					$log->info($title);
+					$log->warning($title);
 
 					$opt	=	Cmd::selectWithKeys($options,'asset>',$log);
 

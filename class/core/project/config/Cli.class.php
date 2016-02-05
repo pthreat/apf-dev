@@ -47,7 +47,7 @@
 
 					try{
 
-						$log->info('Please specify the directory where the project should be created');
+						$log->info('Please specify the project directory');
 
 						$dir	=	new Dir(realpath(getcwd()));
 						$dir->addPath($config->getName());
@@ -156,30 +156,69 @@
 
 				$project	=	new Project($config,$validateMode='soft');
 
-				AssetCli::addAssetsToObject(
-													$config,
-													'Add project assets',
-													'Add assets at a project level. This means that every asset you add here will be present in each controller or action',
-													$log
+
+				$options	=	Array(
+										'A'	=>	'Add assets',
+										'M'	=>	'Create module',
+										'F'	=>	'Finish'
 				);
+
+				$options	=	Cmd::selectWithKeys($options,'>',$log);
 
 				do{
 
-					$log->info('Specify which custom modules shall be created. By default the frontend and the backend modules will be created');
-					$opt	=	Cmd::selectWithKeys(Array('N'=>'New module','E'=>'End adding modules'),'>',$log);
+					switch(strtolower($options)){
 
-					if(strtolower($opt)=='e'){
+						case 'a':
+
+								$help	=	'Add assets at a project level. This means that every asset you add here will be ';
+								$help	=	sprintf('%s present in each controller or action',$help);
+
+								AssetCli::addAssetsToObject(
+																	$config,
+																	'Add project assets',
+																	$help,
+																	$log
+								);
+
+						break;
+
+						case 'm':
+
+							do{
+
+								$log->info('Specify which modules will be created');
+								$opt	=	Cmd::selectWithKeys(Array('N'=>'New module','E'=>'End adding modules'),'>',$log);
+
+								if(strtolower($opt)=='e'){
+
+									break;
+
+								}
+
+								$moduleConfig	=	new ModuleConfig();
+								$moduleConfig->setProject($project);
+
+								$config->addModule(ProjectModule::cliConfig($moduleConfig,$log));
+
+							}while(TRUE);
+
+						break;
+
+						case 'f':
+
+							break 2;
 
 						break;
 
 					}
 
-					$moduleConfig	=	new ModuleConfig();
-					$moduleConfig->setProject($project);
-
-					$config->addModule(ProjectModule::cliConfig($moduleConfig,$log));
-
 				}while(TRUE);
+
+				$log->info("Select default module");
+				$log->info("Select default sub");
+				$log->info("Select default controller");
+				$log->info("Select default action?");
 
 				$log->success('Done configuring project');
 

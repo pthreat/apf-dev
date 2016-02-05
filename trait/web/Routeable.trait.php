@@ -1,19 +1,50 @@
 <?php
 
-	namespace apf\trait\web{
+	namespace apf\traits\web{
+	
+		use \apf\web\core\Route;
+		use \apf\core\Config;
 
 		trait Routeable{
 
-			public function addRouter(Router $router){
+			public function setRoutes(Array $routes){
 
-				$this->router	=	$router;
-				return $this;
+				if(!parent::hasKey('routes')){
+
+					$this->routes	=	new Config();
+
+				}
+
+				foreach($routes as $key=>$route){
+
+					if(!is_a($route,'\\apf\\web\\core\\Route')){
+
+						throw new \InvalidArgumentException("Given array element ($key) is not an Route");
+
+					}
+
+					$this->routes->{$route->getConfig()->getName()}	=	$route;
+
+				}
 
 			}
 
-			public function getRouter(){
+			public function addRoute(Route $route){
 
-				return parent::getRouter();
+				return $this->setRoutes(Array($route));
+
+			}
+
+			public function getRoutes(){
+
+				return parent::getRoutes();
+
+			}
+
+			public function getRoute($name){
+			}
+
+			public function hasRoute($name){
 
 			}
 

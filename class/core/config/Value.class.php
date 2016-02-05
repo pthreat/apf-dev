@@ -6,11 +6,11 @@
 
 		class Value{
 
-			private	$name			=	NULL;
-			private	$value		=	NULL;
-			private	$separator	=	'=';
-			private	$isMultiple	=	FALSE;
-			private	$isSecured	=	NULL;
+			private	$name				=	NULL;
+			private	$value			=	NULL;
+			private	$separator		=	'=';
+			private	$isSecured		=	NULL;
+			private	$securedText	=	'(secured attribute) xxxxxxx';
 
 			public function __construct($name,$value,$isSecure=FALSE,$separator='='){
 
@@ -26,12 +26,6 @@
 				$this->value		=	$value;
 				$this->separator	=	$separator;
 				$this->setSecure($isSecure);
-
-				if(is_array($this->value)){
-
-					$this->isMultiple	=	TRUE;
-
-				}
 
 			}
 
@@ -55,12 +49,6 @@
 
 			}
 
-			public function isMultiple(){
-
-				return $this->isMultiple;
-
-			}
-
 			public function isSection(){
 
 				return $this->isSection;
@@ -81,7 +69,7 @@
 
 			public function getValue(){
 
-				return $this->isSecured	?	'(secured attribute) xxxxxxx'	:	$this->value;
+				return $this->isSecured	?	$this->securedText	:	$this->value;
 
 			}
 

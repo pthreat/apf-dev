@@ -2,16 +2,19 @@
 
 	namespace apf\web\core\controller{
 
-		use apf\core\Cmd;
-		use apf\web\core\controller\Action;
-		use apf\core\Directory					as	Dir;
-		use apf\core\Config						as BaseConfig;
+		use \apf\core\Cmd;
+		use \apf\web\core\controller\Action;
+		use \apf\core\Directory					as	Dir;
+		use \apf\core\Config						as BaseConfig;
 		use \apf\iface\web\Assetable			as	AssetableInterface;
+		use \apf\iface\web\Routeable			as	RouteableInterface;
 
-		class Config extends BaseConfig implements AssetableInterface{
+		class Config extends BaseConfig implements AssetableInterface,RouteableInterface{
 
 			//Adds assets method such as addAsset, getAsset, addJavascript, addCss, etc
 			use \apf\traits\web\Assetable;
+
+			use \apf\traits\web\Routeable;
 
 			public function setName($name){
 

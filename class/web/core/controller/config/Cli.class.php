@@ -4,12 +4,12 @@
 
 		use \apf\core\Configurable;
 		use \apf\web\core\Controller;
-		use \apf\web\core\controller\Config				as	ControllerConfig;
 		use \apf\web\core\controller\Action;
 		use \apf\web\core\controller\action\Config	as	ActionConfig;
+		use \apf\web\core\controller\Config				as	ControllerConfig;
 		use \apf\web\asset\config\Cli						as	AssetCli;
-		use \apf\iface\config\Cli							as	CliConfigInterface;
 		use \apf\iface\Log									as	LogInterface;
+		use \apf\iface\config\Cli							as	CliConfigInterface;
 
 		use \apf\core\Cmd;
 

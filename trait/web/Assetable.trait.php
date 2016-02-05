@@ -3,14 +3,15 @@
 	namespace apf\traits\web{
 
 		use \apf\web\Asset;
+		use \apf\core\Config;
 
 		trait Assetable{
 
 			public function setAssets(Array $assets){
 
-				if(!parent::hasKey('assets')){
+				if(!parent::getAssets()){
 
-					$this->assets	=	new \stdClass();
+					$this->assets	=	Array();
 
 				}
 
@@ -22,7 +23,7 @@
 
 					}
 
-					$this->assets->{$asset->getConfig()->getName()}	=	$asset;
+					array_push($this->assets,$asset);
 
 				}
 
