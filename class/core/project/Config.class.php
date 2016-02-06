@@ -101,6 +101,12 @@
 
 			}
 
+			public function hasModules(){
+
+				return parent::hasKey('modules');
+	
+			}
+
 			public function getModule($name){
 
 				if(!$this->hasModule($name)){
@@ -109,7 +115,7 @@
 
 				}
 
-				return $this->module[$name];
+				return $this->modules[$name];
 
 			}
 

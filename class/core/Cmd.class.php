@@ -112,7 +112,19 @@
 
 					foreach($options as $key=>$opt){
 
-						$log->info(sprintf('%s)%s%s',$key,str_repeat(' ',$len),$opt));
+						if(is_array($opt)){
+
+							if(isset($opt['color'])){
+
+								$log->log(sprintf('%s)%s%s',$key,str_repeat(' ',$len),$opt['value']),$type=0,$opt['color']);
+
+							}
+
+						}else{
+
+							$log->info(sprintf('%s)%s%s',$key,str_repeat(' ',$len),$opt));
+
+						}
 
 					}
 

@@ -141,7 +141,8 @@
 
 				if(!method_exists($this,$setter)){
 
-					throw new \InvalidArgumentException("No setter method named \"$setter\" was found in this configuration class");
+					$class	=	get_called_class();
+					throw new \InvalidArgumentException("No setter method named \"$setter\" was found in class $class");
 
 				}
 

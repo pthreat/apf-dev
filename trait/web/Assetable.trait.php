@@ -27,6 +27,8 @@
 
 				}
 
+				return $this;
+
 			}
 
 			public function addAsset(Asset $asset){
@@ -43,6 +45,12 @@
 			}
 
 			public function hasAsset($type,$name){
+
+			}
+
+			public function hasAssets(){
+
+				return parent::getAssets()	?	TRUE	:	FALSE;
 
 			}
 

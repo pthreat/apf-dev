@@ -92,10 +92,53 @@
 
 			}
 
+			public function setModulesDirectory(Dir $dir){
+
+				$this->modulesDirectory	=	$dir;
+				return $this;
+
+			}
+
+			public function getModulesDirectory(){
+
+				return parent::getModulesDirectory();
+
+			}
+
 			public function addSub(Sub $sub){
 
 				$this->subs[$sub->getName()]	=	$sub;
 				return $this;
+
+			}
+
+			public function setSubs(Array $subs){
+
+				if(!parent::getSubs()){
+
+					$this->subs	=	Array();
+
+				}
+
+				foreach($subs as $sub){
+
+					if(!is_a($sub,'\\apf\\core\\project\\module\\Sub')){
+
+						throw new \InvalidArgumentException("Given element is not a Sub!");
+
+					}
+
+					$this->subs->append($sub);
+
+				}
+
+				return $this;
+
+			}
+
+			public function getSubs(){
+
+				return parent::getSubs();
 
 			}
 
@@ -115,6 +158,12 @@
 			public function hasSub($name){
 
 				return array_key_exists($name,$this->subs);
+
+			}
+
+			public function hasSubs(){
+
+				return parent::getSubs()	?	TRUE	:	FALSE;
 
 			}
 

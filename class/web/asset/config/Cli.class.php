@@ -57,43 +57,29 @@
 
 			}
 
-			public static function addAssetsToObject(AssetableInterface &$object,$title,$help,$log){
+			public static function assetConfiguration(AssetableInterface &$object,$title,$help,$log){
 
 				do{
 
-					$currentAssets	=	$object->getAssetsOrderedByType();
+					Cmd::clear();
 
 					$options	=	Array(
-											'C'	=>	'Add CSS Asset',
-											'J'	=>	'Add Javascript Asset',
+											'AC'	=>	'Add CSS Asset',
+											'AJ'	=>	'Add Javascript Asset',
 					);
+
+					$currentAssets	=	$object->getAssetsOrderedByType();
 
 					if(sizeof($currentAssets)){
 	
-						$log->repeat('-',80,'white');
-						$log->debug('Current assets');
-						$log->repeat('-',80,'white');
-
-						foreach($currentAssets as $type=>$assets){
-
-							$log->debug("[ $type Assets ]");
-
-							foreach($assets as $asset){
-
-								$log->success("> $asset");
-
-							}
-
-
-						}
-
-						$options['E']	=	'Edit assets';
-						$options['D']	=	'Delete assets';
+						$options['EA']	=	'Edit assets';
+						$options['DA']	=	'Delete assets';
+						$options['LA']	=	'List assets';
 
 					}
 
-					$options['F']	=	'Finish adding assets';
 					$options['H']	=	'Help';
+					$options['B']	=	'Back';
 
 					$log->warning($title);
 
@@ -101,37 +87,72 @@
 
 					switch(strtolower($opt)){
 
-						case 'c':
+						case 'ac':
 							$cssAssetConfig	=	new CssAssetConfig();
 							$object->addAsset(CSSAsset::cliConfig($cssAssetConfig,$log));
 						break;
 
-						case 'j':
+						case 'aj':
 							$jsAssetConfig		=	new JSAssetConfig();
 							$object->addAsset(JSAsset::cliConfig($jsAssetConfig,$log));
 						break;
 
-						case 'e':
+						case 'ea':
 							$log->debug('Edit assets');
 						break;
 
-						case 'd':
+						case 'da':
 							$log->debug('Delete assets');
 						break;
 
-						case 'f':
+						case 'la':
+							self::listAssets($object,$log);
+							Cmd::readInput('Press enter to continue ...',$log);
+						break;
+
+						case 'b':
 							break 2;
 						break;
 
 						case 'h':
 
 							$log->debug($help);
+							Cmd::readInput('Press enter to continue ...',$log);
 
 						break;
 
 					}
 
 				}while(TRUE);
+
+			}
+
+			public static function listAssets(AssetableInterface &$config,LogInterface $log){
+
+				$assets	=	$config->getAssetsOrderedByType();
+
+				if(!$assets){
+
+					$log->warning('No assets available');
+
+				}
+
+				$log->repeat('-',80,'white');
+				$log->debug('Current assets');
+				$log->repeat('-',80,'white');
+
+				foreach($assets as $type=>$assets){
+
+					$log->debug("[ $type Assets ]");
+
+					foreach($assets as $asset){
+
+						$log->success("> $asset");
+
+					}
+
+
+				}
 
 			}
 
