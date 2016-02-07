@@ -26,6 +26,12 @@
 
 			public static function configureDirectories(ProjectConfig &$config,LogInterface $log){
 
+				if(!$config->getName()){
+
+					throw new \LogicException("Must configure project name first");
+
+				}
+
 				do{
 
 					Cmd::clear();
@@ -268,28 +274,124 @@
 
 			}
 
-			public static function configure($config=NULL,LogInterface $log){
+			public static function configureDatabaseConnections(ProjectConfig $config, LogInterface $log){
 
-				Cmd::clear();
+					do{
 
-				$log->success('[New project configuration]');
+						Cmd::clear();
+						$log->debug('[ Network configuration ]');
+						$log->repeat('-',80,'light_purple');
 
+						$options	=	Array(
+												'N'	=>	'New database connection'
+						);
+
+						$options['B']	=	'Back';
+
+						Cmd::selectWithKeys($options,'>',$log);
+
+						try{
+
+							switch(strtolower($opt)){
+
+								case 'db':
+									self::configureDatabaseConnections($config,$log);
+								break;
+
+								case 'nc':
+									self::configureNetworkConnections($config,$log);
+								break;
+
+							}
+
+						}catch(\Exception $e){
+
+							$log->error($e->getMessage());
+
+						}
+
+					}while(TRUE);
+
+			}
+
+			public static function configureConnections(ProjectConfig $config,LogInterface $log){
+
+					do{
+
+						Cmd::clear();
+						$log->debug('[ Network configuration ]');
+						$log->repeat('-',80,'light_purple');
+
+						$options	=	Array(
+												'DB'	=>	'Configure database connections',
+												'NC'	=>	'Configure network connections',
+												'B'	=>	'B'
+						);
+
+						Cmd::selectWithKeys($options,'>',$log);
+
+						try{
+
+							switch(strtolower($opt)){
+
+								case 'db':
+									self::configureDatabaseConnections($config,$log);
+								break;
+
+								case 'nc':
+									self::configureNetworkConnections($config,$log);
+								break;
+
+							}
+
+						}catch(\Exception $e){
+
+							$log->error($e->getMessage());
+
+						}
+
+					}while(TRUE);
+
+
+			}
+
+			public static function configureProject($config,LogInterface $log){
+
+				$title	=	$config	?	sprintf('Edit project %s',$config->getName())	:	'New project';
 				$config	=	new ProjectConfig($config);
 
-				$options	=	Array(
-										'N'	=>	'Project name',
-										'D'	=>	'Directories',
-										'A'	=>	'Assets',
-										'M'	=>	'Modules',
-										'F'	=>	'Finish'
-				);
-
 				do{
+
+					Cmd::clear();
+
+					$options	=	Array(
+											'N'	=>	'Project name',
+											'D'	=>	'Directories',
+											'C'	=>	'Connections',
+											'A'	=>	'Assets',
+					);
+
+					$enableModulesEntry	=	$config->getName()					&& 
+													$config->getDirectory()				&& 
+													$config->getModulesDirectory()	&& 
+													$config->getTemplatesDirectory() &&
+													$config->getFragmentsDirectory();
+
+					$modulesColor			=	$enableModulesEntry	?	'yellow'	:	'gray';
+
+					$options['M']	=	Array(
+													'color'	=>	$modulesColor,
+													'value'	=>	'Modules'
+					);
+
+					$options['F']	=	'Quit';
 
 					try{
 
 						Cmd::clear();
 
+						$log->success("[ $title ]");
+						$log->repeat('-','80','light_purple');
 						$log->debug("Project {$config->getName()}>");
 						$log->repeat('-','80','light_purple');
 
@@ -327,6 +429,12 @@
 							//Add modules to the project
 							case 'm':
 
+								if(!$enableModulesEntry){
+
+									throw new \LogicException("You must configure project name and directories before adding any modules");
+
+								}
+
 								$project	=	new Project($config,$validateMode='soft');
 								ModuleCli::addModules($project,$log);
 
@@ -337,6 +445,10 @@
 
 								break 2;
 
+							break;
+
+							default:
+								throw new \InvalidArgumentException("Invalid option selected");
 							break;
 
 						}
@@ -352,7 +464,6 @@
 
 				}while(TRUE);
 
-
 				$log->info("Select default module");
 				$log->info("Select default sub");
 				$log->info("Select default controller");
@@ -361,6 +472,77 @@
 				$log->success('Done configuring project');
 
 				return $project;
+
+
+			}
+
+			public static function configure($config=NULL,LogInterface $log){
+
+				$projectOptions	=	Array(
+													'N'	=>	'Create project',
+													'E'	=>	'Edit project',
+													'H'	=>	'Help',
+													'Q'	=>	'Quit'
+				);
+
+				do{
+
+					Cmd::clear();
+
+					$log->debug('-[Apollo Framework interactive configuration]-');
+					$log->repeat('-',80,'light_purple');
+
+					try{
+
+						$option	=	Cmd::selectWithKeys($projectOptions,'apf>',$log);
+
+						switch(strtolower($option)){
+
+							case 'n':
+
+								self::configureProject($config,$log);
+
+							break;
+
+							case 'e':
+
+								$log->debug('Edit project, select project path and then load given project configuration');	
+								Cmd::readInput('press enter ...');
+
+							break;
+
+							case 'h':
+
+								$log->debug('Given configuration interface will allow you to create or edit a new project.');
+								$log->debug('Press N to create a new project');
+								$log->debug('Press E to edit a project, in this case you will have to enter the path where the project is located');
+
+								Cmd::readInput('Press any key to continue ...');
+
+							break;
+
+							case 'q':
+
+								break 2;
+
+							break;
+
+							default:
+
+								throw new \InvalidArgumentException("Invalid option selected: $option");
+
+							break;
+
+						}
+
+					}catch(\Exception $e){
+
+						$log->error($e->getMessage());
+						Cmd::readInput('Press enter to continue ...',$log);
+
+					}
+
+				}while(TRUE);
 
 			}
 

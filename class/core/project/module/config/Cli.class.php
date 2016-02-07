@@ -119,6 +119,64 @@
 
 			}
 
+			public static function configureModuleDirectories(ModuleConfig &$config,LogInterface $log){
+
+				if(!$config->getName()){
+
+					throw new \LogicException("Must configure module name first");
+
+				}
+
+				do{
+
+					Cmd::clear();
+
+					$log->info('Configure module directories');
+					$log->repeat('-',80,'light_purple');
+
+					$options	=	Array(
+											'D'	=>	Array(
+																'value'	=>	"Set/Change Root directory {$config->getDirectory()}",
+																'color'	=>	$config->getDirectory()	?	'light_purple'	:	'light_cyan'
+											),
+											'T'	=>	Array(
+																'value'	=>	"Set/Change templates directory {$config->getTemplatesDirectory()}",
+																'color'	=>	$config->getTemplatesDirectory()	?	'light_purple'	:	'light_cyan'
+											),
+											'F'	=>	Array(
+																'value'	=>	"Set/Change fragments directory {$config->getFragmentsDirectory()}",
+																'color'	=>	$config->getFragmentsDirectory()	?	'light_purple'	:	'light_cyan'
+											),
+											'B'	=>	'Back'
+					);
+
+					$opt	=	Cmd::selectWithKeys($options,'>',$log);
+
+					switch(strtolower($opt)){
+
+						case 'd':
+							self::configureModuleDirectory($config,$log);
+						break;
+
+						case 't':
+							self::configureTemplatesDirectory($config,$log);
+						break;
+
+						case 'f':
+							self::configureFragmentsDirectory($config,$log);
+						break;
+
+						case 'b':
+							break 2;
+						break;
+
+					}
+
+				}while(TRUE);
+
+			}
+
+
 			//Configure root directory
 
 			public static function configureModuleDirectory(ModuleConfig $config,LogInterface $log){
@@ -247,57 +305,6 @@
 					$subConfig	=	new SubConfig();
 					$subConfig->setModule($module);
 					$config->addSub(Sub::configure($subConfig,$log));
-
-				}while(TRUE);
-
-			}
-
-			public static function configureModuleDirectories(ModuleConfig &$config,LogInterface $log){
-
-				do{
-
-					Cmd::clear();
-
-					$log->info('Configure module directories');
-					$log->repeat('-',80,'light_purple');
-
-					$options	=	Array(
-											'D'	=>	Array(
-																'value'	=>	"Set/Change Root directory {$config->getDirectory()}",
-																'color'	=>	$config->getDirectory()	?	'light_purple'	:	'light_cyan'
-											),
-											'T'	=>	Array(
-																'value'	=>	"Set/Change templates directory {$config->getTemplatesDirectory()}",
-																'color'	=>	$config->getTemplatesDirectory()	?	'light_purple'	:	'light_cyan'
-											),
-											'F'	=>	Array(
-																'value'	=>	"Set/Change fragments directory {$config->getFragmentsDirectory()}",
-																'color'	=>	$config->getFragmentsDirectory()	?	'light_purple'	:	'light_cyan'
-											),
-											'B'	=>	'Back'
-					);
-
-					$opt	=	Cmd::selectWithKeys($options,'>',$log);
-
-					switch(strtolower($opt)){
-
-						case 'd':
-							self::configureModuleDirectory($config,$log);
-						break;
-
-						case 't':
-							self::configureTemplatesDirectory($config,$log);
-						break;
-
-						case 'f':
-							self::configureFragmentsDirectory($config,$log);
-						break;
-
-						case 'b':
-							break 2;
-						break;
-
-					}
 
 				}while(TRUE);
 
