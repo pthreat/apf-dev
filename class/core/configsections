@@ -1,7 +1,0 @@
-A config container holds configuration sections (which are basically config objects)
-
-Configuration sections can be also exported as whatever (ini, json, xml)
-
-Configuration sections have configuration values
-
-It's a fucking tree dude ....

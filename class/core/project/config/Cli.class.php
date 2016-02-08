@@ -274,32 +274,135 @@
 
 			}
 
+			public static function configureDatabaseConnection(ProjectConfig $config,LogInterface $log,DatabaseConnection $connection=NULL){
+
+				do{
+
+					Cmd::clear();
+
+					$title	=	$connection===NULL	?	'New database connection'	:	'Edit database connection';
+
+					$log->debug("[ $title ]");
+					$log->repeat('-',80,'light_purple');
+
+					$options	=	Array(
+											'A'	=>	'Choose adapter',
+											'H'	=>	'Set host',
+											'U'	=>	'Set username',
+											'K'	=>	'Set password',
+											'P'	=>	'Set port',
+					);
+
+					$hasConnections	=	$config->hasDatabaseConnections();
+
+					if($hasDatabaseConnections){
+
+						$options['E']	=	'Edit connections';
+						$options['D']	=	'Delete connections';
+
+					}
+
+					$options['H']	=	'Help';
+					$options['B']	=	'Back';
+
+
+					try{
+
+						$opt	=	Cmd::selectWithKeys($options,'>',$log);
+
+						switch(strtolower($opt)){
+
+							case 'n':
+								$config->addDatabaseConnection(self::configureDatabaseConnection($config,$log));
+							break;
+
+							case 'e':
+							break;
+
+							case 'd':
+							break;
+
+							case 'h':
+
+								$log->debug('In this menu you will be able to add/edit database connections for your project.');
+								$log->debug('Press N to configure a new database connection');
+								$log->debug('Press E to edit a database connection');
+								$log->debug('Press D to delete a database connection');
+
+								Cmd::readInput('Press enter to continue ...');
+
+							break;
+
+							case 'b':
+								break 2;
+							break;
+
+						}
+
+					}catch(\Exception $e){
+
+						$log->error($e->getMessage());
+
+					}
+
+				}while(TRUE);
+
+			}
+
 			public static function configureDatabaseConnections(ProjectConfig $config, LogInterface $log){
 
 					do{
 
 						Cmd::clear();
-						$log->debug('[ Network configuration ]');
+						$log->debug('[ Database configuration ]');
 						$log->repeat('-',80,'light_purple');
 
 						$options	=	Array(
-												'N'	=>	'New database connection'
+												'N'	=>	'New connection'
 						);
 
+						$hasConnections	=	$config->hasDatabaseConnections();
+
+						if($hasDatabaseConnections){
+
+							$options['E']	=	'Edit connections';
+							$options['D']	=	'Delete connections';
+
+						}
+
+						$options['H']	=	'Help';
 						$options['B']	=	'Back';
 
-						Cmd::selectWithKeys($options,'>',$log);
 
 						try{
 
+							$opt	=	Cmd::selectWithKeys($options,'>',$log);
+
 							switch(strtolower($opt)){
 
-								case 'db':
-									self::configureDatabaseConnections($config,$log);
+								case 'n':
+									$config->addDatabaseConnection(self::configureDatabaseConnection($config,$log));
 								break;
 
-								case 'nc':
-									self::configureNetworkConnections($config,$log);
+								case 'e':
+								break;
+
+								case 'd':
+								break;
+
+								case 'h':
+
+									$log->debug('In this menu you will be able to add/edit database connections for your project.');
+									$log->debug('Press N to configure a new database connection');
+									$log->debug('Press E to edit a database connection');
+									$log->debug('Press D to delete a database connection');
+
+									Cmd::readInput('Press enter to continue ...');
+
+								break;
+
+								case 'b':
+									break 2;
 								break;
 
 							}
@@ -323,14 +426,15 @@
 						$log->repeat('-',80,'light_purple');
 
 						$options	=	Array(
-												'DB'	=>	'Configure database connections',
-												'NC'	=>	'Configure network connections',
-												'B'	=>	'B'
+												'DB'	=>	'Database connections',
+												'NC'	=>	'Network connections',
+												'B'	=>	'Back'
 						);
 
-						Cmd::selectWithKeys($options,'>',$log);
 
 						try{
+
+							$opt	=	Cmd::selectWithKeys($options,'>',$log);
 
 							switch(strtolower($opt)){
 
@@ -340,6 +444,10 @@
 
 								case 'nc':
 									self::configureNetworkConnections($config,$log);
+								break;
+
+								case 'b':
+									break 2;
 								break;
 
 							}
@@ -384,7 +492,8 @@
 													'value'	=>	'Modules'
 					);
 
-					$options['F']	=	'Quit';
+					$options['S']	=	'Save';
+					$options['B']	=	'Back';
 
 					try{
 
@@ -426,6 +535,10 @@
 
 							break;
 
+							case 'c':
+								self::configureConnections($config,$log);
+							break;
+
 							//Add modules to the project
 							case 'm':
 
@@ -441,7 +554,7 @@
 							break;
 
 							//Finish CLI configuration process
-							case 'f':
+							case 'b':
 
 								break 2;
 
@@ -464,22 +577,14 @@
 
 				}while(TRUE);
 
-				$log->info("Select default module");
-				$log->info("Select default sub");
-				$log->info("Select default controller");
-				$log->info("Select default action?");
-
-				$log->success('Done configuring project');
-
-				return $project;
-
+				return; 
 
 			}
 
 			public static function configure($config=NULL,LogInterface $log){
 
 				$projectOptions	=	Array(
-													'N'	=>	'Create project',
+													'C'	=>	'Create project',
 													'E'	=>	'Edit project',
 													'H'	=>	'Help',
 													'Q'	=>	'Quit'
@@ -498,7 +603,7 @@
 
 						switch(strtolower($option)){
 
-							case 'n':
+							case 'c':
 
 								self::configureProject($config,$log);
 

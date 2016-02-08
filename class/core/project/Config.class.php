@@ -3,6 +3,7 @@
 	namespace apf\core\project{
 
 		use \apf\core\Cmd;
+		use \apf\db\Connection			as	DatabaseConnection;
 		use \apf\core\Directory			as	Dir;
 		use \apf\core\Config				as BaseConfig;
 		use \apf\iface\web\Assetable	as	AssetableInterface;
@@ -105,6 +106,52 @@
 
 				return parent::hasKey('modules');
 	
+			}
+
+			public function setDatabaseConnections(Array $connections=Array()){
+
+				if(!parent::getDatabaseConnections()){
+
+					$this->databaseConnections	=	Array();
+
+				}
+
+				foreach($assets as $key=>$asset){
+
+					if(!is_a($asset,'\\apf\\db\\Connection')){
+
+						throw new \InvalidArgumentException("Given array element ($key) is not a database connection");
+
+					}
+
+					$this->databaseConnections->append($asset);
+
+				}
+
+				return $this;
+
+			}
+
+			public function getDatabaseConnections(){
+
+				return parent::getDatabaseConnections();
+
+			}
+
+			public function addDatabaseConnection(DatabaseConnection $connection){
+
+				return $this->setDatabaseConnections(Array($connection));
+
+			}
+
+			public function getDatabaseConnection($name){
+
+			}
+
+			public function hasDatabaseConnections(){
+
+				return parent::getDatabaseConnections() ? TRUE : FALSE;
+
 			}
 
 			public function getModule($name){
