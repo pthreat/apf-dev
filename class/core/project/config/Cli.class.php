@@ -24,6 +24,30 @@
 
 		class Cli implements CliConfigInterface{
 
+			public static function selectDatabaseAdapter(ProjectConfig &$config, LogInterface $log){
+
+				do{
+
+					Cmd::clear();
+
+					$log->info('[ Select database adapter ]');
+					$log->repeat('-',80,'light_purple');
+
+					try{
+
+						$adapter	=	Cmd::select(Adapter::listAvailableAdapters(),"adapter>",$log);
+						return sprintf('\\apf\\db\\adapter\\%s\\connection\\config\\Cli',$adapter);
+
+					}catch(\Exception $e){
+
+						$log->error($e->getMessage();
+
+					}
+
+				}while(TRUE);
+
+			}
+
 			public static function configureDirectories(ProjectConfig &$config,LogInterface $log){
 
 				if(!$config->getName()){
@@ -91,12 +115,12 @@
 
 			public static function configureName(ProjectConfig &$config,LogInterface $log){
 
-				Cmd::clear();
-
-				$log->info('Configure project name');
-				$log->repeat('-',80,'light_purple');
-
 				do{
+
+					Cmd::clear();
+
+					$log->info('Configure project name');
+					$log->repeat('-',80,'light_purple');
 
 					try{
 
@@ -105,6 +129,7 @@
 					}catch(\Exception $e){
 
 						$log->error($e->getMessage());
+						Cmd::readInput('Press enter to continue ...');
 
 					}
 
@@ -286,8 +311,8 @@
 					$log->repeat('-',80,'light_purple');
 
 					$options	=	Array(
-											'A'	=>	'Choose adapter',
-											'H'	=>	'Set host',
+											'A'	=>	'Set/Change adapter',
+											'S'	=>	'Set host',
 											'U'	=>	'Set username',
 											'K'	=>	'Set password',
 											'P'	=>	'Set port',
@@ -365,14 +390,13 @@
 
 						if($hasDatabaseConnections){
 
-							$options['E']	=	'Edit connections';
+							$options['E']	=	'Edit connection';
 							$options['D']	=	'Delete connections';
 
 						}
 
 						$options['H']	=	'Help';
 						$options['B']	=	'Back';
-
 
 						try{
 
@@ -393,9 +417,12 @@
 								case 'h':
 
 									$log->debug('In this menu you will be able to add/edit database connections for your project.');
-									$log->debug('Press N to configure a new database connection');
-									$log->debug('Press E to edit a database connection');
-									$log->debug('Press D to delete a database connection');
+									$log->debug('Database connections hold a database adapter object inside them.');
+									$log->debug('This means you will have to also configure the adapter parameters for said connection.');
+
+									$log->debug('Press N to configure a new database adapter');
+									$log->debug('Press E to edit a database adapter');
+									$log->debug('Press D to delete a database adapter');
 
 									Cmd::readInput('Press enter to continue ...');
 

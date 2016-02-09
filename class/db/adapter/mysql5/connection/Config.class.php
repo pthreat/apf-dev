@@ -33,7 +33,16 @@
 
 			public function setCharset($charset){
 
+				$charset	=	trim($charset);
+
+				if(empty($charset)){
+
+					throw new \InvalidArgumentException("Invalid charset specified");
+
+				}
+
 				$this->charset	=	$charset;
+
 				return $this;
 
 			}
@@ -54,17 +63,6 @@
 			public function getSocket(){
 
 				return parent::getSocket();
-
-			}
-
-			public static function getDefaultInstance(){
-
-				$instance	=	parent::getDefaultInstance();
-				$instance->setHost(new Host('localhost'));
-				$instance->setPort(new Port(3306));
-				$instance->setCharset('utf8');
-
-				return $instance;
 
 			}
 

@@ -16,25 +16,25 @@
 
 		class Config extends BaseConfig{
 
-			public function setId($id){
+			public function setName($name){
 
-				$id	=	trim($id);
+				$name	=	trim($name);
 
-				if(empty($id)){
+				if(empty($name)){
 
-					throw new \InvalidArgumentException("Connection identifier can not be empty");
+					throw new \InvalidArgumentException("Connection name can not be empty");
 
 				}
 
-				$this->id	=	$id;
+				$this->name	=	$name;
 
 				return $this;
 
 			}
 
-			public function getId(){
+			public function getName(){
 
-				return parent::getId();
+				return parent::getName();
 
 			}
 
@@ -87,17 +87,6 @@
 			public function getPassword(){
 
 				return parent::getPassword();
-
-			}
-
-			public static function getDefaultInstance(){
-
-				$obj	=	new static();
-
-				$obj->setHost(new Host('localhost'));
-				$obj->setPort(new Port(0));
-
-				return $obj;
 
 			}
 

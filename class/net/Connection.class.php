@@ -37,44 +37,10 @@
 
 				}
 
-				if(!$this->isValidated()){
-
-					$this->validateConfig();
-
-				}
-
 				$this->__logDebug("Attempting to connect using the following settings");
 				$this->__logDebug($this->getConfig());
 
 				return $this->connection	=	$this->__connect();
-
-			}
-
-			protected function __validateConfig(){
-
-				$this->__logDebug("Validating connection configuration ...");
-
-				$config	=	$this->getConfig();
-
-				if(!$config->getHost()){
-
-					throw new \LogicException("No host specified");
-
-				}
-
-				if(!$config->getPort()){
-
-					throw new \LogicException("No port specified");
-
-				}
-
-				if(!$config->getId()){
-
-					throw new \LogicException("No connection id specified, each connection must have a unique identifier!");
-
-				}
-
-				return $this->___validateConfig();
 
 			}
 
@@ -131,7 +97,6 @@
 
 			//Abstract methods
 
-			abstract protected function ___validateConfig();
 			abstract protected function __connect();
 			abstract public function getAdapter();
 			abstract public function __toString();

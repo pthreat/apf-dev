@@ -11,28 +11,13 @@
 		use \apf\core\Log;
 		use \apf\validate\String					as StringValidate;
 		use \apf\validate\Vector					as	VectorValidate;
+		use \apf\db\Adapter							as	DatabaseAdapter;
 
 		abstract class Config extends ConnectionConfig{
 
-			public function __construct(Array $values=Array()){
+			public function setAdapter(Adapter $adapter){
 
-				parent::__construct($values);
-
-				$adapter	=	get_class($this);
-				$adapter	=	substr($adapter,strpos($adapter,'adapter'));
-				$adapter	=	substr($adapter,0,strrpos($adapter,'\\'));
-				$adapter	=	substr($adapter,strpos($adapter,'\\')+1);
-				$adapter	=	substr($adapter,0,strpos($adapter,'\\'));
-
-				$this->setAdapter($adapter);
-
-			}
-
-			public function setAdapter($adapter){
-
-				$adapter			=	trim(strtolower($adapter));
 				$this->adapter	=	$adapter;
-
 				return $this;
 
 			}
