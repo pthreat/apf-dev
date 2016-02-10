@@ -137,7 +137,7 @@
 
 			}
 
-			public static function configure($config=NULL,LogInterface $log){
+			public static function configure(&$config=NULL, LogInterface &$log){
 			}
 
 			public static function configureConnection($option,&$config,LogInterface $log){

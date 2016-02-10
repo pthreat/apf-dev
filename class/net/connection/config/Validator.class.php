@@ -11,6 +11,19 @@
 			protected static function __softConfigValidation($config){
 
 				$config->setName($config->getName());
+
+				if(!$config->getHost()){
+
+					throw new \InvalidArgumentException("Host name must be specified");
+
+				}
+
+				if(!$config->getPort()){
+
+					throw new \InvalidArgumentException("Port number must be specified");
+
+				}
+
 				$config->setHost(new Host($config->getHost()));
 				$config->setPort(new Port($config->getPort()));
 				$config->setUsername($config->getUsername());

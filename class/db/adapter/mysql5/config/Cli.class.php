@@ -13,22 +13,35 @@
 
 		class Cli implements CliConfigInterface{
 
-			public static function configure($config=NULL,LogInterface $log){
+			public static function configure(&$config=NULL, LogInterface &$log){
 
 				$config		=	new AdapterConfig($config);
 
-				$options	=	Array(
-										'C'	=>	'Set/Change connection parameters',
-										'P'	=>	'Print connection parameters',
-										'B'	=>	'Back'
-				);
-
 				$connectionConfig	=	new Mysql5ConnectionConfig();
+
 				do{
 
 					Cmd::clear();
+
 					$log->debug('[ Configure MySQL 5 database adapter ]');
 					$log->repeat('-',80,'light_purple');
+
+					$options	=	Array(
+											'C'	=>	Array(
+																'color'	=>	$config->getConnection()	?	'light_green'	:	'light_cyan',
+																'value'	=>	sprintf('%s connection parameters',$config->getConnection() ? 'Change' : 'Set')
+											)
+					);
+
+					if($config->getConnection()){
+
+						$options['P']	=	'Print connection parameters';
+						$options['T']	=	'Test connection';
+
+					}
+
+					$options['B']	=	'Back';
+
 					$opt	=	Cmd::selectWithKeys($options,'>',$log);
 
 					if($config->getConnection()){
@@ -45,7 +58,8 @@
 
 								try{
 
-									$config->setConnection(Mysql5ConnectionCliConfig::configur($connectionConfig,$log));
+									$config->setConnection(Mysql5ConnectionCliConfig::configure($connectionConfig,$log));
+									break;
 
 								}catch(\Exception $e){
 
@@ -66,7 +80,10 @@
 						break;
 
 						case 'p':
-							echo $config->getConnection();
+
+							echo $config->getConnection()->getConfig();
+							Cmd::readInput('Press enter to continue ...');
+
 						break;
 
 						case 'b':

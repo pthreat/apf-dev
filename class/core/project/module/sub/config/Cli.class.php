@@ -335,7 +335,7 @@
 			*Returns an interactively configured Sub (Module) class
 			*/
 
-			public static function configure($config=NULL,LogInterface $log){
+			public static function configure(&$config=NULL, LogInterface &$log){
 
 				$log->success('Sub configuration');
 				$log->repeat('-',80,'light_purple');

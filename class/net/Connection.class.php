@@ -44,57 +44,6 @@
 
 			}
 
-			public static function interactiveConfig(LogInterface $log,Config $defaults=NULL){
-
-				$config		=	$defaults	?	$defaults	:	ConnectionConfig::getDefaultInstance();
-
-				do{
-
-					try{
-
-						$config->setHost(new Host(Cmd::readWithDefault('Hostname:',$config->getHost(),$log)));
-
-					}catch(\Exception $e){
-
-						$log->error($e->getMessage());
-
-					}
-
-				}while(!$config->getHost());
-
-				do{
-
-					try{
-
-						$config->setPort(new Port(Cmd::readWithDefault('Port:',sprintf('%s',$config->getPort()),$log)));
-
-					}catch(\Exception $e){
-
-						$log->error($e->getMessage());
-
-					}
-
-				}while(!$config->getPort());
-
-				do{
-
-					try{
-
-						$default	=	$config->getId() ? $config->getId() : sprintf('%s:%s',$config->getHost(),$config->getPort());
-						$config->setId(Cmd::readWithDefault('Name (identifier) of this connection',$default,$log));
-
-					}catch(\Exception $e){
-
-						$log->error($e->getMessage());
-
-					}
-
-				}while(!$config->getId());
-
-				return $config;
-
-			}
-
 			//Abstract methods
 
 			abstract protected function __connect();

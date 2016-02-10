@@ -88,7 +88,7 @@
 						break;
 
 						case 't':
-							self::configureSocket($config,$Log);
+							self::configureSocket($config,$log);
 						break;
 
 						case 'b':

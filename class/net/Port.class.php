@@ -10,7 +10,7 @@
 
 				if(!is_null($number)){
 
-					$this->setNumber($number);
+					$this->setNumber(sprintf('%s',$number));
 
 				}
 

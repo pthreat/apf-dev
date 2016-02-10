@@ -35,7 +35,7 @@
 
 
 		$log				=	new Log();
-		Mysql5CliConfig::configure(NULL,$log);
+		Mysql5CliConfig::configure($config=NULL,$log);
 		die();
 		$config			=	Project::cliConfig(NULL,$log);
 		echo $config;

@@ -24,7 +24,7 @@
 
 		class Cli implements CliConfigInterface{
 
-			public static function configure($config=NULL,LogInterface $log){
+			public static function configure(&$config=NULL, LogInterface &$log){
 
 				$projectOptions	=	Array(
 													'C'	=>	'Create project',

@@ -9,7 +9,7 @@
 
 		class Cli extends BaseAssetCliConfig{
 
-			public static function configure($config=NULL,LogInterface $log){
+			public static function configure(&$config=NULL, LogInterface &$log){
 
 				$config	=	new JSAssetConfig($config);
 				$config	=	parent::configure($config,$log);
