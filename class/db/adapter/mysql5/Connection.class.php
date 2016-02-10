@@ -4,7 +4,6 @@
 
 		use \apf\iface\Log									as	LogInterface;
 		use \apf\core\Cmd;
-		use \apf\core\Config;
 		use \apf\validate\String							as	StringValidate;
 		use \apf\db\Connection								as	DatabaseConnection;
 		use \apf\db\adapter\mysql5\Adapter				as	Mysql5Adapter;

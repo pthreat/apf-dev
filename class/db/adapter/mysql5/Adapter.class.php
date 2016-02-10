@@ -6,21 +6,9 @@
 
 		class Adapter extends BaseAdapter{
 
-			protected function __getCommentOpenings(){
+			protected function __connect(){
 
-				return Array('/*','--','#','\'');
-
-			}
-
-			protected function __getQuoteCharacter(){
-
-				return "'";
-
-			}
-
-			protected function __getCommentClosings(){
-
-				return Array('*/');
+				die("CONNECT!")
 
 			}
 

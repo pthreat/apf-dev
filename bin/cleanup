@@ -1,0 +1,4 @@
+#!/bin/bash
+cd /usr/share/apf-dev
+find ./ -name "*~" | xargs rm
+find ./ -name "*.sw*" | xargs rm 

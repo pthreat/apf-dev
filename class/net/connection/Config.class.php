@@ -14,7 +14,7 @@
 		use \apf\core\Log;
 		use \apf\core\Cmd;
 
-		class Config extends BaseConfig{
+		abstract class Config extends BaseConfig{
 
 			public function setName($name){
 

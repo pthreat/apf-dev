@@ -98,7 +98,6 @@
 			//Abstract methods
 
 			abstract protected function __connect();
-			abstract public function getAdapter();
 			abstract public function __toString();
 
 		}

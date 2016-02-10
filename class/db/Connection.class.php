@@ -10,7 +10,7 @@
 		use \apf\net\Host;
 		use \apf\core\Config;
 
-		class Connection extends NetworkConnection{
+		abstract class Connection extends NetworkConnection{
 
 			use \apf\traits\log\Inner;
 

@@ -40,7 +40,7 @@
 
 					}catch(\Exception $e){
 
-						$log->error($e->getMessage();
+						$log->error($e->getMessage());
 
 					}
 
@@ -311,8 +311,8 @@
 					$log->repeat('-',80,'light_purple');
 
 					$options	=	Array(
-											'A'	=>	'Set/Change adapter',
-											'S'	=>	'Set host',
+											'A'	=>	'Select adapter',
+											'S'	=>	'Set change',
 											'U'	=>	'Set username',
 											'K'	=>	'Set password',
 											'P'	=>	'Set port',
@@ -390,6 +390,7 @@
 
 						if($hasDatabaseConnections){
 
+							$options['L']	=	'List connections';
 							$options['E']	=	'Edit connection';
 							$options['D']	=	'Delete connections';
 

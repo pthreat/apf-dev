@@ -6,28 +6,12 @@
 		use \apf\db\connection\Config				as	DatabaseConnectionConfig;
 		use \apf\core\Log;
 		use \apf\core\Cmd;
-		use \apf\net\Host;
-		use \apf\net\Port;
 
 		class Config extends DatabaseConnectionConfig{
 
 			public function getRootUsername(){
 
 				return 'root';
-
-			}
-
-			public function setUsername($username){
-
-				$this->username	=	StringValidate::mustBeNotEmpty($username,$useTrim=TRUE,'Username can not be empty');
-				return $this;
-
-			}
-
-			public function setPassword($password){
-
-				$this->password	=	$password;
-				return $this;
 
 			}
 
@@ -63,6 +47,12 @@
 			public function getSocket(){
 
 				return parent::getSocket();
+
+			}
+
+			public function getNonExportableAttributes(){
+
+				return Array();
 
 			}
 

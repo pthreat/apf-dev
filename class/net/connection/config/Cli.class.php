@@ -6,103 +6,150 @@
 		use \apf\net\Host;
 		use \apf\net\Port;
 		use \apf\net\connection\Config	as	NetConfig;
+		use \apf\iface\Log					as	LogInterface;
+		use \apf\iface\config\Cli						as	CliConfigInterface;
 
-		public static function configureName(NetConfig &$config,LogInterface $log){
+		class Cli implements CliConfigInterface{
 
-			do{
+			public static function configureName(NetConfig &$config,LogInterface $log){
 
-				$config->setName(Cmd::readWithDefault('name>',$config->getName(),$log));
+				do{
 
-			}while(!$config->getName());
+					try{
 
-		}
+						$config->setName(Cmd::readWithDefault('name>',$config->getName(),$log));
 
-		public static function configureHost(NetConfig &$config,LogInterface $log){
+					}catch(\Exception $e){
 
-			do{
+						$log->error($e->getMessage());
 
-				$config->setHost('host>',new Host(Cmd::readWithDefault($config->getHost())),$log);
+					}
 
-			}while(!$config->getHost());
+				}while(!$config->getName());
 
-		}
+			}
 
-		public static function configurePort(NetConfig &$config,LogInterface $log){
+			public static function configureHost(NetConfig &$config,LogInterface $log){
 
-			do{
+				do{
 
-				$config->setPort('port>',new Port(Cmd::readWithDefault($config->getPort())),$log);
+					try{
 
-			}while(!$config->getPort());
+						$config->setHost(new Host(Cmd::readWithDefault('host>',$config->getHost(),$log)));
 
-		}
+					}catch(\Exception $e){
 
-		public static function configureUsername(NetConfig &$config,LogInterface $log){
+						$log->error($e->getMessage());
 
-			do{
+					}
 
-				$config->setUsername('username>',Cmd::readWithDefault($config->getUsername()),$log);
+				}while(!$config->getHost());
 
-			}while(!$config->getUsername());
+			}
 
-		}
+			public static function configurePort(NetConfig &$config,LogInterface $log){
 
-		public static function configurePassword(NetConfig &$config,LogInterface $log){
+				do{
 
-			do{
+					$config->setPort(new Port(Cmd::readWithDefault('port>',$config->getPort(),$log)));
 
-				$config->setPassword('password>',Cmd::readWithDefault($config->getPassword()),$log);
+				}while(!$config->getPort());
 
-			}while(!$config->getPassword());
+			}
 
-		}
+			public static function configureUsername(NetConfig &$config,LogInterface $log){
 
-		public static function configure($config=NULL,LogInterface $log){
+				do{
 
-			$config	=	new NetConfig($config);
+					try{
 
-			$options	=	Array(
-									'N'	=>	Array(
-														'color'	=>	$config->getName() ? 'light_purple'	:	'light_cyan',
-														'value'	=>	sprintf('%s connection name %s',
-																									$config->getName() ?	'Change' : 'Set', 
-																									$config->getName() ?	"({$config->getName()})" : ""
-									),
-									'H'	=>	Array(
-														'color'	=>	$config->getHost() ? 'light_purple'	:	'light_cyan',
-														'value'	=>	sprintf('%s port %s',
-																									$config->getHost() ?	'Change' : 'Set', 
-																									$config->getHost() ?	"({$config->getHost()})" : ""
-									),
-									'U'	=>	Array(
-														'color'	=>	$config->getUsername() ? 'light_purple'	:	'light_cyan',
-														'value'	=>	sprintf('%s port %s',
-																									$config->getUsername() ?	'Change' : 'Set', 
-																									$config->getUsername() ?	"({$config->getUsername()})" : ""
-									),
-									'S'	=>	Array(
-														'color'	=>	$config->getPassword() ? 'light_purple'	:	'light_cyan',
-														'value'	=>	sprintf('%s port %s',
-																									$config->getPassword() ?	'Change' : 'Set', 
-																									$config->getPassword() ?	"({$config->getPassword()})" : ""
-									),
-									'P'	=>	Array(
-														'color'	=>	$config->getPort() ? 'light_purple'	:	'light_cyan',
-														'value'	=>	sprintf('%s port %s',
-																									$config->getPort() ?	'Change' : 'Set', 
-																									$config->getPort() ?	"({$config->getPort()})" : ""
-									),
-									'B'	=>	'Back'
-			);	
+						$config->setUsername(Cmd::readWithDefault('username>',$config->getUsername()),$log);
 
-			do{
+					}catch(\Exception $e){
 
-				$opt	=	Cmd::selectWithKeys($options,'>',$log);
+						$log->error($e->getMessage());
 
-				switch(strtolower($opt)){
+					}
+
+				}while(!$config->getUsername());
+
+			}
+
+			public static function configurePassword(NetConfig &$config,LogInterface $log){
+
+				do{
+
+					try{
+
+						$config->setPassword(Cmd::readWithDefault('password>',$config->getPassword(),$log));
+
+					}catch(\Exception $e){
+
+						$log->error($e->getMessage());
+
+					}
+
+				}while(!$config->getPassword());
+
+			}
+
+			public static function getConfigurationMenu(&$config,Array $menu=Array()){
+
+					$options	=	Array(
+											'N'	=>	Array(
+																'color'	=>	$config->getName() ? 'light_purple'	:	'light_cyan',
+																'value'	=>	sprintf('%s connection name %s',
+																											$config->getName() ?	'Change' : 'Set', 
+																											$config->getName() ?	"({$config->getName()})" : ""
+																)
+											),
+											'H'	=>	Array(
+																'color'	=>	$config->getHost() ? 'light_purple'	:	'light_cyan',
+																'value'	=>	sprintf('%s host %s',
+																											$config->getHost() ?	'Change' : 'Set', 
+																											$config->getHost() ?	"({$config->getHost()})" : ""
+																)
+											),
+											'U'	=>	Array(
+																'color'	=>	$config->getUsername() ? 'light_purple'	:	'light_cyan',
+																'value'	=>	sprintf('%s username %s',
+																											$config->getUsername() ?	'Change' : 'Set', 
+																											$config->getUsername() ?	"({$config->getUsername()})" : ""
+																)
+											),
+											'S'	=>	Array(
+																'color'	=>	$config->getPassword() ? 'light_purple'	:	'light_cyan',
+																'value'	=>	sprintf('%s password %s',
+																											$config->getPassword() ?	'Change' : 'Set', 
+																											$config->getPassword() ?	"({$config->getPassword()})" : ""
+																)
+											),
+											'P'	=>	Array(
+																'color'	=>	$config->getPort() ? 'light_purple'	:	'light_cyan',
+																'value'	=>	sprintf('%s port %s',
+																											$config->getPort() ?	'Change' : 'Set', 
+																											$config->getPort() ?	"({$config->getPort()})" : ""
+																)
+											)
+					);
+
+					return array_merge($options,$menu);
+
+			}
+
+			public static function configure($config=NULL,LogInterface $log){
+			}
+
+			public static function configureConnection($option,&$config,LogInterface $log){
+
+				switch(strtolower($option)){
 
 					case 'n':
 						self::configureName($config,$log);
+					break;
+
+					case 'u':
+						self::configureUsername($config,$log);
 					break;
 
 					case 's':
@@ -116,16 +163,9 @@
 					case 'h':
 						self::configureHost($config,$log);
 					break;
-
-					case 'b':
-						break 2;
-					break;
-
 				}
 
-			}while(TRUE);
-
-			return $config;
+			}
 
 		}
 

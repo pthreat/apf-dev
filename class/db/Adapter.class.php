@@ -5,9 +5,10 @@
 		use \apf\core\Directory 		as Dir;		
 		use \apf\db\Connection			as	DatabaseConnection;
 		use \apf\iface\Log				as	LogInterface;
+		use \apf\net\Adapter				as	NetworkAdapter;
 		use \apf\core\Configurable;
 
-		abstract class Adapter extends Configurable{
+		abstract class Adapter extends NetworkAdapter{
 
 			use \apf\traits\log\Inner;
 
@@ -52,7 +53,7 @@
 
 			//List available adapters
 
-			public static function listAvailableAdapters($refresh=FALSE){
+			public static function listAvailable($refresh=FALSE){
 
 				if(sizeof(self::$availableAdapters)&&!$refresh){
 

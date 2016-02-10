@@ -6,6 +6,10 @@
 
 		class Config extends BaseAdapterConfig{
 
+			public function getNonExportableAttributes(){
+				return Array();
+			}
+
 		}
 
 	}

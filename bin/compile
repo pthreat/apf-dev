@@ -27,11 +27,16 @@
 	use apf\db\connection\Config				as	DatabaseConnectionConfig;
 	use apf\db\connection\Pool					as	DatabaseConnectionPool;
 
+	use apf\db\adapter\mysql5\config\Cli	as	Mysql5CliConfig;
+
 	try{
 
 		Kernel::boot();
 
+
 		$log				=	new Log();
+		Mysql5CliConfig::configure(NULL,$log);
+		die();
 		$config			=	Project::cliConfig(NULL,$log);
 		echo $config;
 		die();
@@ -42,13 +47,6 @@
 		$dbPool->add($connection);
 		echo $dbPool->get($connection)->getConfig();
 		die();
-		$pluginConfig	=	new PluginConfig();
-		$pluginConfig->setAuthor('jpfstange@gmail.com');
-		$plugin			=	new Plugin($pluginConfig);
-		echo $pluginConfig->export();
-		die();
-
-		$context	=	new Context();
 
 		define('INTERACTIVE',Cmd::searchOpt('--no-interactive')!=='&');
 
