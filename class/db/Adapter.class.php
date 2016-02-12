@@ -72,7 +72,23 @@
 
 				}
 
-				return self::$availableAdapters	=	(new Dir($dir))->getIterator()
+				$adapters	=	(new Dir($dir))->toArray();
+
+				foreach($adapters as $adapter){
+
+					$adapterDir	=	sprintf('%s%sadapter%s%s',__DIR__,DIRECTORY_SEPARATOR,DIRECTORY_SEPARATOR,$adapter);
+
+					if(!is_dir($adapterDir)||$adapter == 'config'){
+
+						continue;
+
+					}
+
+					self::$availableAdapters[]	=	$adapter;
+
+				}
+
+				return self::$availableAdapters;
 
 			}
 
@@ -88,8 +104,8 @@
 			abstract protected function __rollback();
 			abstract protected function __directQuery($sql);
 			abstract protected function __getDate($format="Y-m-d H:i:s");
-			abstract public function __listTables($cache=TRUE);
-			abstract public function __findTable($name);
+			abstract protected function __listTables($cache=TRUE);
+			abstract protected function __findTable($name);
 
 		}
 

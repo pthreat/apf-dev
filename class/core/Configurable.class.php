@@ -68,7 +68,26 @@
 				//Validate that the passed configuration instance responds to the proper class
 				$this->config	=	self::validateConfigurationInstance($config);
 
-				//Validate the configuration instance with a mode (soft or hard).
+				$validationModes	=	Array(
+													'soft',
+													'hard',
+													'extra',
+													'none'
+				);
+
+				if(!in_array($validateMode,$validationModes)){
+
+					throw new \InvalidArgumentException("Invalid validation mode specified: \"$validateMode\"");
+
+				}
+
+				if($validateMode=='none'){
+
+					return;
+
+				}
+
+				//Validate the configuration instance with a mode (soft,hard or extra).
 				if(!$this->validateConfig($validateMode,$reValidate)){
 
 					$configClass	=	get_called_class();

@@ -1,6 +1,6 @@
 <?php
 
-	namespace apf\traits\web{
+	namespace apf\traits\config\web{
 
 		use \apf\web\Asset;
 		use \apf\core\Config;

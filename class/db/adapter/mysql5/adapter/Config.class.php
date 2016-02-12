@@ -1,6 +1,6 @@
 <?php
 
-	namespace apf\db\adapter\mysql5{
+	namespace apf\db\adapter\mysql5\adapter{
 
 		use \apf\db\adapter\Config	as	BaseAdapterConfig;
 

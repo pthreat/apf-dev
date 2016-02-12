@@ -93,7 +93,8 @@
 
 						case 'b':
 
-							return new Mysql5Connection($config);
+							$connection	=	new Mysql5Connection($config);
+							return $connection;
 
 						break;
 

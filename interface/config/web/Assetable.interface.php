@@ -1,6 +1,6 @@
 <?php
 
-	namespace apf\iface\web{
+	namespace apf\iface\config\web{
 
 		use \apf\web\Asset;
 

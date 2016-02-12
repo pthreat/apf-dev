@@ -1,69 +1,78 @@
 <?php
 
-	namespace apf\core\project\config{
+	namespace apf\db\adapter\config{
 
 		use \apf\iface\Log								as	LogInterface;
 		use \apf\core\project\Config;
-		use \apf\core\Project;
-		use \apf\core\project\Module					as	ProjectModule;
 		use \apf\core\project\module\Config			as	ModuleConfig;
 		use \apf\core\project\module\config\Cli	as	ModuleCli;
 		use \apf\core\project\Config					as	ProjectConfig;
-
-		use \apf\web\asset\config\Cli					as	AssetCli;
-
-		use \apf\web\asset\Javascript					as	JSAsset;
-		use \apf\web\asset\Css							as	CSSAsset;
-
-		use \apf\web\Asset;
+		use \apf\db\Adapter;
 
 		use \apf\core\Cmd;
-		use \apf\core\Directory							as	Dir;
 
 		use \apf\iface\config\Cli						as	CliConfigInterface;
 
 		class Cli implements CliConfigInterface{
 
+			public static function configureAdapter(ProjectConfig &$config,LogInterface &$log){
+
+				$log->debug('[ Select database adapter ]');
+				$options			=	Adapter::listAvailable();
+				$options['B']	=	'Back';
+
+				$opt	=	strtolower(Cmd::select($options,'adapter>',$log));
+
+				if($opt=='b'){
+
+					return;
+
+				}
+
+				$adapterCliClass	=	sprintf('\\apf\\db\\adapter\\%s\\config\\Cli',$opt);
+
+				return $adapterCliClass::configure($config,$log);
+
+			}
+
 			public static function configure(&$config=NULL, LogInterface &$log){
 
-				$projectOptions	=	Array(
-													'C'	=>	'Create project',
-													'E'	=>	'Edit project',
-													'H'	=>	'Help',
-													'Q'	=>	'Quit'
+				$config	=	new ProjectConfig($config);
+
+				$options	=	Array(
+										'S'	=>	'Select database adapter',
+										'H'	=>	'Help',
+										'B'	=>	'Back'
 				);
 
 				do{
 
 					Cmd::clear();
 
-					$log->debug('-[Apollo Framework interactive configuration]-');
+					$log->debug('[Database adapter configuration]');
 					$log->repeat('-',80,'light_purple');
 
 					try{
 
-						$option	=	Cmd::selectWithKeys($projectOptions,'apf>',$log);
+						$option	=	Cmd::selectWithKeys($options,'>',$log);
 
 						switch(strtolower($option)){
 
-							case 'c':
+							case 's':
 
-								self::configureProject($config,$log);
+								$adapter	=	self::configureAdapter($config,$log);
 
-							break;
-
-							case 'e':
-
-								$log->debug('Edit project, select project path and then load given project configuration');	
-								Cmd::readInput('press enter ...');
-
+								if($adapter){
+								}
 							break;
 
 							case 'h':
 
-								$log->debug('Given configuration interface will allow you to create or edit a new project.');
-								$log->debug('Press N to create a new project');
-								$log->debug('Press E to edit a project, in this case you will have to enter the path where the project is located');
+								$log->debug('This menu will allow you to select an available database adapter for further configuration');
+								$log->debug('If your project already has configured adapters, an edit menu will appear which will enable ');
+								$log->debug('you to edit the selected adapter.');
+								$log->debug('Press C to configure a new adapter for your project.');
+								$log->debug('Press E to edit a pre existent adapter in your project.');
 
 								Cmd::readInput('Press any key to continue ...');
 

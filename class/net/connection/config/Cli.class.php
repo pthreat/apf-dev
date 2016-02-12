@@ -6,10 +6,14 @@
 		use \apf\net\Host;
 		use \apf\net\Port;
 		use \apf\net\connection\Config	as	NetConfig;
+		use \apf\net\Adapter					as	NetworkAdapter;
 		use \apf\iface\Log					as	LogInterface;
-		use \apf\iface\config\Cli						as	CliConfigInterface;
+		use \apf\iface\config\Cli			as	CliConfigInterface;
 
 		class Cli implements CliConfigInterface{
+
+			//Configure connection name / identifier
+			////////////////////////////////////////////
 
 			public static function configureName(NetConfig &$config,LogInterface $log){
 
@@ -55,6 +59,7 @@
 
 				}while(!$config->getPort());
 
+
 			}
 
 			public static function configureUsername(NetConfig &$config,LogInterface $log){
@@ -93,6 +98,17 @@
 
 			}
 
+			public static function configureMode(NetConfig &$config,LogInterface &$log){
+
+				$log->debug('[ Specify connection mode ]');
+
+				$log->success('1 = Production');
+				$log->warning('0 = Development');
+
+				$config->setIsProduction(Cmd::readInput('mode>',$log));
+
+			}
+
 			public static function getConfigurationMenu(&$config,Array $menu=Array()){
 
 					$options	=	Array(
@@ -103,11 +119,25 @@
 																											$config->getName() ?	"({$config->getName()})" : ""
 																)
 											),
+											'M'	=>	Array(
+																'color'	=>	$config->getIsProduction() ? 'light_green'	:	'yellow',
+																'value'	=>	sprintf('Set as %s',
+																											$config->getIsProduction() ?	'production' : 'dev', 
+																											$config->getIsProduction() ?	"({$config->getIsProduction()})" : ""
+																)
+											),
 											'H'	=>	Array(
 																'color'	=>	$config->getHost() ? 'light_purple'	:	'light_cyan',
 																'value'	=>	sprintf('%s host %s',
 																											$config->getHost() ?	'Change' : 'Set', 
 																											$config->getHost() ?	"({$config->getHost()})" : ""
+																)
+											),
+											'P'	=>	Array(
+																'color'	=>	$config->getPort() ? 'light_purple'	:	'light_cyan',
+																'value'	=>	sprintf('%s port %s',
+																											$config->getPort() ?	'Change' : 'Set', 
+																											$config->getPort() ?	"({$config->getPort()})" : ""
 																)
 											),
 											'U'	=>	Array(
@@ -123,13 +153,6 @@
 																											$config->getPassword() ?	'Change' : 'Set', 
 																											$config->getPassword() ?	"({$config->getPassword()})" : ""
 																)
-											),
-											'P'	=>	Array(
-																'color'	=>	$config->getPort() ? 'light_purple'	:	'light_cyan',
-																'value'	=>	sprintf('%s port %s',
-																											$config->getPort() ?	'Change' : 'Set', 
-																											$config->getPort() ?	"({$config->getPort()})" : ""
-																)
 											)
 					);
 
@@ -140,7 +163,7 @@
 			public static function configure(&$config=NULL, LogInterface &$log){
 			}
 
-			public static function configureConnection($option,&$config,LogInterface $log){
+			public static function configureConnection($option,NetConfig &$config,LogInterface $log){
 
 				switch(strtolower($option)){
 
@@ -158,6 +181,10 @@
 
 					case 'p':
 						self::configurePort($config,$log);
+					break;
+
+					case 'm':
+						self::configureMode($config,$log);
 					break;
 
 					case 'h':

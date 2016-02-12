@@ -6,6 +6,7 @@
 		use \apf\iface\Log											as	LogInterface;
 		use \apf\iface\config\Cli									as	CliConfigInterface;
 		use \apf\net\connection\config\Cli						as	NetConnectionCli;
+		use \apf\db\adapter\mysql5\Config						as	Adapter;
 		use \apf\db\adapter\mysql5\Config						as	AdapterConfig;
 		use \apf\db\adapter\mysql5\Connection					as	Mysql5Connection;
 		use \apf\db\adapter\mysql5\connection\Config			as	Mysql5ConnectionConfig;
@@ -14,8 +15,6 @@
 		class Cli implements CliConfigInterface{
 
 			public static function configure(&$config=NULL, LogInterface &$log){
-
-				$config		=	new AdapterConfig($config);
 
 				$connectionConfig	=	new Mysql5ConnectionConfig();
 
@@ -26,16 +25,17 @@
 					$log->debug('[ Configure MySQL 5 database adapter ]');
 					$log->repeat('-',80,'light_purple');
 
+
 					$options	=	Array(
-											'C'	=>	Array(
-																'color'	=>	$config->getConnection()	?	'light_green'	:	'light_cyan',
-																'value'	=>	sprintf('%s connection parameters',$config->getConnection() ? 'Change' : 'Set')
+											'S'	=>	Array(
+																'color'	=>	$config->getAdapter()	?	'light_green'	:	'light_cyan',
+																'value'	=>	sprintf('%s connection parameters',$config->getAdapter() ? 'Change' : 'Set')
 											)
 					);
 
+
 					if($config->getConnection()){
 
-						$options['P']	=	'Print connection parameters';
 						$options['T']	=	'Test connection';
 
 					}
@@ -87,14 +87,13 @@
 						break;
 
 						case 'b':
+							return new Adapter($config);
 							break 2;
 						break;
 
 					}
 
 				}while(TRUE);
-
-				return $config;
 
 			}
 

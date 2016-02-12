@@ -13,6 +13,7 @@
 		use \apf\core\Config as BaseConfig;
 		use \apf\core\Log;
 		use \apf\core\Cmd;
+		use \apf\net\Adapter	as	 NetworkAdapter;
 
 		abstract class Config extends BaseConfig{
 
@@ -35,6 +36,38 @@
 			public function getName(){
 
 				return parent::getName();
+
+			}
+
+			public function setEnableLogging($boolean){
+
+				$this->enableLogging	=	$boolean;
+				return $this;
+
+			}
+
+			public function getEnableLogging(){
+
+				return parent::getEnableLogging();
+
+			}
+
+			public function setIsProduction($boolean){
+
+				$this->isProduction	=	(boolean)$boolean;
+				return $this;
+
+			}
+
+			public function getIsProduction(){
+
+				return parent::getIsProduction();
+
+			}
+
+			public function isProduction(){
+
+				return (boolean)parent::getIsProduction();
 
 			}
 
@@ -89,6 +122,21 @@
 				return parent::getPassword();
 
 			}
+
+			public function setAdapter(NetworkAdapter $adapter){
+
+				$this->adapter	=	$adapter;
+				return $this;
+
+			}
+
+			public function getAdapter(){
+
+				return parent::getAdapter();
+
+			}
+
+			abstract public function getType();
 
 		}
 

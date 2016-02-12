@@ -2,173 +2,27 @@
 
 	namespace apf\core\project{
 
-		use \apf\core\Cmd;
-		use \apf\db\Connection			as	DatabaseConnection;
-		use \apf\core\Directory			as	Dir;
-		use \apf\core\Config				as BaseConfig;
-		use \apf\iface\web\Assetable	as	AssetableInterface;
+		use \apf\core\Config						as BaseConfig;
 
-		class Config extends BaseConfig implements AssetableInterface{
+		use \apf\iface\config\Nameable		as	NameableInterface;
+		use \apf\iface\config\RootDirectory	as	RootDirectoryInterface;
+		use \apf\iface\config\Moduleable		as	ModuleableInterface;
+		use \apf\iface\config\Networkable	as	NetworkableInterface;
+		use \apf\iface\config\web\Assetable	as	AssetableInterface;
+		use \apf\iface\config\Templateable	as	TemplateableInterface;
 
-			use \apf\traits\web\Assetable;
+		class Config extends BaseConfig implements NameableInterface,RootDirectoryInterface,ModuleableInterface,NetworkableInterface,AssetableInterface,TemplateableInterface{
 
-			public function setName($name){
-
-				$name	=	trim($name);
-
-				if(empty($name)){
-
-					throw new \InvalidArgumentException("Project name can not be empty");
-
-				}
-
-				$this->name	=	$name;
-
-				return $this;
-
-			}
-
-			public function getName(){
-
-				return parent::getName();
-
-			}
-
-			public function setFragmentsDirectory(Dir $dir){
-
-				$this->fragmentsDirectory	=	$dir;
-
-				return $this;
-
-			}
-
-			public function getFragmentsDirectory(){
-
-				return parent::getFragmentsDirectory();
-
-			}
-
-			public function setTemplatesDirectory(Dir $dir){
-
-				$this->templatesDirectory	=	$dir;
-
-				return $this;
-
-			}
-
-			public function getTemplatesDirectory(){
-
-				return parent::getTemplatesDirectory();
-
-			}
+			use \apf\traits\config\Nameable;
+			use \apf\traits\config\RootDirectory;
+			use \apf\traits\config\Moduleable;
+			use \apf\traits\config\Networkable;
+			use \apf\traits\config\web\Assetable;
+			use \apf\traits\config\Templateable;
 
 			public function getNonExportableAttributes(){
 
 				return Array();
-
-			}
-
-			public function setDirectory(Dir $dir){
-
-				$this->directory	=	$dir;
-
-				return $this;
-
-			}
-
-			public function getDirectory(){
-
-				return parent::getDirectory();
-
-			}
-
-			public function setModulesDirectory(Dir $dir){
-
-				$this->modulesDirectory	=	$dir;
-				return $this;
-
-			}
-
-			public function getModulesDirectory(){
-
-				return parent::getModulesDirectory();
-
-			}
-
-			public function addModule(Module $module){
-
-				$this->modules[$module->getName()]	=	$module;
-				return $this;
-
-			}
-
-			public function hasModules(){
-
-				return parent::hasKey('modules');
-	
-			}
-
-			public function setDatabaseConnections(Array $connections=Array()){
-
-				if(!parent::getDatabaseConnections()){
-
-					$this->databaseConnections	=	Array();
-
-				}
-
-				foreach($assets as $key=>$asset){
-
-					if(!is_a($asset,'\\apf\\db\\Connection')){
-
-						throw new \InvalidArgumentException("Given array element ($key) is not a database connection");
-
-					}
-
-					$this->databaseConnections->append($asset);
-
-				}
-
-				return $this;
-
-			}
-
-			public function getDatabaseConnections(){
-
-				return parent::getDatabaseConnections();
-
-			}
-
-			public function addDatabaseConnection(DatabaseConnection $connection){
-
-				return $this->setDatabaseConnections(Array($connection));
-
-			}
-
-			public function getDatabaseConnection($name){
-
-			}
-
-			public function hasDatabaseConnections(){
-
-				return parent::getDatabaseConnections() ? TRUE : FALSE;
-
-			}
-
-			public function getModule($name){
-
-				if(!$this->hasModule($name)){
-
-					throw new \InvalidArgumentException("No module named \"$name\" could be found in this project");
-
-				}
-
-				return $this->modules[$name];
-
-			}
-
-			public function hasModule($name){
-
-				return array_key_exists($name,$this->modules);
 
 			}
 

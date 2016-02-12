@@ -24,29 +24,20 @@
 
 		class Cli implements CliConfigInterface{
 
-			public static function selectDatabaseAdapter(ProjectConfig &$config, LogInterface $log){
 
-				do{
-
-					Cmd::clear();
-
-					$log->info('[ Select database adapter ]');
-					$log->repeat('-',80,'light_purple');
-
-					try{
-
-						$adapter	=	Cmd::select(Adapter::listAvailableAdapters(),"adapter>",$log);
-						return sprintf('\\apf\\db\\adapter\\%s\\connection\\config\\Cli',$adapter);
-
-					}catch(\Exception $e){
-
-						$log->error($e->getMessage());
-
-					}
-
-				}while(TRUE);
-
-			}
+			/**
+			 * Configure project directories.
+			 * This interactive menu will allow the end user to configure several project directories.
+			 *
+			 * A) Configure the Project Root directory, this is the base directory where the project will be located.
+			 * B) Configure the DocumentRoot directory, this is the directory that your HTTP server will use as the DocumentRoot
+			 * C) Configure the Templates directory, this is the directory where global templates will be stored.
+			 * D) Configure the fragments directory, this is the directory where global fragments will be stored.
+			 *
+			 * @params \apf\core\project\Config	A project configuration object
+			 * @params \apf\iface\Log           A log interface so we can display messages and prompts in the command line.
+			 *
+			 */
 
 			public static function configureDirectories(ProjectConfig &$config,LogInterface $log){
 
@@ -113,6 +104,15 @@
 
 			}
 
+			/**
+			 * Configure your project name.
+			 * Your project must have a configured name for it to make sense, you can call it whatever you want :)
+			 *
+			 * @params \apf\core\project\Config	A project configuration object
+			 * @params \apf\iface\Log           A log interface so we can display messages and prompts in the command line.
+			 * 
+			 */
+
 			public static function configureName(ProjectConfig &$config,LogInterface $log){
 
 				do{
@@ -142,7 +142,18 @@
 
 			}
 
-			//List modules in project
+			/**
+			 *
+			 * List modules that belong to this project.
+			 * A project is break down into modules and subs.
+			 *
+			 * This method allows the end user to view which modules does his project has.
+			 *
+			 * @params \apf\core\project\Config	A project configuration object
+			 * @params \apf\iface\Log           A log interface so we can display messages and prompts in the command line.
+			 *
+			 */
+			
 			public static function listModules(ProjectConfig &$config,LogInterface $log){
 
 				$modules	=	$config->getModules();
@@ -161,7 +172,15 @@
 
 			}
 
-			//Configure root directory
+			/**
+			 *
+			 * Configure the project root directory, this is the directory where the project will live.
+			 *
+			 * @params \apf\core\project\Config	A project configuration object
+			 * @params \apf\iface\Log           A log interface so we can display messages and prompts in the command line.
+			 *
+			 */
+
 			public static function configureDirectory(ProjectConfig $config,LogInterface $log){
 
 				do{
@@ -201,7 +220,18 @@
 
 			}
 
-			//Configure modules directory
+			/**
+			 *
+			 * Configure the modules  directory, this is the directory where the project modules will live.
+			 * It is a good idea that the modules reside inside the same directory the project is in.
+			 *
+			 * However the end user can choose any other directory of their preference, even outside of the project.
+			 *	This could be a good idea when you have two projects sharing the same modules.
+			 *
+			 * @params \apf\core\project\Config	A project configuration object
+			 * @params \apf\iface\Log           A log interface so we can display messages and prompts in the command line.
+			 *
+			 */
 
 			public static function configureModulesDirectory(ProjectConfig &$config,LogInterface $log){
 
@@ -209,7 +239,7 @@
 
 					Cmd::clear();
 
-					$log->info('Please specify the modules directory for this project');
+					$log->info('[ Please specify the modules directory for this project ]');
 					$log->repeat('-',80,'light_purple');
 
 					$dir	=	$config->getModulesDirectory();
@@ -379,14 +409,14 @@
 					do{
 
 						Cmd::clear();
-						$log->debug('[ Database configuration ]');
+						$log->debug('[ Database connections ]');
 						$log->repeat('-',80,'light_purple');
 
 						$options	=	Array(
 												'N'	=>	'New connection'
 						);
 
-						$hasConnections	=	$config->hasDatabaseConnections();
+						$hasDatabaseConnections	=	$config->hasConnectionsOfType('database');
 
 						if($hasDatabaseConnections){
 

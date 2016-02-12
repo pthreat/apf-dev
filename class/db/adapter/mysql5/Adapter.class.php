@@ -2,13 +2,13 @@
 
 	namespace apf\db\adapter\mysql5{
 
-		use \apf\db\Adapter	as	BaseAdapter;		
+		use \apf\net\Adapter	as	BaseAdapter;		
 
 		class Adapter extends BaseAdapter{
 
 			protected function __connect(){
 
-				die("CONNECT!")
+				die("CONNECT!");
 
 			}
 
@@ -30,7 +30,7 @@
 
 			}
 
-			public function findTable($name){
+			protected function __findTable($name){
 
 				foreach($this->listTables() as $table){
 
@@ -46,7 +46,7 @@
 
 			}
 
-			public function listTables($cache=TRUE){
+			protected function __listTables($cache=TRUE){
 
 				if($cache && sizeof($this->tables)){
 

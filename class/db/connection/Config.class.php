@@ -15,51 +15,6 @@
 
 		abstract class Config extends ConnectionConfig{
 
-			public function setAdapter(Adapter $adapter){
-
-				$this->adapter	=	$adapter;
-				return $this;
-
-			}
-
-			public function getAdapter(){
-
-				return parent::getAdapter();
-
-			}
-
-			public function setEnableLogging($boolean){
-
-				$this->enableLogging	=	$boolean;
-				return $this;
-
-			}
-
-			public function getEnableLogging(){
-
-				return parent::getEnableLogging();
-
-			}
-
-			public function setIsProduction($boolean){
-
-				$this->isProduction	=	(boolean)$boolean;
-				return $this;
-
-			}
-
-			public function getIsProduction(){
-
-				return parent::getIsProduction();
-
-			}
-
-			public function isProduction(){
-
-				return (boolean)parent::getIsProduction();
-
-			}
-
 			public function setDatabase($database){
 
 				$this->database	=	StringValidate::mustBeNotEmpty($database,$useTrim=TRUE,'Database name can not be empty');
@@ -70,6 +25,12 @@
 			public function getDatabase(){
 
 				return parent::getDatabase();
+
+			}
+
+			public function getType(){
+
+				return 'database';
 
 			}
 
