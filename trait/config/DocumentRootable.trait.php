@@ -2,20 +2,20 @@
 
 	namespace apf\traits\config{
 
-		use \apf\core\Directory	as	Dir;
+		use \apf\core\project\DocumentRoot;
 	
 		trait DocumentRootable{
 
-			public function setDocumentRootDirectory(Dir $dir){
+			public function setDocumentRoot(DocumentRoot $documentRoot){
 
-				$this->directory	=	$dir;
+				$this->documentRoot	=	$documentRoot;
 				return $this;
 
 			}
 
-			public function getDocumentRootDirectory(){
+			public function getDocumentRoot(){
 
-				return parent::getDocumentRootDirectory();
+				return parent::getDocumentRoot();
 
 			}
 

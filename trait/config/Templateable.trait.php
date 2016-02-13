@@ -1,7 +1,9 @@
 <?php
 
-	namespace apf\traits{
-	
+	namespace apf\traits\config{
+
+		use \apf\core\Directory	as	Dir;
+
 		trait Templateable{
 
 			public function setFragmentsDirectory(Dir $dir){

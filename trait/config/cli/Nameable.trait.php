@@ -17,7 +17,7 @@
 			 * 
 			 */
 
-			public static function configureName(Nameable &$config,LogInterface &$log){
+			public static function configureName(NameableInterface &$config,LogInterface &$log){
 
 				do{
 

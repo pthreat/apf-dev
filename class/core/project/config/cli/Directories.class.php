@@ -1,7 +1,8 @@
 <?php
 
 	namespace apf\core\project\config\cli{
-	
+
+		use \apf\iface\Log						as	LogInterface;	
 		use \apf\iface\config\RootDirectory	as	RootDirectoryInterface;
 		use \apf\iface\config\Templateable	as	TemplateableInterface;
 		use \apf\iface\config\Subable			as	SubableInterface;
