@@ -7,8 +7,6 @@
 
 		class Sub extends Configurable{
 
-			private	$controllers	=	Array();
-
 			public function create(LogInterface $log){
 
 				$this->validateConfig();

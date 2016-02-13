@@ -35,10 +35,7 @@
 
 
 		$log				=	new Log();
-		\apf\db\connection\config\Cli::configure($config=NULL,$log);
-		die();
 		$config			=	Project::cliConfig(NULL,$log);
-		echo $config;
 		die();
 
 		$connection		=	DatabaseConnection::interactiveConfig($log);

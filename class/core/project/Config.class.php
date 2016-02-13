@@ -2,19 +2,21 @@
 
 	namespace apf\core\project{
 
-		use \apf\core\Config						as BaseConfig;
+		use \apf\core\Config							as BaseConfig;
 
-		use \apf\iface\config\Nameable		as	NameableInterface;
-		use \apf\iface\config\RootDirectory	as	RootDirectoryInterface;
-		use \apf\iface\config\Moduleable		as	ModuleableInterface;
-		use \apf\iface\config\Networkable	as	NetworkableInterface;
-		use \apf\iface\config\web\Assetable	as	AssetableInterface;
-		use \apf\iface\config\Templateable	as	TemplateableInterface;
+		use \apf\iface\config\Nameable;
+		use \apf\iface\config\RootDirectory;
+		use \apf\iface\config\Moduleable;
+		use \apf\iface\config\Networkable;
+		use \apf\iface\config\web\Assetable;
+		use \apf\iface\config\Templateable;
+		use \apf\iface\config\DocumentRootable;
 
-		class Config extends BaseConfig implements NameableInterface,RootDirectoryInterface,ModuleableInterface,NetworkableInterface,AssetableInterface,TemplateableInterface{
+		class Config extends BaseConfig implements Nameable,RootDirectory,DocumentRootable,Moduleable,Networkable,Assetable,Templateable{
 
 			use \apf\traits\config\Nameable;
 			use \apf\traits\config\RootDirectory;
+			use \apf\traits\config\DocumentRootable;
 			use \apf\traits\config\Moduleable;
 			use \apf\traits\config\Networkable;
 			use \apf\traits\config\web\Assetable;

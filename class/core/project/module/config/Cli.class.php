@@ -16,194 +16,8 @@
 
 		class Cli implements CliConfigInterface{
 
-			public static function addModules(Project &$project,LogInterface $log){
-
-				$config	=	$project->getConfig();
-
-				do{
-
-					Cmd::clear();
-
-					$log->info('Project modules');
-					$log->repeat('-','80','light_purple');
-
-					$options	=	Array(
-											'N'	=>	'New Module'
-					);
-
-					$hasModules	=	$config->hasModules();
-
-					if($hasModules){
-
-						self::listModules($config,$log);
-
-						$options['E']	=	'Edit modules';
-						$options['L']	=	'List modules';
-
-					}
-
-					$options['B']	=	'Back';
-
-					$opt	=	Cmd::selectWithKeys($options,'>',$log);
-
-					switch(strtolower($opt)){
-
-						case 'n':
-
-							$moduleConfig	=	new ModuleConfig();
-							$moduleConfig->setProject($project);
-							self::configure($moduleConfig,$log);
-
-						break;
-
-						case 'e':
-
-							if($hasModules){
-
-								self::editModules($config,$log);
-
-							}
-
-						break;
-
-						case 'l':
-
-							if($hasModules){
-
-								self::listModules($config,$log);
-								Cmd::readInput('Press enter to continue ...');
-
-							}
-
-						break;
-
-						case 'd':
-
-							if($hasModules){
-
-								self::deleteModules($config,$log);
-
-							}
-
-						break;
-
-						case 'b':
-
-							break 2;
-
-						break;
-
-					}
-
-				}while(TRUE);
-
-			}
-
-
-			//Configure module name
-			public static function configureModuleName(ModuleConfig &$config, LogInterface $log){
-
-				do{
-
-					try{
-
-						$config->setName(Cmd::readInput('Module name:',$log));
-
-					}catch(\Exception $e){
-
-						$log->error($e->getMessage());
-
-					}
-
-				}while(!$config->getName());
-
-			}
-
-			public static function configureModuleDirectories(ModuleConfig &$config,LogInterface $log){
-
-				if(!$config->getName()){
-
-					throw new \LogicException("Must configure module name first");
-
-				}
-
-				do{
-
-					Cmd::clear();
-
-					$log->info('Configure module directories');
-					$log->repeat('-',80,'light_purple');
-
-					$options	=	Array(
-											'D'	=>	Array(
-																'value'	=>	"Set/Change Root directory {$config->getDirectory()}",
-																'color'	=>	$config->getDirectory()	?	'light_purple'	:	'light_cyan'
-											),
-											'T'	=>	Array(
-																'value'	=>	"Set/Change templates directory {$config->getTemplatesDirectory()}",
-																'color'	=>	$config->getTemplatesDirectory()	?	'light_purple'	:	'light_cyan'
-											),
-											'F'	=>	Array(
-																'value'	=>	"Set/Change fragments directory {$config->getFragmentsDirectory()}",
-																'color'	=>	$config->getFragmentsDirectory()	?	'light_purple'	:	'light_cyan'
-											),
-											'B'	=>	'Back'
-					);
-
-					$opt	=	Cmd::selectWithKeys($options,'>',$log);
-
-					switch(strtolower($opt)){
-
-						case 'd':
-							self::configureModuleDirectory($config,$log);
-						break;
-
-						case 't':
-							self::configureTemplatesDirectory($config,$log);
-						break;
-
-						case 'f':
-							self::configureFragmentsDirectory($config,$log);
-						break;
-
-						case 'b':
-							break 2;
-						break;
-
-					}
-
-				}while(TRUE);
-
-			}
-
-
-			//Configure root directory
-
-			public static function configureModuleDirectory(ModuleConfig $config,LogInterface $log){
-
-				$projectConfig	=	$config->getProject()->getConfig();
-
-				do{
-
-					$log->info('Please specify the directory for this module');
-
-					$dir	=	$projectConfig->getModulesDirectory()->addPath($config->getName());
-
-					$config->setDirectory(
-													new Dir(
-																Cmd::readWithDefault(
-																							'directory>',
-																							$dir,
-																							$log
-																)
-													)
-					);
-
-				}while(!$config->getDirectory());
-
-			}
-
-			//Configure subs directory
+			use \apf\traits\config\cli\Nameable;
+			use \apf\traits\config\cli\Templateable;
 
 			public static function configureSubsDirectory(ModuleConfig &$config,LogInterface $log){
 
@@ -229,66 +43,11 @@
 
 			}
 
-			//Configure module templates directories
+			/**
+			 *Subs CRUD for a module configuration object
+			 */
 
-			public static function configureTemplatesDirectory(ModuleConfig &$config,LogInterface $log){
-
-				do{
-
-					$log->info('Please specify the templates directory for this module');
-
-					$dir	=	clone($config->getDirectory());
-					$dir->addPath('templates');
-
-					$config->setTemplatesDirectory(
-													new Dir(
-																Cmd::readWithDefault(
-																							'directory>',
-																							$dir,
-																							$log
-																)
-													)
-					);
-
-
-				}while(!$config->getTemplatesDirectory());
-
-			}
-
-			//Configure module fragments directories
-
-			public static function configureFragmentsDirectory(ModuleConfig &$config,LogInterface $log){
-
-				do{
-
-					$log->info('Please specify the fragments directory for this module');
-
-					$dir	=	$config->getFragmentsDirectory();
-
-					if(!$dir){
-
-						$dir	=	clone($config->getDirectory());
-						$dir->addPath('fragments');
-
-					}
-
-					$config->setFragmentsDirectory(
-													new Dir(
-																Cmd::readWithDefault(
-																							'directory>',
-																							$dir,
-																							$log
-																)
-													)
-					);
-
-
-				}while(!$config->getFragmentsDirectory());
-
-			}
-
-			//Add a sub to a module
-			public static function addSubs(ModuleConfig &$config,LogInterface $log){
+			public static function configureSubs(ModuleConfig &$config,LogInterface $log){
 
 				do{
 
@@ -337,9 +96,12 @@
 					$hasSubs	=	$config->hasSubs();
 
 					$options	=	Array(
-											'MN'	=>	"Set/Change module name {$config->getName()}",
-											'MD'	=>	"Set/Edit module directories",
-											'AS'	=>	"Add a new sub",
+											'MN'	=>	Array(
+																'value'	=>	sprintf('%s module name (%s)',$config->getName() ? 'Change' : 'Set', $config->getName()),
+																'color'	=>	$config->getName()	?	'light_purple'	:	'light_cyan'
+											),
+											'MD'	=>	"Configure module directories",
+											'CS'	=>	"Configure subs"
 					);
 
 					if($hasSubs){
@@ -355,15 +117,15 @@
 					switch(strtolower($opt)){
 
 						case 'mn':
-							self::configureModuleName($config,$log);
+							self::configureName($config,$log);
 						break;
 
 						case 'md':
-							self::configureModuleDirectories($config,$log);
+							self::configureDirectories($config,$log);
 						break;
 
 						case 'as':
-							self::addSubs($config,$log);
+							self::configureSubs($config,$log);
 						break;
 
 						case 'b':

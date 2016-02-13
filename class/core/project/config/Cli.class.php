@@ -2,31 +2,142 @@
 
 	namespace apf\core\project\config{
 
-		use \apf\iface\Log								as	LogInterface;
+		use \apf\iface\Log										as	LogInterface;
+		use \apf\core\project\config\cli\Directories;
 		use \apf\core\project\Config;
 		use \apf\core\Project;
-		use \apf\core\project\Module					as	ProjectModule;
-		use \apf\core\project\module\Config			as	ModuleConfig;
-		use \apf\core\project\module\config\Cli	as	ModuleCli;
-		use \apf\core\project\Config					as	ProjectConfig;
+		use \apf\core\project\Module							as	ProjectModule;
+		use \apf\core\project\module\Config					as	ModuleConfig;
+		use \apf\core\project\module\config\Cli			as	ModuleCli;
+		use \apf\core\project\Config							as	ProjectConfig;
+		use \apf\db\connection\config\Cli					as	DatabaseConnectionCliConfig;
+		use \apf\web\asset\config\Cli							as	AssetCli;
 
-		use \apf\web\asset\config\Cli					as	AssetCli;
-
-		use \apf\web\asset\Javascript					as	JSAsset;
-		use \apf\web\asset\Css							as	CSSAsset;
+		use \apf\web\asset\Javascript							as	JSAsset;
+		use \apf\web\asset\Css									as	CSSAsset;
 
 		use \apf\web\Asset;
 
 		use \apf\core\Cmd;
-		use \apf\core\Directory							as	Dir;
+		use \apf\core\Directory									as	Dir;
 
-		use \apf\iface\config\Cli						as	CliConfigInterface;
+		use \apf\iface\config\Cli								as	CliConfigInterface;
 
 		class Cli implements CliConfigInterface{
 
+			use \apf\traits\config\cli\Nameable;
+			use \apf\traits\config\cli\Templateable;
+
+			/**
+			 * CRUD for project modules
+			 */
+
+			public static function configureModules(ProjectConfig &$config,LogInterface &$log){
+
+				do{
+
+					Cmd::clear();
+
+					$log->debug('[ Project modules ]');
+					$log->repeat('-','80','light_purple');
+
+					$options	=	Array(
+											'N'	=>	'New Module'
+					);
+
+					$hasModules	=	$config->hasModules();
+
+					if($hasModules){
+
+						self::listModules($config,$log);
+
+						$options['C']	=	'Copy module';
+						$options['E']	=	'Edit modules';
+						$options['L']	=	'List modules';
+
+					}
+
+					$options['B']	=	'Back';
+
+					$opt	=	Cmd::selectWithKeys($options,'>',$log);
+
+					switch(strtolower($opt)){
+
+						case 'n':
+
+							$moduleConfig	=	new ModuleConfig();
+							$moduleConfig->setProject($project);
+							$module			=	ModuleCli::configure($moduleConfig,$log);
+
+							if($module){
+
+								$config->addModule($module);
+
+							}
+
+						break;
+
+						case 'e':
+
+							if($hasModules){
+
+								self::editModules($config,$log);
+
+							}
+
+						break;
+
+						case 'c':
+							$module	=	self::copyModule($config,$log);
+
+							if($module){
+
+								$config->addModule($copy);
+
+							}
+
+						break;
+
+						case 'l':
+
+							if($hasModules){
+
+								self::listModules($config,$log);
+								Cmd::readInput('Press enter to continue ...');
+
+							}
+
+						break;
+
+						case 'd':
+
+							if($hasModules){
+
+								self::deleteModules($config,$log);
+
+							}
+
+						break;
+
+						case 'b':
+
+							break 2;
+
+						break;
+
+					}
+
+				}while(TRUE);
+
+			}
+
+			public function copyModule(ProjectConfig &$config, LogInterface &$log){
+
+			}
 
 			/**
 			 * Configure project directories.
+			 *
 			 * This interactive menu will allow the end user to configure several project directories.
 			 *
 			 * A) Configure the Project Root directory, this is the base directory where the project will be located.
@@ -55,85 +166,25 @@
 					$log->repeat('-',80,'light_purple');
 
 					$options	=	Array(
-											'D'	=>	Array(
-																'value'	=>	"Set/Change Root directory {$config->getDirectory()}",
-																'color'	=>	$config->getDirectory()	?	'light_purple'	:	'light_cyan'
-											),
-											'T'	=>	Array(
-																'value'	=>	"Set/Change templates directory {$config->getTemplatesDirectory()}",
-																'color'	=>	$config->getTemplatesDirectory()	?	'light_purple'	:	'light_cyan'
-											),
-											'M'	=>	Array(
-																'value'	=>	"Set/Change modules directory {$config->getModulesDirectory()}",
-																'color'	=>	$config->getModulesDirectory()	?	'light_purple'	:	'light_cyan'
-											),
-											'F'	=>	Array(
-																'value'	=>	"Set/Change fragments directory {$config->getFragmentsDirectory()}",
-																'color'	=>	$config->getFragmentsDirectory()	?	'light_purple'	:	'light_cyan'
-											),
 											'B'	=>	'Back'
 					);
 
-					$opt	=	Cmd::selectWithKeys($options,'>',$log);
+					$options	=	Directories::getDirectoriesMenu($config,Array('B'=>'Back'));
+					$opt		=	Cmd::selectWithKeys($options,'>',$log);
 
 					switch(strtolower($opt)){
-
-						case 'd':
-							self::configureDirectory($config,$log);
-						break;
-
-						case 't':
-							self::configureTemplatesDirectory($config,$log);
-						break;
-
-						case 'm':
-							self::configureModulesDirectory($config,$log);
-						break;
-
-						case 'f':
-							self::configureFragmentsDirectory($config,$log);
-						break;
 
 						case 'b':
 							break 2;
 						break;
 
+						default:
+							Directories::switchDirectoriesOption($opt,$config,$log);
+						break;
+
 					}
 
 				}while(TRUE);
-
-			}
-
-			/**
-			 * Configure your project name.
-			 * Your project must have a configured name for it to make sense, you can call it whatever you want :)
-			 *
-			 * @params \apf\core\project\Config	A project configuration object
-			 * @params \apf\iface\Log           A log interface so we can display messages and prompts in the command line.
-			 * 
-			 */
-
-			public static function configureName(ProjectConfig &$config,LogInterface $log){
-
-				do{
-
-					Cmd::clear();
-
-					$log->info('Configure project name');
-					$log->repeat('-',80,'light_purple');
-
-					try{
-
-						$config->setName(Cmd::readWithDefault('name>',$config->getName(),$log));
-
-					}catch(\Exception $e){
-
-						$log->error($e->getMessage());
-						Cmd::readInput('Press enter to continue ...');
-
-					}
-
-				}while(!$config->getName());
 
 			}
 
@@ -169,54 +220,6 @@
 					$log->info($module);
 
 				}
-
-			}
-
-			/**
-			 *
-			 * Configure the project root directory, this is the directory where the project will live.
-			 *
-			 * @params \apf\core\project\Config	A project configuration object
-			 * @params \apf\iface\Log           A log interface so we can display messages and prompts in the command line.
-			 *
-			 */
-
-			public static function configureDirectory(ProjectConfig $config,LogInterface $log){
-
-				do{
-
-					try{
-
-						Cmd::clear();
-
-						$log->info('Please specify the project main directory');
-
-						$dir	=	$config->getDirectory();
-
-						if(!$dir){
-
-							$dir	=	new Dir(realpath(getcwd()));
-							$dir->addPath($config->getName());
-
-						}
-
-						$config->setDirectory(
-														new Dir(
-																	Cmd::readWithDefault(
-																								'directory>',
-																								$dir,
-																								$log
-																	)
-														)
-						);
-
-					}catch(\Exception $e){
-
-						$log->error($e->getMessage());
-
-					}
-
-				}while(!$config->getDirectory());
 
 			}
 
@@ -266,144 +269,6 @@
 
 			}
 
-			//Configure module templates directories
-
-			public static function configureTemplatesDirectory(ProjectConfig &$config,LogInterface $log){
-
-				do{
-
-					Cmd::clear();
-					$log->info('Please specify the templates directory for this project');
-					$log->repeat('-',80,'light_purple');
-
-					$dir	=	clone($config->getDirectory());
-					$dir->addPath('templates');
-
-					$config->setTemplatesDirectory(
-													new Dir(
-																Cmd::readWithDefault(
-																							'directory>',
-																							$dir,
-																							$log
-																)
-													)
-					);
-
-
-				}while(!$config->getTemplatesDirectory());
-
-			}
-
-			//Configure module fragments directories
-
-			public static function configureFragmentsDirectory(ProjectConfig &$config,LogInterface $log){
-
-				do{
-
-					Cmd::clear();
-
-					$log->info('Please specify the fragments directory for this project');
-					$log->repeat('-',80,'light_purple');
-
-					$dir	=	$config->getFragmentsDirectory();
-
-					if(!$dir){
-
-						$dir	=	clone($config->getDirectory());
-						$dir->addPath('fragments');
-
-					}
-
-					$config->setFragmentsDirectory(
-													new Dir(
-																Cmd::readWithDefault(
-																							'directory>',
-																							$dir,
-																							$log
-																)
-													)
-					);
-
-
-				}while(!$config->getFragmentsDirectory());
-
-			}
-
-			public static function configureDatabaseConnection(ProjectConfig $config,LogInterface $log,DatabaseConnection $connection=NULL){
-
-				do{
-
-					Cmd::clear();
-
-					$title	=	$connection===NULL	?	'New database connection'	:	'Edit database connection';
-
-					$log->debug("[ $title ]");
-					$log->repeat('-',80,'light_purple');
-
-					$options	=	Array(
-											'A'	=>	'Select adapter',
-											'S'	=>	'Set change',
-											'U'	=>	'Set username',
-											'K'	=>	'Set password',
-											'P'	=>	'Set port',
-					);
-
-					$hasConnections	=	$config->hasDatabaseConnections();
-
-					if($hasDatabaseConnections){
-
-						$options['E']	=	'Edit connections';
-						$options['D']	=	'Delete connections';
-
-					}
-
-					$options['H']	=	'Help';
-					$options['B']	=	'Back';
-
-
-					try{
-
-						$opt	=	Cmd::selectWithKeys($options,'>',$log);
-
-						switch(strtolower($opt)){
-
-							case 'n':
-								$config->addDatabaseConnection(self::configureDatabaseConnection($config,$log));
-							break;
-
-							case 'e':
-							break;
-
-							case 'd':
-							break;
-
-							case 'h':
-
-								$log->debug('In this menu you will be able to add/edit database connections for your project.');
-								$log->debug('Press N to configure a new database connection');
-								$log->debug('Press E to edit a database connection');
-								$log->debug('Press D to delete a database connection');
-
-								Cmd::readInput('Press enter to continue ...');
-
-							break;
-
-							case 'b':
-								break 2;
-							break;
-
-						}
-
-					}catch(\Exception $e){
-
-						$log->error($e->getMessage());
-
-					}
-
-				}while(TRUE);
-
-			}
-
 			public static function configureDatabaseConnections(ProjectConfig $config, LogInterface $log){
 
 					do{
@@ -436,7 +301,15 @@
 							switch(strtolower($opt)){
 
 								case 'n':
-									$config->addDatabaseConnection(self::configureDatabaseConnection($config,$log));
+
+									$connection	=	DatabaseConnectionCliConfig::configure($cfg=NULL,$log);
+
+									if($connection){
+
+										$project->addConnection($connection);
+
+									}
+
 								break;
 
 								case 'e':
@@ -451,9 +324,9 @@
 									$log->debug('Database connections hold a database adapter object inside them.');
 									$log->debug('This means you will have to also configure the adapter parameters for said connection.');
 
-									$log->debug('Press N to configure a new database adapter');
-									$log->debug('Press E to edit a database adapter');
-									$log->debug('Press D to delete a database adapter');
+									$log->debug('Press N to configure a new database connection');
+									$log->debug('Press E to edit a database connection');
+									$log->debug('Press D to delete a database connection');
 
 									Cmd::readInput('Press enter to continue ...');
 
@@ -523,7 +396,7 @@
 
 			public static function configureProject($config,LogInterface $log){
 
-				$title	=	$config	?	sprintf('Edit project %s',$config->getName())	:	'New project';
+				$title	=	$config	?	sprintf('Edit project < %s >',$config->getName())	:	'New project';
 				$config	=	new ProjectConfig($config);
 
 				do{
@@ -593,8 +466,11 @@
 
 							break;
 
+							//Configure connections
 							case 'c':
+
 								self::configureConnections($config,$log);
+
 							break;
 
 							//Add modules to the project
@@ -606,12 +482,10 @@
 
 								}
 
-								$project	=	new Project($config,$validateMode='soft');
-								ModuleCli::addModules($project,$log);
+								self::configureModules($config,$log);
 
 							break;
 
-							//Finish CLI configuration process
 							case 'b':
 
 								break 2;
