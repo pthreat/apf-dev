@@ -23,7 +23,7 @@
 			 *
 			 */
 
-			public static function configure($config,LogInterface $log){
+			public static function configure(&$config,LogInterface &$log){
 
 				do{
 

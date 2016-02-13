@@ -26,7 +26,6 @@
 		class Cli implements CliConfigInterface{
 
 			use \apf\traits\config\cli\Nameable;
-			use \apf\traits\config\cli\Templateable;
 
 			/**
 			 * CRUD for project modules
@@ -306,7 +305,7 @@
 
 									if($connection){
 
-										$project->addConnection($connection);
+										$config->addConnection($connection);
 
 									}
 
@@ -403,14 +402,20 @@
 
 					Cmd::clear();
 
+					$hasName	=	$config->getName();
+
 					$options	=	Array(
 											'N'	=>	'Project name',
-											'D'	=>	'Directories',
+											'D'	=>	Array(
+																'value'	=>	'Directories',
+																'color'	=>	$hasName	?	'light_cyan'	:	'gray'
+											),
 											'C'	=>	'Connections',
 											'A'	=>	'Assets',
 					);
 
-					$enableModulesEntry	=	$config->getName()					&& 
+
+					$enableModulesEntry	=	$hasName									&& 
 													$config->getDirectory()				&& 
 													$config->getModulesDirectory()	&& 
 													$config->getTemplatesDirectory() &&
@@ -461,6 +466,12 @@
 
 							//Configure project directories
 							case 'd':
+
+								if(!$hasName){
+
+									throw new \LogicException("You must configure project name before configuring the project directories");
+
+								}
 
 								self::configureDirectories($config,$log);
 

@@ -8,7 +8,7 @@
 
 			public function setConnections(Array $connections){
 
-				if(!parent::getAssets()){
+				if(!parent::getConnections()){
 
 					$this->connections	=	Array();
 
@@ -45,6 +45,29 @@
 
 			public function getConnection($type,$name){
 
+				$connections	=	parent::getConnections();	
+
+				$type				=	trim(strtolower($type));
+				$name				=	trim(strtolower($name));
+
+				if(!$connections){
+
+					return NULL;
+
+				}
+
+				foreach($connections as $connection){
+
+					if($connection->getType()==$type && $connection->getName() == $name){
+
+						return $connection;
+
+					}
+
+				}
+
+				return FALSE;
+
 			}
 
 			public function hasConnections(){
@@ -56,6 +79,7 @@
 			public function hasConnectionsOfType($type){
 
 				$connections	=	parent::getConnections();	
+				$type				=	trim(strtolower($type));
 
 				if(!$connections){
 
@@ -65,7 +89,7 @@
 
 				foreach($connections as $connection){
 
-					if(strtolower($connection->getType()) == strtolower($type)){
+					if(strtolower($connection->getConfig()->getType()) == $type){
 
 						return TRUE;
 

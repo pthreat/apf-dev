@@ -1,11 +1,10 @@
 #!/usr/bin/php
 <?php
 
-	set_include_path(realpath(sprintf('%s/../../',__DIR__)));
+	set_include_path(realpath(sprintf('%s/../',__DIR__)));
 
 	require	"boot.php";
 
-	use apf\core\DI;
 	use apf\core\Log;
 	use apf\core\Kernel;
 	use apf\db\adapter\mysql5\Adapter		as	DatabaseAdapter;

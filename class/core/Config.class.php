@@ -107,7 +107,7 @@
 
 				}
 
-				return $this->addValue(new ConfigValue($key,$value));
+				return $this->setValue(new ConfigValue($key,$value));
 
 			}
 
@@ -135,7 +135,7 @@
 
 			}
 
-			public function addValue(ConfigValue $value){
+			public function setValue(ConfigValue $value){
 
 				$setter		=	"set{$value->getName()}";
 
@@ -156,7 +156,6 @@
 					$value->setSecure(TRUE);
 
 				}
-
 
 				$this->values[strtolower($value->getName())]	=	$value;
 
@@ -230,7 +229,7 @@
 
 				foreach($config->values as $value){
 
-					$this->addValue($value);
+					$this->setValue($value);
 
 				}
 
@@ -281,23 +280,32 @@
 
 					$attribute	=	strtolower(substr($method,3));
 
-					if(array_key_exists($attribute,$this->values)){
+					if(!array_key_exists($attribute,$this->values)){
 
-						return ($this->values[$attribute] instanceof \ArrayObject)	?	$this->values[$attribute]	:	$this->values[$attribute]->getValue();
+						return NULL;
 
 					}
 
-					if(!method_exists($this,$method)){
+					return ($this->values[$attribute] instanceof \ArrayObject)	?	$this->values[$attribute]	:	$this->values[$attribute]->getValue();
 
-						throw new \InvalidArgumentException("Undefined configuration attribute \"$attribute\"");
+				}
+
+				$isUnset		=	strtolower(substr($method,0,5)) === 'unset';
+
+				if($isUnset){
+
+					$attribute	=	strtolower(substr($method,5));
+
+					if(array_key_exists($attribute,$this->values)){
+
+						unset($this->values[$attribute]);
+						return;
 
 					}
 
 					return NULL;
 
 				}
-
-				throw new \BadMethodCallException("Method \"$method\" does not exists in this class");
 
 			}
 
