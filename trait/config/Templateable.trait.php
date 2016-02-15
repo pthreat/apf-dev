@@ -12,13 +12,16 @@
 			public function hasTemplate($name){
 			}
 
-			public function removeTemplate(){
+			public function removeTemplate($name){
 			}
 
 			public function getTemplate($name){
 			}
 
 			public function getTemplates(){
+			}
+
+			public function hasTemplates(){
 			}
 
 		}

@@ -4,7 +4,7 @@
 
 		trait Fragmentable{
 
-			public function addFragment(){
+			public function addFragment($fragment){
 			}
 
 			public function removeFragment($name){
@@ -14,6 +14,12 @@
 			}
 
 			public function getFragments(){
+			}
+
+			public function hasFragment($name){
+			}
+
+			public function hasFragments(){
 			}
 
 		}

@@ -7,8 +7,6 @@
 
 		interface Moduleable{
 
-			public function setModulesDirectory(Dir $dir);
-			public function getModulesDirectory();
 			public function addModule(Module $module);
 			public function getModule($name);
 			public function hasModule($name);
