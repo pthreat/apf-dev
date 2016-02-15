@@ -7,19 +7,6 @@
 
 		trait Moduleable{
 
-			public function setModulesDirectory(Dir $dir){
-
-				$this->modulesDirectory	=	$dir;
-				return $this;
-
-			}
-
-			public function getModulesDirectory(){
-
-				return parent::getModulesDirectory();
-
-			}
-
 			public function addModule(Module $module){
 
 				$this->modules[$module->getName()]	=	$module;
@@ -58,7 +45,6 @@
 				return parent::hasKey('modules');
 	
 			}
-
 
 		}
 

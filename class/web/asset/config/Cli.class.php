@@ -5,7 +5,7 @@
 		use \apf\core\Cmd;
 		use \apf\iface\Log							as	LogInterface;
 		use \apf\iface\config\Cli					as	CliConfigInterface;
-		use \apf\iface\web\Assetable				as	AssetableInterface;
+		use \apf\iface\config\web\Assetable		as	AssetableInterface;
 
 		use \apf\web\asset\Css						as	CSSAsset;
 		use \apf\web\asset\Javascript				as	JSAsset;

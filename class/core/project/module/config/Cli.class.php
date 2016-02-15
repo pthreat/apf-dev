@@ -5,6 +5,7 @@
 		use \apf\core\Cmd;
 		use \apf\iface\config\Cli						as	CliConfigInterface;
 		use \apf\core\Project;
+		use \apf\core\project\config\Directories;
 		use \apf\core\project\Config					as	ProjectConfig;
 		use \apf\core\project\Module;
 		use \apf\iface\Log								as	LogInterface;
@@ -17,31 +18,6 @@
 		class Cli implements CliConfigInterface{
 
 			use \apf\traits\config\cli\Nameable;
-			use \apf\traits\config\cli\Templateable;
-
-			public static function configureSubsDirectory(ModuleConfig &$config,LogInterface $log){
-
-				do{
-
-					$log->info('Please specify the subs directory for this module');
-
-					$dir	=	clone($config->getDirectory());
-					$dir->addPath('subs');
-
-					$config->setSubsDirectory(
-													new Dir(
-																Cmd::readWithDefault(
-																							'directory>',
-																							$dir,
-																							$log
-																)
-													)
-					);
-
-
-				}while(!$config->getSubsDirectory());
-
-			}
 
 			/**
 			 *Subs CRUD for a module configuration object
@@ -69,9 +45,21 @@
 
 			}
 
+
+			/**
+			 * Configures a Module configuration object.
+			 *
+			 * @params \apf\core\project\module\Config	$config a module configuration to be edited (optional).
+			 * @params \apf\iface\Log							$log    a log object to display configuration messages.
+			 * @return \apf\core\project\Module				returns a configurated module.
+			 * @return boolean FALSE							if the user aborts the configuration process.
+			 */
+
 			public static function configure(&$config=NULL, LogInterface &$log){
-				
+
+				$isNew	=	$config===NULL;
 				$config	=	new ModuleConfig($config);
+
 				$project	=	$config->getProject();
 
 				if(!$project){
@@ -86,11 +74,24 @@
 
 				}
 
+				$projectConfig	=	$project->getConfig();
+				$isNew			=	!$project->isValidated();
 
 				do{
 
 					Cmd::clear();
-					$log->info('Module configuration');
+
+					$log->logArray(
+										Array(
+												"Project {$projectConfig->getName()}",
+												"modules",
+												$isNew ? 'create' :	'edit',
+												$isNew ? ''			:	" > {$config->getName()}"
+										),
+										' > ',
+										'light_purple'
+					);
+
 					$log->repeat('-',80,'light_purple');
 
 					$hasSubs	=	$config->hasSubs();
@@ -117,15 +118,21 @@
 					switch(strtolower($opt)){
 
 						case 'mn':
+
 							self::configureName($config,$log);
+
 						break;
 
 						case 'md':
-							self::configureDirectories($config,$log);
+
+							Directories::configureDirectories($config,$log);
+
 						break;
 
 						case 'as':
+
 							self::configureSubs($config,$log);
+
 						break;
 
 						case 'b':

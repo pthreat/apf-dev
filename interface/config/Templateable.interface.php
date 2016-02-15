@@ -6,10 +6,12 @@
 
 		interface Templateable{
 
-			public function setTemplatesDirectory(Dir $dir);
-			public function getTemplatesDirectory();
-			public function setFragmentsDirectory(Dir $dir);
-			public function getFragmentsDirectory();
+			public function addTemplate($template);
+			public function hasTemplate($name);
+			public function removeTemplate($name);
+			public function getTemplate($name);
+			public function getTemplates();
+			public function hasTemplates();
 
 		}
 

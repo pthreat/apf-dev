@@ -31,7 +31,9 @@
 			 * CRUD for project modules
 			 */
 
-			public static function configureModules(ProjectConfig &$config,LogInterface &$log){
+			public static function configureModules(Project &$project,LogInterface &$log){
+
+				$projectConfig	=	$project->getConfig();
 
 				do{
 
@@ -44,11 +46,11 @@
 											'N'	=>	'New Module'
 					);
 
-					$hasModules	=	$config->hasModules();
+					$hasModules	=	$projectConfig->hasModules();
 
 					if($hasModules){
 
-						self::listModules($config,$log);
+						self::listModules($projectConfig,$log);
 
 						$options['C']	=	'Copy module';
 						$options['E']	=	'Edit modules';
@@ -80,13 +82,14 @@
 
 							if($hasModules){
 
-								self::editModules($config,$log);
+								self::editModules($projectConfig,$log);
 
 							}
 
 						break;
 
 						case 'c':
+
 							$module	=	self::copyModule($config,$log);
 
 							if($module){
@@ -194,10 +197,9 @@
 
 			/**
 			 *
-			 * List modules that belong to this project.
-			 * A project is break down into modules and subs.
+			 * List modules that belong to a project.
 			 *
-			 * This method allows the end user to view which modules does his project has.
+			 * This method allows the end user to view which modules does the project has assigned.
 			 *
 			 * @params \apf\core\project\Config	A project configuration object
 			 * @params \apf\iface\Log           A log interface so we can display messages and prompts in the command line.
@@ -222,58 +224,12 @@
 
 			}
 
-			/**
-			 *
-			 * Configure the modules  directory, this is the directory where the project modules will live.
-			 * It is a good idea that the modules reside inside the same directory the project is in.
-			 *
-			 * However the end user can choose any other directory of their preference, even outside of the project.
-			 *	This could be a good idea when you have two projects sharing the same modules.
-			 *
-			 * @params \apf\core\project\Config	A project configuration object
-			 * @params \apf\iface\Log           A log interface so we can display messages and prompts in the command line.
-			 *
-			 */
-
-			public static function configureModulesDirectory(ProjectConfig &$config,LogInterface $log){
-
-				do{
-
-					Cmd::clear();
-
-					$log->info('[ Please specify the modules directory for this project ]');
-					$log->repeat('-',80,'light_purple');
-
-					$dir	=	$config->getModulesDirectory();
-
-					if(!$dir){
-
-						$dir	=	clone($config->getDirectory());
-						$dir->addPath('modules');
-
-					}
-
-					$config->setModulesDirectory(
-													new Dir(
-																Cmd::readWithDefault(
-																							'directory>',
-																							$dir,
-																							$log
-																)
-													)
-					);
-
-
-				}while(!$config->getModulesDirectory());
-
-			}
-
 			public static function configureDatabaseConnections(ProjectConfig $config, LogInterface $log){
 
 					do{
 
 						Cmd::clear();
-						$log->debug('[ Database connections ]');
+						$log->debug("[ Configure \"{$config->getName()}'s\" database connections ]");
 						$log->repeat('-',80,'light_purple');
 
 						$options	=	Array(
@@ -397,6 +353,7 @@
 
 				$title	=	$config	?	sprintf('Edit project < %s >',$config->getName())	:	'New project';
 				$config	=	new ProjectConfig($config);
+				$project	=	new Project($config,$validate='none');
 
 				do{
 
@@ -407,7 +364,7 @@
 					$options	=	Array(
 											'N'	=>	'Project name',
 											'D'	=>	Array(
-																'value'	=>	'Directories',
+																'value'	=>	$hasName	?	'Directories'	:	'Directories (Set project name first)',
 																'color'	=>	$hasName	?	'light_cyan'	:	'gray'
 											),
 											'C'	=>	'Connections',
@@ -425,7 +382,7 @@
 
 					$options['M']	=	Array(
 													'color'	=>	$modulesColor,
-													'value'	=>	'Modules'
+													'value'	=>	$enableModulesEntry ? 'Modules' : 'Modules (configure name and directories first)'
 					);
 
 					$options['S']	=	'Save';
@@ -493,7 +450,7 @@
 
 								}
 
-								self::configureModules($config,$log);
+								self::configureModules($project,$log);
 
 							break;
 

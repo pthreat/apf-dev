@@ -68,20 +68,6 @@
 
 			}
 
-			public function setSubsDirectory(Dir $dir){
-
-				$this->subsDirectory	=	$dir;
-
-				return $this;
-
-			}
-
-			public function getSubsDirectory(){
-
-				return parent::getSubsDirectory();
-
-			}
-
 		}
 
 	}

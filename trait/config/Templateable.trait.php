@@ -6,32 +6,19 @@
 
 		trait Templateable{
 
-			public function setFragmentsDirectory(Dir $dir){
-
-				$this->fragmentsDirectory	=	$dir;
-
-				return $this;
-
+			public function addTemplate($template){
 			}
 
-			public function getFragmentsDirectory(){
-
-				return parent::getFragmentsDirectory();
-
+			public function hasTemplate($name){
 			}
 
-			public function setTemplatesDirectory(Dir $dir){
-
-				$this->templatesDirectory	=	$dir;
-
-				return $this;
-
+			public function removeTemplate(){
 			}
 
-			public function getTemplatesDirectory(){
+			public function getTemplate($name){
+			}
 
-				return parent::getTemplatesDirectory();
-
+			public function getTemplates(){
 			}
 
 		}

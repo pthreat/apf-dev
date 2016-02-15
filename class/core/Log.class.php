@@ -161,9 +161,15 @@
 
 			}
 
-			public function repeat($string,$times,$color){
+			public function repeat($string,$times,$color,$type=0){
 
-				return $this->log(str_repeat($string,$times),$color);
+				return $this->log(str_repeat($string,$times),$type,$color);
+
+			}
+
+			public function logArray(Array $array,$separator=',',$color=NULL,$type=0){
+
+				return $this->log(implode($separator,$array),$type,$color);
 
 			}
 

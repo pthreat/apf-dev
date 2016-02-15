@@ -230,7 +230,7 @@
 
 			}
 
-			public function getConfig(){
+			public function &getConfig(){
 
 				return $this->config;
 

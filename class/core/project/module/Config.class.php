@@ -5,17 +5,23 @@
 		use \apf\core\Cmd;
 		use \apf\core\Project;
 		use \apf\core\project\module\Sub;
-		use \apf\core\Directory							as	Dir;
-		use \apf\core\Config 							as BaseConfig;
+		use \apf\core\Directory								as	Dir;
+		use \apf\core\Config 								as BaseConfig;
 
-		use \apf\iface\config\Nameable				as	NameableInterface;
-		use \apf\iface\config\RootDirectory			as	RootDirectoryInterface;
-		use \apf\iface\config\Projectable			as	ProjectableInterface;
-		use \apf\iface\config\Subable					as	SubableInterface;
-		use \apf\iface\config\Templateable			as	TemplateableInterface;
-		use \apf\iface\config\web\Assetable			as	AssetableInterface;
+		use \apf\iface\config\Nameable;
+		use \apf\iface\config\RootDirectory;
 
-		class Config extends BaseConfig implements NameableInterface,RootDirectoryInterface,ProjectableInterface,SubableInterface,TemplateableInterface,AssetableInterface{
+		use \apf\iface\config\Projectable;
+
+		use \apf\iface\config\Subable;
+		use \apf\iface\config\sub\Directories			as	SubDirectories;
+
+		use \apf\iface\config\Templateable;
+		use \apf\iface\config\template\Directories	as	TemplateDirectories;
+
+		use \apf\iface\config\web\Assetable;
+
+		class Config extends BaseConfig implements Nameable,RootDirectory,Projectable,Subable,SubDirectories,Templateable,Assetable{
 
 			use \apf\traits\config\Nameable;
 			use \apf\traits\config\RootDirectory;
