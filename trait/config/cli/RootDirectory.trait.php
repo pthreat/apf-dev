@@ -28,46 +28,62 @@
 
 						$log->info('[ Please specify the root directory ]');
 						$log->repeat('-',80,'light_purple');
-						$log->info('Press \'<\' to go back | Press \'!\' to reset this option');
-						$log->repeat('-',80,'light_purple');
 
-						$dir	=	$config->getRootDirectory();
+						$dir		=	$config->getRootDirectory();
+						$hasDir	=	(boolean)$dir;
 
-						if($dir){
+						if($hasDir){
 
 							$log->success("Current value: {$config->getRootDirectory()}");
 							$log->repeat('-',80,'light_purple');
 
 						}
 
-						if(!$dir){
+						$options	=	Array(
+												'C'	=>	Array(
+																	'value'	=>	sprintf('%s directory (%s)',$hasDir ? 'Change' : 'Set',$dir),
+																	'color'	=>	$hasDir	?	'light_purple'	:	'light_cyan'
+												)
+						);
 
-							$dir	=	new Dir(realpath(getcwd()));
+						if($hasDir){
 
-							if($config instanceof NameableInterface){
-
-								$dir->addPath($config->getName());
-
-							}
-
-						}
-
-						$opt	=	trim(Cmd::readWithDefault('>',$dir,$log));
-
-						if($opt=='<'){
-
-							return;
+							$options['R']	=	Array(
+															'value'	=>	'Reset value',
+															'color'	=>	'light_yellow'
+							);
 
 						}
 
-						if($opt=='!'){
+						$options['B']	=	'Back';
+					
+						$opt	=	Cmd::selectWithKeys($options,'>',$log);
 
-							$config->unsetRootDirectory();
-							continue;
+						switch(strtolower($opt)){
+
+							case 'r':
+								$config->unsetRootDirectory();
+							break;
+
+							case 'c':
+
+								$config->setRootDirectory(
+																	new Dir(
+																				Cmd::readWithDefault(
+																											'>',
+																											$config->getRootDirectory(),
+																											$log
+																				)
+																	)
+								);
+
+							break;
+
+							case 'b':
+								break 2;
+							break;
 
 						}
-
-						$config->setRootDirectory(new Dir($opt));
 
 					}catch(\Exception $e){
 
