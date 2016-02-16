@@ -6,8 +6,8 @@
 
 		interface RootDirectory{
 
-			public function setDirectory(Dir $dir);
-			public function getDirectory();
+			public function setRootDirectory(Dir $dir);
+			public function getRootDirectory();
 
 		}
 

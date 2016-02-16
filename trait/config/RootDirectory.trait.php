@@ -6,16 +6,16 @@
 	
 		trait RootDirectory{
 
-			public function setDirectory(Dir $dir){
+			public function setRootDirectory(Dir $dir){
 
-				$this->directory	=	$dir;
+				$this->rootDirectory	=	$dir;
 				return $this;
 
 			}
 
-			public function getDirectory(){
+			public function getRootDirectory(){
 
-				return parent::getDirectory();
+				return parent::getRootDirectory();
 
 			}
 

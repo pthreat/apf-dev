@@ -8,7 +8,7 @@
 
 			public function setTemplatesDirectory(Dir $dir){
 
-				$this->fragmentsDirectory	=	$dir;
+				$this->templatesDirectory	=	$dir;
 
 				return $this;
 

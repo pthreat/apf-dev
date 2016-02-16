@@ -2,6 +2,8 @@
 
 	namespace apf\traits\config\cli\module{
 
+		use \apf\core\Cmd;
+		use \apf\core\Directory							as	Dir;
 		use \apf\iface\config\module\Directories	as	ModuleDirectoriesInterface;
 		use \apf\iface\Log								as	LogInterface;
 

@@ -272,6 +272,12 @@
 
 			}
 
+			public function hasValues(){
+
+				return sizeof($this->values);
+
+			}
+
 			public function __call($method,$values){
 
 				$isGetter	=	strtolower(substr($method,0,3)) === 'get';

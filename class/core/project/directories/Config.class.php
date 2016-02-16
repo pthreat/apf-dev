@@ -8,7 +8,7 @@
 		use \apf\iface\config\Projectable;
 		use \apf\iface\config\template\Directories	as	TemplateDirectories;
 		use \apf\iface\config\fragment\Directories	as	FragmentDirectories;
-		use \apf\iface\config\modules\Directories		as	ModuleDirectories;
+		use \apf\iface\config\module\Directories		as	ModuleDirectories;
 
 		class Config extends BaseConfig implements RootDirectory,TemplateDirectories,FragmentDirectories,ModuleDirectories{
 

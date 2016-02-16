@@ -2,6 +2,8 @@
 
 	namespace apf\traits\config\cli\fragment{
 
+		use \apf\core\Cmd;
+		use \apf\core\Directory								as	Dir;
 		use \apf\iface\config\fragment\Directories	as	FragmentDirectoriesInterface;
 		use \apf\iface\Log									as	LogInterface;
 

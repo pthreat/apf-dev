@@ -2,6 +2,8 @@
 
 	namespace apf\traits\config\cli{
 
+		use \apf\core\Cmd;
+		use \apf\core\Directory					as	Dir;
 		use \apf\iface\config\RootDirectory	as	RootDirectoryInterface;
 		use \apf\iface\Log						as	LogInterface;
 
@@ -29,11 +31,11 @@
 						$log->info('Press \'<\' to go back | Press \'!\' to reset this option');
 						$log->repeat('-',80,'light_purple');
 
-						$dir	=	$config->getDirectory();
+						$dir	=	$config->getRootDirectory();
 
 						if($dir){
 
-							$log->success("Current value: {$config->getDirectory()}");
+							$log->success("Current value: {$config->getRootDirectory()}");
 							$log->repeat('-',80,'light_purple');
 
 						}
@@ -60,12 +62,12 @@
 
 						if($opt=='!'){
 
-							$config->unsetDirectory();
+							$config->unsetRootDirectory();
 							continue;
 
 						}
 
-						$config->setDirectory(new Dir($opt));
+						$config->setRootDirectory(new Dir($opt));
 
 					}catch(\Exception $e){
 
@@ -74,7 +76,7 @@
 
 					}
 
-				}while(!$config->getDirectory());
+				}while(TRUE);
 
 				return TRUE;
 

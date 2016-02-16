@@ -2,6 +2,8 @@
 
 	namespace apf\traits\config\cli\template{
 
+		use \apf\core\Cmd;
+		use \apf\core\Directory								as	Dir;
 		use \apf\iface\config\template\Directories	as	TemplateDirectoriesInterface;
 		use \apf\iface\Log									as	LogInterface;
 

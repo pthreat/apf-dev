@@ -3,9 +3,13 @@
 	namespace apf\core\project\config{
 
 		use \apf\iface\Log										as	LogInterface;
-		use \apf\core\project\config\cli\Directories;
-		use \apf\core\project\Config;
+
 		use \apf\core\Project;
+		use \apf\core\project\Config;
+
+		use \apf\core\project\Directories					as	ProjectDirectories;
+		use \apf\core\project\directories\Config			as	ProjectDirectoriesConfig;
+
 		use \apf\core\project\Module							as	ProjectModule;
 		use \apf\core\project\module\Config					as	ModuleConfig;
 		use \apf\core\project\module\config\Cli			as	ModuleCli;
@@ -134,59 +138,6 @@
 			}
 
 			public function copyModule(ProjectConfig &$config, LogInterface &$log){
-
-			}
-
-			/**
-			 * Configure project directories.
-			 *
-			 * This interactive menu will allow the end user to configure several project directories.
-			 *
-			 * A) Configure the Project Root directory, this is the base directory where the project will be located.
-			 * B) Configure the DocumentRoot directory, this is the directory that your HTTP server will use as the DocumentRoot
-			 * C) Configure the Templates directory, this is the directory where global templates will be stored.
-			 * D) Configure the fragments directory, this is the directory where global fragments will be stored.
-			 *
-			 * @params \apf\core\project\Config	A project configuration object
-			 * @params \apf\iface\Log           A log interface so we can display messages and prompts in the command line.
-			 *
-			 */
-
-			public static function configureDirectories(ProjectConfig &$config,LogInterface $log){
-
-				if(!$config->getName()){
-
-					throw new \LogicException("Must configure project name first");
-
-				}
-
-				do{
-
-					Cmd::clear();
-
-					$log->info('Configure project directories');
-					$log->repeat('-',80,'light_purple');
-
-					$options	=	Array(
-											'B'	=>	'Back'
-					);
-
-					$options	=	Directories::getDirectoriesMenu($config,Array('B'=>'Back'));
-					$opt		=	Cmd::selectWithKeys($options,'>',$log);
-
-					switch(strtolower($opt)){
-
-						case 'b':
-							break 2;
-						break;
-
-						default:
-							Directories::switchDirectoriesOption($opt,$config,$log);
-						break;
-
-					}
-
-				}while(TRUE);
 
 			}
 
@@ -349,7 +300,7 @@
 
 			}
 
-			public static function configureProject($config,LogInterface $log){
+			public static function configureProject(&$config,LogInterface &$log){
 
 				$title	=	$config	?	sprintf('Edit project < %s >',$config->getName())	:	'New project';
 				$config	=	new ProjectConfig($config);
@@ -372,11 +323,7 @@
 					);
 
 
-					$enableModulesEntry	=	$hasName									&& 
-													$config->getDirectory()				&& 
-													$config->getModulesDirectory()	&& 
-													$config->getTemplatesDirectory() &&
-													$config->getFragmentsDirectory();
+					$enableModulesEntry	=	$hasName	&& $config->getDirectories();
 
 					$modulesColor			=	$enableModulesEntry	?	'yellow'	:	'gray';
 
@@ -426,11 +373,16 @@
 
 								if(!$hasName){
 
-									throw new \LogicException("You must configure project name before configuring the project directories");
+									throw new \LogicException("You must configure the project name before configuring directories");
 
 								}
 
-								self::configureDirectories($config,$log);
+								$projectDirectoriesConfig	=	$config->getDirectories()	?	
+								$project->getDirectories()	:	new ProjectDirectoriesConfig($noConfig=NULL);
+
+								$projectDirectoriesConfig->setProject($project);
+
+								ProjectDirectories::cliConfig($projectDirectoriesConfig,$log);
 
 							break;
 

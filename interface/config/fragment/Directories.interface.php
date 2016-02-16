@@ -1,6 +1,6 @@
 <?php 
 
-	namespace apf\iface\config\fragments{
+	namespace apf\iface\config\fragment{
 
 		use \apf\core\Directory	as	Dir;
 
@@ -11,4 +11,4 @@
 
 		}
 
-	
+	}	
