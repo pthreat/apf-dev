@@ -26,7 +26,6 @@
 			use \apf\traits\config\Networkable;
 			use \apf\traits\config\web\Assetable;
 
-
 			public function getNonExportableAttributes(){
 
 				return Array();

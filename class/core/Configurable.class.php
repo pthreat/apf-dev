@@ -47,7 +47,7 @@
 			*This enforces proper namespace naming for native framework classes and also acts as a sort of "type hint".
 			*/
 
-			protected static function validateConfigurationInstance($config){
+			protected static function validateConfigurationInstance(&$config){
 
 				$childClass		=	strtolower(get_called_class());
 				$configClass	=	sprintf('%s\\Config',$childClass);
@@ -99,7 +99,7 @@
 
 			}
 
-			public static function cliConfig(Config $config=NULL,LogInterface $log=NULL){
+			public static function cliConfig(Config &$config=NULL,LogInterface $log=NULL){
 
 				if(!is_null($config)){
 
@@ -127,9 +127,15 @@
 
 				$return	=	$cliConfigClass::configure($config,$log);
 
-				if(!($return instanceof $calledClass)){
+				if($return === FALSE){
 
-					throw new \InvalidArgumentException("Returned value by cli configuration must be an instance of $calledClass");
+					return FALSE;
+
+				}
+
+				if(!is_a($return,$calledClass)){
+
+					throw new \InvalidArgumentException("Returned value by cli configuration must be an instance of $calledClass or a boolean false value in case of user abort.");
 
 				}
 

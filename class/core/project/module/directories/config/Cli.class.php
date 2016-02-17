@@ -1,27 +1,27 @@
 <?php
 
-	namespace apf\core\project\directories\config{
+	namespace apf\core\project\module\directories\config{
 
-		use \apf\core\Project;
-		use \apf\core\project\Directories					as	ProjectDirectories;
-		use \apf\core\project\directories\Config			as	ProjectDirectoriesConfig;
-		use \apf\iface\Log										as	LogInterface;
-		use \apf\core\project\Config							as	ProjectConfig;
+		use \apf\core\project\Module;
+		use \apf\cpre\project\module\Config						as	ModuleConfig;
+		use \apf\core\project\module\Directories				as	ModuleDirectories;
+		use \apf\core\project\module\directories\Config		as	ModuleDirectoriesConfig;
+		use \apf\iface\Log											as	LogInterface;
 
 		use \apf\core\Cmd;
-		use \apf\core\Directory									as	Dir;
-		use \apf\iface\config\Cli								as	CliConfigInterface;
+		use \apf\core\Directory										as	Dir;
+		use \apf\iface\config\Cli									as	CliConfigInterface;
 
 		class Cli implements CliConfigInterface{
 
 			use \apf\traits\config\cli\RootDirectory;
-			use \apf\traits\config\cli\module\Directories;
+			use \apf\traits\config\cli\sub\Directories;
 			use \apf\traits\config\cli\template\Directories;
 			use \apf\traits\config\cli\fragment\Directories;
 
-			private static function setDefaults(ProjectDirectoriesConfig $config){
+			private static function setDefaults(ModuleDirectoriesConfig $config){
 
-				$projectConfig	=	$config->getProject()->getConfig();
+				$moduleConfig	=	$config->getModule()->getConfig();
 
 				if($config->getRootDirectory()){
 
@@ -30,12 +30,12 @@
 				}else{
 
 					$mainDir		=	new Dir(realpath(getcwd()));
-					$mainDir->addPath($projectConfig->getName());
+					$mainDir->addPath($moduleConfig->getName());
 
 				}
 
-				$modulesDir	=	clone($mainDir);
-				$modulesDir->addPath('modules');
+				$subsDir	=	clone($mainDir);
+				$subsDir->addPath('modules');
 
 				$templatesDir	=	clone($mainDir);
 				$templatesDir->addPath('templates');
@@ -44,46 +44,38 @@
 				$fragmentsDir->addPath('fragments');
 
 				$config->setRootDirectory($mainDir);
-				$config->setModulesDirectory($modulesDir);
+				$config->setSubsDirectory($subsDir);
 				$config->setTemplatesDirectory($templatesDir);
 				$config->setFragmentsDirectory($fragmentsDir);
 
 			}
 
-			public function resetConfiguration(&$config){
-
-				$config->unsetRootDirectory();
-				$config->unsetModulesDirectory();
-				$config->unsetFragmentsDirectory();
-				$config->unsetTemplatesDirectory();
-
-			}
-
 			/**
-			 * Configure project directories.
+			 * Configure module directories.
 			 *
-			 * This interactive menu will allow the end user to configure several project directories.
+			 * This interactive menu will allow the end user to configure several module directories.
 			 *
-			 * A) Configure the Project	directory, this is the base directory where the project will be located.
-			 * B) Configure the Modules	directory, this is the directory where modules will be in.
+			 * A) Configure the Module		directory, this is the base directory where the module will be located.
+			 * B) Configure the Subs		directory, this is the directory where modules will be in.
 			 * C) Configure the Templates directory, this is the directory where global templates will be stored.
 			 * D) Configure the Fragments directory, this is the directory where global fragments will be stored.
 			 *
-			 * @params \apf\core\project\Config			A project configuration object
-			 * @params \apf\iface\Log						A log interface to display messages and prompts in the command line.
-			 *	@return \apf\core\project\Directories	A configured project directories object.
+			 * @params \apf\core\project\module\directories\Config	A module directories configuration object.
+			 * @params \apf\iface\Log											A log interface to display messages and prompts in the command line.
+			 *	@return \apf\core\project\module\Directories				A configured module directories object.
+			 *	@return boolean	FALSE											If the user aborts the configuration process.
 			 *
 			 */
 
 			public static function configure(&$config=NULL, LogInterface &$log){
 
-				$config	=	new ProjectDirectoriesConfig($config);
+				$config	=	new ModuleDirectoriesConfig($config);
 
 				do{
 
 					try{
 
-						$allConfigured	=	$config->getRootDirectory() && $config->getFragmentsDirectory() && $config->getTemplatesDirectory() && $config->getModulesDirectory();
+						$allConfigured	=	$config->getRootDirectory() && $config->getFragmentsDirectory() && $config->getTemplatesDirectory() && $config->getSubsDirectory();
 
 						$menu				=	Array(
 															'R'	=>	Array(
@@ -98,39 +90,21 @@
 																				'value'	=>	sprintf('Configure fragments directory (%s)',$config->getFragmentsDirectory()),
 																				'color'	=>	$config->getFragmentsDirectory() ? 'light_purple'	:	'light_cyan'
 															),
-															'M'	=>	Array(
-																				'value'	=>	sprintf('Configure modules directory (%s)',$config->getModulesDirectory()),
-																				'color'	=>	$config->getModulesDirectory() ? 'light_purple'	:	'light_cyan'
+															'U'	=>	Array(
+																				'value'	=>	sprintf('Configure subs directory (%s)',$config->getSubsDirectory()),
+																				'color'	=>	$config->getSubsDirectory() ? 'light_purple'	:	'light_cyan'
 															),
-															'L'	=>	Array(
-																				'value'	=>	'Load defaults',
-																				'color'	=>	$allConfigured	?	'yellow'			:	'light_green'
-															)
-						);
-
-
-						if($config->hasValuesExcept('project')){
-
-							$menu['E']	=	Array(
-														'value'	=>	'Reset configuration',
-														'color'	=>	$allConfigured	?	'red'				:	'yellow'
-							);
-
-						}
-
-						$menu['S']	=	Array(
-													'value'	=>	'Save',
-													'color'	=>	$allConfigured	?	'light_green'	:	'yellow',
-						);
-
-						$menu['B']	=	Array(
-													'value'	=>	'Back',
-													'color'	=>	$allConfigured	?	'light_cyan'	:	'yellow'
+															'D'	=>	Array(
+																				'value'	=>	'Set defaults',
+																				'color'	=>	$allConfigured	?	'yellow'	:	'light_green'
+															),
+															'S'	=>	'Save',
+															'B'	=>	'Back'
 						);
 
 						Cmd::clear();
 
-						$log->debug("[ Configure project directories ]");
+						$log->debug("[ Configure module directories ]");
 
 						$log->repeat('-',80,'light_purple');
 
@@ -156,19 +130,9 @@
 
 							break;
 
-							case 'm':
+							case 'u':
 
-								self::configureModuleDirectories($config,$log);
-
-							break;
-
-							case 'e':
-
-								if($config->hasValues() && Cmd::yesNo('Are you sure you want to reset the entire configuration?',$log)){
-
-									self::resetConfiguration($config);
-
-								}
+								self::configureSubDirectories($config,$log);
 
 							break;
 
@@ -176,7 +140,7 @@
 
 								try{
 
-									return new ProjectDirectories($config,$validate='soft');
+									return new ModuleDirectories($config);
 
 								}catch(\Exception $e){
 	
@@ -190,7 +154,8 @@
 
 							break;
 
-							case 'l':
+
+							case 'd':
 
 								if($allConfigured){
 
@@ -206,10 +171,9 @@
 							case 'b':
 
 								//No values, assume safe "back"
+								if(!$config->hasValues()){
 
-								if(!$config->hasValues()||$allConfigured){
-
-									return FALSE;
+									break 2;
 
 								}
 
@@ -217,7 +181,7 @@
 
 								if(Cmd::yesNo("Are you sure you want to go back without saving?",$log)){
 
-									return FALSE;
+									break 2;
 
 								}
 

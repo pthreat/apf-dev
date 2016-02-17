@@ -34,7 +34,7 @@
 
 
 		$log				=	new Log();
-		$config			=	Project::cliConfig(NULL,$log);
+		$config			=	Project::cliConfig($conf=NULL,$log);
 		die();
 
 		$connection		=	DatabaseConnection::interactiveConfig($log);

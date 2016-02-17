@@ -272,9 +272,59 @@
 
 			}
 
-			public function hasValues(){
+			public function hasValue($name){
+
+				return array_key_exists($name,$this->values);
+
+			}
+
+			public function hasValues(Array $specificValues=Array()){
+
+				if($specificValues){
+
+					foreach($specificValues as $key=>$value){
+
+						if(!$this->hasValue($key)){
+
+							return FALSE;
+
+						}
+
+					}
+
+				}
 
 				return sizeof($this->values);
+
+			}
+
+			public function hasValuesExcept($values){
+
+				if(!is_array($values)){
+
+					$values	=	Array($values);
+
+				}
+
+				if(!$this->hasValues()){
+
+					return FALSE;
+
+				}
+
+				foreach($this->values as $key=>$value){
+
+					if(in_array($key,$values)){
+
+						continue;
+
+					}
+
+					return TRUE;
+
+				}
+
+				return FALSE;
 
 			}
 
@@ -286,7 +336,7 @@
 
 					$attribute	=	strtolower(substr($method,3));
 
-					if(!array_key_exists($attribute,$this->values)){
+					if(!$this->hasValue($attribute)){
 
 						return NULL;
 

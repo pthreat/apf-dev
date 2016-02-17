@@ -1,6 +1,6 @@
 <?php
 
-	namespace apf\core\project\directories\config{
+	namespace apf\core\project\module\directories\config{
 
 		use \apf\core\config\Validator	as	BaseValidator;
 
@@ -24,7 +24,7 @@
 
 				//Validate modules directory
 
-				if(!$config->getModulesDirectory()){
+				if(!$config->getSubsDirectory()){
 
 					throw new \LogicException("The modules directory has not been set");
 
@@ -55,7 +55,7 @@
 
 				$directories	=	Array(
 												'root'		=>	$config->getRootDirectory(),
-												'modules'	=>	$config->getModulesDirectory(),
+												'subs'		=>	$config->getSubsDirectory(),
 												'templates'	=>	$config->getTemplatesDirectory(),
 												'fragments'	=>	$config->getFragmentsDirectory(),
 				);
@@ -64,7 +64,7 @@
 
 					if(!$directory->exists()){
 
-						throw new \LogicException("The $description directory \"$directory\" directory does not exists");
+						throw new \LogicException("The $description directory \"$directory\" does not exists");
 
 					}
 

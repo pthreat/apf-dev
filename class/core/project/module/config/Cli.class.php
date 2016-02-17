@@ -97,12 +97,12 @@
 					$hasSubs	=	$config->hasSubs();
 
 					$options	=	Array(
-											'MN'	=>	Array(
+											'N'	=>	Array(
 																'value'	=>	sprintf('%s module name (%s)',$config->getName() ? 'Change' : 'Set', $config->getName()),
 																'color'	=>	$config->getName()	?	'light_purple'	:	'light_cyan'
 											),
-											'MD'	=>	"Configure module directories",
-											'CS'	=>	"Configure subs"
+											'D'	=>	"Configure module directories",
+											'S'	=>	"Configure subs"
 					);
 
 					if($hasSubs){
@@ -117,19 +117,19 @@
 
 					switch(strtolower($opt)){
 
-						case 'mn':
+						case 'n':
 
 							self::configureName($config,$log);
 
 						break;
 
-						case 'md':
+						case 'd':
 
-							Directories::configureDirectories($config,$log);
+							Directories::cliConfig($config,$log);
 
 						break;
 
-						case 'as':
+						case 's':
 
 							self::configureSubs($config,$log);
 

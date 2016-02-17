@@ -50,7 +50,7 @@
 
 							$options['R']	=	Array(
 															'value'	=>	'Reset value',
-															'color'	=>	'light_yellow'
+															'color'	=>	'yellow'
 							);
 
 						}

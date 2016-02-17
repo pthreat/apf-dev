@@ -10,7 +10,7 @@
 		use \apf\iface\config\fragment\Directories	as	FragmentDirectories;
 		use \apf\iface\config\module\Directories		as	ModuleDirectories;
 
-		class Config extends BaseConfig implements RootDirectory,TemplateDirectories,FragmentDirectories,ModuleDirectories{
+		class Config extends BaseConfig implements Projectable,RootDirectory,TemplateDirectories,FragmentDirectories,ModuleDirectories{
 
 			use \apf\traits\config\Projectable;
 			use \apf\traits\config\RootDirectory;
@@ -20,7 +20,9 @@
 
 			public function getNonExportableAttributes(){
 
-				return Array();
+				return Array(
+								'project'
+				);
 
 			}
 

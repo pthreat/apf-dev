@@ -8,13 +8,13 @@
 
 			public function setDirectories(ProjectDirectories $projectDirectories){
 
-				$this->projectDirectories	=	$projectDirectories;
+				$this->directories	=	$projectDirectories;
 
 			}
 
-			public function getProjectDirectories(){
+			public function getDirectories(){
 
-				return parent::getProjectDirectories();
+				return parent::getDirectories();
 
 			}
 

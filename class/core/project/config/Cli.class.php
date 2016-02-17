@@ -312,11 +312,16 @@
 
 					$hasName	=	$config->getName();
 
+					$directoriesConfigured	=	$config->getDirectories()&&$config->getDirectories()->isValidated();
+
 					$options	=	Array(
-											'N'	=>	'Project name',
+											'N'	=>	Array(
+																'value'	=>	sprintf('Project name (%s)',$hasName	?	$config->getName()	:	''),
+																'color'	=>	$hasName	?	'light_green'	:	'yellow'
+											),
 											'D'	=>	Array(
-																'value'	=>	$hasName	?	'Directories'	:	'Directories (Set project name first)',
-																'color'	=>	$hasName	?	'light_cyan'	:	'gray'
+																'value'	=>	sprintf('Directories %s',$directoriesConfigured	?	'(configured)' : $hasName	?	''	:	'(Set project name first)'),
+																'color'	=> $directoriesConfigured	? 'light_green'	:	($hasName	?	'yellow'	:	'gray')
 											),
 											'C'	=>	'Connections',
 											'A'	=>	'Assets',
@@ -378,11 +383,17 @@
 								}
 
 								$projectDirectoriesConfig	=	$config->getDirectories()	?	
-								$project->getDirectories()	:	new ProjectDirectoriesConfig($noConfig=NULL);
+								$config->getDirectories()->getConfig()	:	new ProjectDirectoriesConfig($noConfig=NULL);
 
 								$projectDirectoriesConfig->setProject($project);
 
-								ProjectDirectories::cliConfig($projectDirectoriesConfig,$log);
+								$projectDirectoriesConfig	=	ProjectDirectories::cliConfig($projectDirectoriesConfig,$log);
+
+								if($projectDirectoriesConfig){
+
+									$config->setDirectories($projectDirectoriesConfig);
+
+								}
 
 							break;
 
