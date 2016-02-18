@@ -83,7 +83,10 @@
 
 					try{
 
-						$allConfigured	=	$config->getRootDirectory() && $config->getFragmentsDirectory() && $config->getTemplatesDirectory() && $config->getModulesDirectory();
+						$allConfigured	=	$config->getRootDirectory()		&& 
+												$config->getFragmentsDirectory() && 
+												$config->getTemplatesDirectory() && 
+												$config->getModulesDirectory();
 
 						$menu				=	Array(
 															'R'	=>	Array(
