@@ -27,6 +27,7 @@
 			use \apf\traits\config\RootDirectory;
 			use \apf\traits\config\Projectable;
 			use \apf\traits\config\Subable;
+			use \apf\traits\config\sub\Directories;
 			use \apf\traits\config\Templateable;
 			use \apf\traits\config\web\Assetable;
 

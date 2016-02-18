@@ -1,6 +1,6 @@
 <?php
 
-	namespace apf\traits\config\subs{
+	namespace apf\traits\config\sub{
 
 		use \apf\core\Directory					as	Dir;
 

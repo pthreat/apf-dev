@@ -10,7 +10,7 @@
 		use \apf\core\project\Directories					as	ProjectDirectories;
 		use \apf\core\project\directories\Config			as	ProjectDirectoriesConfig;
 
-		use \apf\core\project\Module							as	ProjectModule;
+		use \apf\core\project\Module							as	Module;
 		use \apf\core\project\module\Config					as	ModuleConfig;
 		use \apf\core\project\module\config\Cli			as	ModuleCli;
 		use \apf\core\project\Config							as	ProjectConfig;
@@ -72,7 +72,8 @@
 
 							$moduleConfig	=	new ModuleConfig();
 							$moduleConfig->setProject($project);
-							$module			=	ModuleCli::configure($moduleConfig,$log);
+
+							$module			=	Module::cliConfig($moduleConfig,$log);
 
 							if($module){
 

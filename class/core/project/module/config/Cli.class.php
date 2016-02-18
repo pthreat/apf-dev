@@ -2,18 +2,21 @@
 
 	namespace apf\core\project\module\config{
 
-		use \apf\core\Cmd;
-		use \apf\iface\config\Cli						as	CliConfigInterface;
+		use \apf\iface\config\Cli								as	CliConfigInterface;
+		use \apf\iface\Log										as	LogInterface;
+
 		use \apf\core\Project;
-		use \apf\core\project\config\Directories;
-		use \apf\core\project\Config					as	ProjectConfig;
+		use \apf\core\project\module\Directories;
+		use \apf\core\project\module\directories\config	as	DirectoriesConfig;
+
+		use \apf\core\project\Config							as	ProjectConfig;
 		use \apf\core\project\Module;
-		use \apf\iface\Log								as	LogInterface;
-		use \apf\core\project\module\Config			as	ModuleConfig;
-		use \apf\core\project\module\config\Cli	as	ModuleCli;
+		use \apf\core\Cmd;
+		use \apf\core\project\module\Config					as	ModuleConfig;
+		use \apf\core\project\module\config\Cli			as	ModuleCli;
 		use \apf\core\project\module\Sub;
-		use \apf\core\project\module\sub\Config	as	SubConfig;
-		use \apf\core\Directory							as	Dir;
+		use \apf\core\project\module\sub\Config			as	SubConfig;
+		use \apf\core\Directory									as	Dir;
 
 		class Cli implements CliConfigInterface{
 
@@ -75,7 +78,7 @@
 				}
 
 				$projectConfig	=	$project->getConfig();
-				$isNew			=	!$project->isValidated();
+				$module			=	new Module($config,$validate='none');
 
 				do{
 
@@ -125,7 +128,24 @@
 
 						case 'd':
 
-							Directories::cliConfig($config,$log);
+							if(!$config->getName()){
+
+								throw new \LogicException("You must configure the module name before configuring directories");
+
+							}
+
+							$moduleDirectoriesConfig	=	$config->getDirectories()	?	
+							$config->getDirectories()->getConfig()	:	new DirectoriesConfig($noConfig=NULL);
+
+							$moduleDirectoriesConfig->setModule($module);
+
+							$moduleDirectoriesConfig	=	Directories::cliConfig($moduleDirectoriesConfig,$log);
+
+							if($moduleDirectoriesConfig){
+
+								$config->setDirectories($moduleDirectoriesConfig);
+
+							}
 
 						break;
 
