@@ -1,8 +1,8 @@
 <?php
 
-	namespace apf\traits\config\web{
+	namespace apf\traits\config{
 	
-		use \apf\web\core\Route;
+		use \apf\core\Route;
 		use \apf\core\Config;
 
 		trait Routeable{
@@ -17,7 +17,7 @@
 
 				foreach($routes as $key=>$route){
 
-					if(!is_a($route,'\\apf\\web\\core\\Route')){
+					if(!is_a($route,'\\apf\\core\\Route')){
 
 						throw new \InvalidArgumentException("Given array element ($key) is not an Route");
 

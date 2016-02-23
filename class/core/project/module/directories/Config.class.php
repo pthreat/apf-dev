@@ -4,7 +4,7 @@
 
 		use \apf\core\Config									as BaseConfig;
 
-		use \apf\core\Module;
+		use \apf\core\project\Module;
 		use \apf\iface\config\RootDirectory;
 		use \apf\iface\config\template\Directories	as	TemplateDirectories;
 		use \apf\iface\config\fragment\Directories	as	FragmentDirectories;

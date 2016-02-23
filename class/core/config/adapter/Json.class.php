@@ -1,11 +1,12 @@
 <?php
 
-	namespace core\config\adapter{
+	namespace apf\core\config\adapter{
 
-		use core\Config;	
-		use core\config\Section;
+		use \apf\core\Config;	
+		use \apf\core\config\Section;
+		use \apf\core\config\Adapter;
 
-		class Json{
+		class Json extends Adapter{
 
 			public static function exportSection(Section $section){
 
@@ -38,6 +39,12 @@
 				}
 
 				return $str;
+
+			}
+
+			public function parse(){
+
+				return json_decode(file_get_contents($this->getFile()),$assoc=TRUE);
 
 			}
 

@@ -39,9 +39,35 @@
 			}
 
 			/**
+			 * The factory method takes as the first parameter any of the following arguments:
+			 * An Array
+			 * A File instance
+			 * A string: In the case of a string, this will assume that the given string is the path to a configuration file.
+			 *
+			 * The purpose of this method is to return a properly configured configurable object. No redundancy or pun intended.
+			 *
+			 *	@param	Array							An array containing corresponding configuration entries for this configurable object
+			 *	@param	String						A path to a file containing configuration entries for this configurable object
+			 *	@param	\apf\core\File				A File object that points to a file.
+			 *
+			 * @return	\apf\core\Configurable	the pertinent configurable object, i.e an instance of the child class that extends this class.
+			 */
+
+			public static function factory($config){
+
+				$configObject	=	self::getConfigurationInstance();
+				$configObject->import($config);
+				
+				$returnClass	=	get_called_class();
+
+				return new $returnClass($configObject);
+
+			}
+
+			/**
 			*
 			*Validates that the passed configuration instance responds to the proper configuration class
-			*
+
 			*@example The \apf\core\Project class extends to the Configurable class. This will validate
 			*that the passed instance is of class \apf\core\project\Config.
 			*This enforces proper namespace naming for native framework classes and also acts as a sort of "type hint".

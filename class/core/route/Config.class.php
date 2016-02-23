@@ -1,65 +1,21 @@
 <?php
 
-	namespace apf\web\core\route{
+	namespace apf\core\route{
 
-		use \apf\core\Cmd;
+		use \apf\core\Project;
+		use \apf\core\project\Module;
+		use \apf\core\project\module\Sub;
 		use \apf\web\core\controller\Action;
+
 		use \apf\core\Config	as	BaseConfig;
 
 		class Config extends BaseConfig{
 
-			/**
-			*Route short name 
-			*example userRegistration
-			*/
-			public function setName($name){
+			use \apf\traits\config\Nameable;
+			use \apf\traits\config\Describable;
 
-				$name	=	trim($name);
-
-				if(empty($name)){
-
-					throw new \InvalidArgumentException("Route name can not be empty");
-
-				}
-
-				$this->name	=	$name;
-
-				return $this;
-
-			}
-
-			public function getName(){
-
-				return parent::getName();
-
-			}
-
-			/**
-			* Brief description of a route for debugging purpouses
-			* for instance: "This is the route that is triggered for user registration"
-			*/
-
-			public function setDescription($description){
-
-				$description	=	trim($description);
-
-				if(empty($description)){
-
-					throw new \InvalidArgumentException("Route description can not be empty");
-
-				}
-
-				$this->description	=	$description;
-
-				return $this;
-
-			}
-
-			public function getDescription(){
-
-				return parent::getDescription();
-
-			}
+			use \apf\traits\config\Moduleable;
+			use \apf\traits\config\Subable;
 
 			/**
 			* Route path: Note that this is only the route path.
@@ -79,6 +35,7 @@
 				}
 
 				$this->path	=	$path;
+				return $this;
 
 			}
 
@@ -88,7 +45,7 @@
 
 			}
 
-			/**
+			/*
 			* A route is always associated with an action
 			* an action is associated to a controller
 			* a controller is associated to a sub

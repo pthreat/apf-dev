@@ -2,25 +2,60 @@
 
 	namespace apf\core {
 
+
+		use \apf\core\Directory	as	Dir;
+
 		class File implements \Iterator{
 
-			private	$_dirname		=	NULL;
-			private	$_file			=	NULL;
-			private	$_contents		=	NULL;
+			private	$_dirname				=	NULL;
+			private	$_file					=	NULL;
+			private	$_contents				=	NULL;
 
-			private	$_fp				=	NULL;
-			private	$_line			=	NULL;
-			private	$_fetchTimes	=	NULL;
-			private	$_readFn			=	"fread";
-			private	$_isTemporary	=	NULL;
+			private	$_fp						=	NULL;
+			private	$_line					=	NULL;
+			private	$_fetchTimes			=	NULL;
+			private	$_readFn					=	"fread";
+			private	$_isTemporary			=	NULL;
+			private	$_directoryValidated	=	FALSE;
+			private	$_writeMode				=	'w';
 
 			public function __construct($file=NULL){
 
 				if(!is_null($file)){
 
-					$this->setFilename($file);
+					$this->setFileName($file);
 
 				}
+
+			}
+
+			public static function getInstance($file){
+
+				if($file instanceof File){
+
+					return $file;
+
+				}
+
+				return new static(sprintf('%s',$file));
+
+			}
+
+			public function getDirectory(){
+
+				if(!$this->_dirname){
+
+					throw new \Exception("File name has not been set, can not determine parent directory");
+
+				}
+
+				return new Dir($this->_dirname);
+
+			}
+
+			public function getExtension(){
+
+				return strtolower(substr($this->_file,strrpos($this->_file,'.')+1));
 
 			}
 
@@ -237,11 +272,47 @@
 
 			}
 
+			private function validateDirectory(){
+
+				if($this->_directoryValidated){
+
+					return;
+
+				}
+
+				$directory	=	$this->getDirectory();
+
+				if(!$directory->exists()){
+
+					$directory->create();
+
+				}
+
+				return $this->_directoryValidated	=	TRUE;
+
+			}
+
+			public function setWriteMode($mode){
+
+				$this->_writeMode	=	$mode;
+				return $this;
+
+			}
+
+			public function getWriteMode(){
+
+				return $this->_writeMode;
+
+			}
+
 			public function write($content){
+
+				$this->validateDirectory();
 
 				if(!$this->_fp){
 
-					$this->open('w');
+
+					$this->open($this->_writeMode);
 
 				}
 
@@ -264,7 +335,9 @@
 			}
 
 			public function dirname(){
+
 				return $this->_dirname;
+
 			}
 
 			public function basename(){

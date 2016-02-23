@@ -1,6 +1,6 @@
 <?php
 
-	namespace apf\core\project\config{
+	namespace apf\core\kernel\config{
 
 		use \apf\core\config\Validator	as	BaseValidator;
 
@@ -10,17 +10,9 @@
 
 				//Validate project name
 
-				if(!$config->getName()){
+				if(!$config->getProject()){
 
-					throw new \LogicException("The project name is invalid");
-
-				}
-
-				//Validate project directory
-
-				if(!$config->getDirectories()){
-
-					throw new \LogicException("Project directories have not been set");
+					throw new \LogicException("Current kernel has no assigned project");
 
 				}
 

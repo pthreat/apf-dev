@@ -7,6 +7,7 @@
 	namespace apf\core{
 
 		use \apf\core\config\Value as ConfigValue;
+		use \apf\core\config\Adapter;
 
 		abstract class Config implements \Iterator{
 
@@ -60,16 +61,6 @@
 			}
 
 			public function toArray(){
-
-				$default	=	self::getDefaultInstance();
-
-				if(!($default instanceof Config)){
-
-					throw new \LogicException("The getDefaultInstance method must return a Config Object");
-
-				}
-
-				$values	=	Array();
 
 				foreach($default as $value){
 
@@ -163,17 +154,6 @@
 
 			}
 
-			protected function initMultipleAttribute($name){
-
-				if($this->hasKey($name)){
-					return;
-				}
-
-				$this->values[$name]	=	Array();
-				return $this;
-
-			}
-
 			public function getValues(){
 
 				return $this->values;
@@ -260,6 +240,18 @@
 				$exportClass	=	self::__getAdapter($format);
 
 				return $exportClass::export($this);
+
+			}
+
+			public function import($file){
+
+				$config		=	Adapter::factory($file);
+
+				foreach($config->parse() as $key=>$value){
+
+					$this->$key	=	$value;
+
+				}
 
 			}
 
@@ -362,6 +354,8 @@
 					return NULL;
 
 				}
+
+				throw new \BadMethodCallException("No such method \"$method\"");
 
 			}
 

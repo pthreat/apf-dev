@@ -71,7 +71,9 @@
 					$selected	=	strtolower(trim(self::readInput($prompt,$log),"\r\n"));
 
 					if($amountOfOptions==1 && $selected==''){
+
 						return $options[0];
+
 					}
 
 					foreach($options as $opt){

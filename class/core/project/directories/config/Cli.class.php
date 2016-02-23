@@ -38,7 +38,7 @@
 
 			public static function configure(&$config=NULL, LogInterface &$log){
 
-				$config	=	new ProjectDirectoriesConfig($config);
+				$config		=	new ProjectDirectoriesConfig($config);
 				$extraMenus	=	Array('back','save','defaults','reset');
 
 				do{

@@ -32,6 +32,12 @@
 
 			}
 
+			public function hasFile($name){
+
+				return file_exists(sprintf('%s%s%s',$this->_directory,DIRECTORY_SEPARATOR,$name));
+
+			}
+
 			public function exists(){
 
 				return is_dir($this->_directory);

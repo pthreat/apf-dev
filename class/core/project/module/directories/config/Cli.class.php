@@ -19,7 +19,7 @@
 			use \apf\traits\config\cli\template\Directories;
 			use \apf\traits\config\cli\fragment\Directories;
 
-			private static function setDefaults(ModuleDirectoriesConfig $config){
+			private static function setDefaults(ModuleDirectoriesConfig $config,$baseDirectory=NULL){
 
 				$moduleConfig	=	$config->getModule()->getConfig();
 

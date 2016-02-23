@@ -3,7 +3,6 @@
 	namespace apf\core{
 
 		use \apf\iface\Log						as	LogInterface;
-		use \apf\core\project\Config;
 		use \apf\core\project\Module			as	ProjectModule;
 		use \apf\core\project\module\Config	as	ModuleConfig;
 		use \apf\core\project\Config			as	ProjectConfig;

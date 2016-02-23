@@ -7,7 +7,7 @@
 
 		use \apf\core\Project;
 		use \apf\core\project\module\Directories;
-		use \apf\core\project\module\directories\config	as	DirectoriesConfig;
+		use \apf\core\project\module\directories\Config	as	DirectoriesConfig;
 
 		use \apf\core\project\Config							as	ProjectConfig;
 		use \apf\core\project\Module;
@@ -134,16 +134,16 @@
 
 							}
 
-							$moduleDirectoriesConfig	=	$config->getDirectories()	?	
+							$directoriesConfig	=	$config->getDirectories()	?	
 							$config->getDirectories()->getConfig()	:	new DirectoriesConfig($noConfig=NULL);
 
-							$moduleDirectoriesConfig->setModule($module);
+							$directoriesConfig->setModule($module);
 
-							$moduleDirectoriesConfig	=	Directories::cliConfig($moduleDirectoriesConfig,$log);
+							$directoriesConfig	=	Directories::cliConfig($directoriesConfig,$log);
 
-							if($moduleDirectoriesConfig){
+							if($directoriesConfig){
 
-								$config->setDirectories($moduleDirectoriesConfig);
+								$config->setDirectories($directoriesConfig);
 
 							}
 

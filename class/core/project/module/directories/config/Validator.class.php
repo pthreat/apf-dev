@@ -8,9 +8,9 @@
 
 			protected static function __softConfigValidation($config){
 
-				if(!$config->getProject()){
+				if(!$config->getModule()){
 
-					throw new \LogicException("Project has not been set for project directories configuration object.");
+					throw new \LogicException("A Module object has not been set for the directories configuration object.");
 
 				}
 
@@ -26,7 +26,7 @@
 
 				if(!$config->getSubsDirectory()){
 
-					throw new \LogicException("The modules directory has not been set");
+					throw new \LogicException("The subs directory has not been set");
 
 				}
 

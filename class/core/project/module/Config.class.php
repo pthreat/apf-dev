@@ -19,16 +19,24 @@
 		use \apf\iface\config\Templateable;
 		use \apf\iface\config\template\Directories	as	TemplateDirectories;
 
+		use \apf\iface\config\Fragmentable;
+		use \apf\iface\config\template\Directories	as	FragmentDirectories;
+
 		use \apf\iface\config\web\Assetable;
 
-		class Config extends BaseConfig implements Nameable,RootDirectory,Projectable,Subable,SubDirectories,Templateable,Assetable{
+		class Config extends BaseConfig implements Nameable,RootDirectory,Projectable,Subable,SubDirectories,Templateable,Fragmentable,Assetable{
 
 			use \apf\traits\config\Nameable;
+
 			use \apf\traits\config\RootDirectory;
+
 			use \apf\traits\config\Projectable;
+
 			use \apf\traits\config\Subable;
 			use \apf\traits\config\sub\Directories;
+
 			use \apf\traits\config\Templateable;
+			use \apf\traits\config\Fragmentable;
 			use \apf\traits\config\web\Assetable;
 
 			public function getNonExportableAttributes(){
