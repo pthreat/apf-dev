@@ -1,2 +1,1 @@
-{input[inputVar]}
-{select[selectVar]}
+{input:inputVar['>']}

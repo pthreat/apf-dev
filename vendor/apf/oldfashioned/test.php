@@ -1,6 +1,6 @@
 <?php
 
-	require '/usr/share/apf-dev/boot.php';
+	require '../../../boot.php';
 	require './class/Engine.class.php';
 
 	use \apf\core\Kernel;

@@ -2,13 +2,16 @@
 
 	namespace oldfashioned{
 	
-		use \apf\iface\template\Engine	as	EngineInterface;
 		use \apf\core\Cmd;
+		use \apf\core\Log;
 		use \apf\core\File;
+		use \apf\iface\template\Engine	as	EngineInterface;
 
 		class Engine implements EngineInterface{
 
 			private $_templates	=	Array();
+
+			use \apf\traits\Logable;
 
 			public function setVar($name,$value){
 
@@ -68,10 +71,21 @@
 
 					}
 
+					$colonPosition	=	strpos($match,':');
+
+					if($colonPosition === FALSE){
+
+						throw new \Exception("No variable assigned at line $number");
+
+					}
+
+
+					$name			=	substr($match,$colonPosition+1);
 					$type			=	substr($match,0,$openBracketPosition);
 					$arguments	=	substr($match,$openBracketPosition+1,-1);
 
 					$matches[]	=	Array(
+												'name'		=>	$name,
 												'type'		=>	$type,
 												'arguments'	=>	explode(',',$arguments)
 					);
@@ -95,20 +109,54 @@
 				$template	=	new File($template);
 				$template->setReadFunction('fgets');
 
+				$matches		=	Array();	
+			
 				foreach($template as $number=>$line){
 
-					$matches	=	$this->parseLine($line,$number);
-					var_dump($matches);
+					$matches[]	=	$this->parseLine($line,$number);
 
 				}
+
+				return $matches;
 
 			}
 
 			public function render(){
 
+				if($this->log === NULL){
+
+					$this->setLog(new Log());
+
+				}
+
 				foreach($this->_templates as $template){
 
-					$this->parse($template);
+					$varsInTemplate	=	$this->parse($template);
+
+					if(!$varsInLine){
+
+
+
+					}
+
+					foreach($varsInTemplate as $vars){
+
+						foreach($vars as $var){
+
+							switch($var['type']){
+
+								case 'input':
+									$this->$var['name'] = Cmd::readInput('>',$this->getLog());
+								break;
+
+						 		case 'select':
+								break;
+									  
+					 		}
+
+						}
+
+					}
 
 				}
 
@@ -117,4 +165,3 @@
 		}
 
 	}
-
