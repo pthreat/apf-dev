@@ -8,11 +8,11 @@
 		class Log implements LogInterface{
 
 			/**
-			 * @var $colors
-			 * @see Log::enableColors($boolean)
+			 * @var $outputColoring
+			 * @see Log::setOutputColoring($boolean)
 			 */
 
-			private $colors	=	TRUE;
+			private $outputColoring	=	TRUE;
 
 			/**
 			 * @var $uselogDate
@@ -70,7 +70,7 @@
 
 			public function __construct(Array $parameters=Array()){
 
-				$this->enableColors(array_key_exists('colors',$parameters)	?	$parameters['colors']	:	$this->colors);
+				$this->setOutputColoring(array_key_exists('colors',$parameters)	?	$parameters['colors']	:	$this->outputColoring);
 				$this->enableStdout(array_key_exists('stdout',$parameters)	?	$parameters['stdout']	:	$this->stdout);
 				$this->useLogDate(array_key_exists('logDate',$parameters)	?	$parameters['logDate']	:	$this->useLogDate);
 
@@ -78,7 +78,7 @@
 
 			public function hasColoring(){
 
-				return (boolean)$this->colors;
+				return (boolean)$this->outputColoring;
 
 			}
 	
@@ -155,15 +155,8 @@
 
 				$color	=	trim($color);
 
-				if(!empty($color) && $this->colors) {
 
-					$msg	=	$this->colors ? Ansi::colorize("$code$msg\033[37m{$this->lineCharacter}",$color)	:	"$code$msg{$this->lineCharacter}";
-
-				} else {
-
-					$msg	=	"$msg{$this->lineCharacter}";
-
-				}
+				$msg	=	$this->outputColoring&&!empty($color) ? Ansi::colorize("$code$msg\033[37m{$this->lineCharacter}",$color)	:	"$code$msg{$this->lineCharacter}";
 
 				if($this->stdout){
 
@@ -304,15 +297,21 @@
 	
 	
 			/**
-			* @method enableColors()  Color output (Console only)
+			* @method setOutputColoring()  Color output (Console only)
 			* @param bool $bool TRUE  Activate output coloring
 			* @param bool $bool FALSE Disable output coloring
 			*/
 	
-			public function enableColors($bool=TRUE) {
+			public function setOutputColoring($bool=TRUE) {
 
-				$this->colors	=	$bool;
+				$this->outputColoring	=	$bool;
 				return $this;
+
+			}
+
+			public function getOutputColoring(){
+
+				return $this->outputColoring;
 
 			}
 	
