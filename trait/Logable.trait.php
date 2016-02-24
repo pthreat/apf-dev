@@ -6,6 +6,8 @@
 
 		trait Logable{
 
+			private	$log	=	NULL;
+
 			public function setLog(LogInterface $log){
 
 				$this->log	=	$log;

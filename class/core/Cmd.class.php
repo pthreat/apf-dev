@@ -2,6 +2,8 @@
 
 	namespace apf\core{
 
+		use \apf\iface\Log	as	LogInterface;
+
 		class Cmd{
 
 			public static function searchOpt($option,$default=NULL){
@@ -48,17 +50,11 @@
 
 			}
 
-			public static function select(Array $options,$prompt='SELECT>',\apf\core\Log $log=NULL){
+			public static function select(Array $options,$prompt='SELECT>',LogInterface &$log){
 
 				\apf\validate\String::mustBeString($prompt,'Given prompt must be a string');
 
 				$amountOfOptions	=	sizeof($options);
-
-				if(is_null($log)){
-
-					$log	=	new \apf\core\Log();
-
-				}
 
 				while(TRUE){
 
@@ -88,17 +84,11 @@
 
 			}
 
-			public static function selectWithKeys(Array $options,$prompt='SELECT>',\apf\core\Log $log=NULL){
+			public static function selectWithKeys(Array $options,$prompt='SELECT>',LogInterface &$log){
 
 				\apf\validate\String::mustBeString($prompt,'Given prompt must be a string');
 
 				$amountOfOptions	=	sizeof($options);
-
-				if(is_null($log)){
-
-					$log	=	new \apf\core\Log();
-
-				}
 
 				$len	=	0;
 
@@ -144,65 +134,26 @@
 
 			}
 
-			public static function yesNo($msg,\apf\core\Log $log=NULL){
+			public static function yesNo($msg,LogInterface &$log){
 
 				\apf\validate\String::mustBeString($msg);
 
-				if(is_null($log)){
-
-					$log	=	new \apf\core\Log();
-
-				}
-
 				$msg		=	sprintf('%s (y/n):',$msg);
 				$options	=	['y','affirmative','yes','ya','ye','yeah','yep','n','no','nope','negative'];
-				$hasEcho	=	$log->getEcho();
-
-				if($hasEcho){
-
-					$log->setEcho(FALSE);
-
-				}
 
 				$select	=	substr(self::select($options,$msg,$log),0,1);
-
-				if($hasEcho){
-
-					$log->setEcho(TRUE);
-
-				}
 
 				return $select=="y";
 
 			}
 
-			public static function readInput($prompt=NULL,\apf\core\Log $log=NULL){
+			public static function readInput($prompt=NULL,LogInterface $log){
 
 				if(!is_null($prompt)){
-
-					if(is_null($log)){
-
-						$log	=	new \apf\core\Log();
-
-					}
-
-					$echo	=	$log->getEcho();
-
-					if(!$echo){
-
-						$log->setEcho(TRUE);
-
-					}
 
 					$log->setNoLf();
 					$log->setNoPrefix();
 					$log->info($prompt);
-
-					if(!$echo){
-
-						$log->setEcho(FALSE);
-
-					}
 
 				}
 
@@ -229,7 +180,7 @@
 
 			}
 
-			public static function readWithDefault($prompt,$default,Log $log=NULL){
+			public static function readWithDefault($prompt,$default,LogInterface &$log){
 
 				$prompt	=	sprintf('%s <default: %s>',$prompt,$default);
 				$value	=	self::readInput($prompt,$log);
@@ -238,7 +189,7 @@
 
 			}
 
-			public static function readWhileEmpty($prompt=NULL,\apf\core\Log $log=NULL){
+			public static function readWhileEmpty($prompt=NULL,LogInterface &$log){
 
 				while(TRUE){
 

@@ -46,7 +46,7 @@
 
 					}
 
-					$closingBracePosition	=	strpos($line,'}');
+					$closingBracePosition	=	strrpos($line,'}');
 
 					if($closingBracePosition===FALSE){
 
@@ -54,66 +54,49 @@
 
 					}
 
-					$match	=	substr($line,$openBracePosition+1,$closingBracePosition-1);
-
-					$openBracketPosition		=	strpos($match,'[');
-					$closingBracketPosition	=	strpos($match,']');
-
-					if($openBracketPosition===FALSE){
-
-						throw new \Exception("No opening bracket found for providing any arguments at line $number");
-
-					}
-
-					if($closingBracketPosition===FALSE){
-
-						throw new \Exception("No closing bracket found at line $number");
-
-					}
-
-					$colonPosition	=	strpos($match,':');
-
-					if($colonPosition === FALSE){
-
-						throw new \Exception("No variable assigned at line $number");
-
-					}
-
-
-					$name			=	substr($match,$colonPosition+1);
-					$type			=	substr($match,0,$openBracketPosition);
-					$arguments	=	substr($match,$openBracketPosition+1,-1);
-
-					$matches[]	=	Array(
-												'name'		=>	$name,
-												'type'		=>	$type,
-												'arguments'	=>	explode(',',$arguments)
-					);
+					$match		=	trim(substr($line,$openBracePosition,$closingBracePosition+1));
 
 					$line			=	trim(substr($line,$closingBracePosition+1));
 
-					if(empty($line)){
+					if(empty($match)){
 
-						break;
+						continue;
 
-					}	
+					}
 
-				}while(TRUE);
+					$match	=	json_decode($match,$assoc=TRUE);
+
+					if(empty($match)){
+						continue;
+					}
+
+					$type		=	key($match);
+					$matches[]	=	array_merge(Array('type'=>$type),$match[$type]);
+
+				}while($line);
 
 				return $matches;
 
 			}
 
-			public function parse($template){
+			public function parse(File $template){
 
-				$template	=	new File($template);
 				$template->setReadFunction('fgets');
 
 				$matches		=	Array();	
 			
 				foreach($template as $number=>$line){
 
-					$matches[]	=	$this->parseLine($line,$number);
+					$match	=	$this->parseLine($line,$number);
+
+					if(!$match){
+
+						$this->log->log($line);
+						continue;
+
+					}
+
+					$matches[]	=	$match;
 
 				}
 
@@ -131,11 +114,19 @@
 
 				foreach($this->_templates as $template){
 
+					$template			=	new File($template);
+
 					$varsInTemplate	=	$this->parse($template);
 
-					if(!$varsInLine){
+					if(empty($varsInTemplate)){
 
+						foreach($template as $line){
 
+							$this->log->log($line);
+
+						}
+
+						continue;
 
 					}
 
@@ -143,13 +134,37 @@
 
 						foreach($vars as $var){
 
-							switch($var['type']){
+							$arguments				=	is_array($var['arguments']) ? $var['arguments']	:	Array($var['arguments']);
+
+							$name	=	$var['name'];
+							$type	=	$var['type'];
+
+							unset($var['name']);
+							unset($var['type']);
+
+							$arguments[]			=	$this->getLog();
+
+							switch($type){
 
 								case 'input':
-									$this->$var['name'] = Cmd::readInput('>',$this->getLog());
+
+									if(sizeof($arguments)>2){
+
+										throw new \Exception("Extra arguments found at line $var[line]");
+
+									}
+
+									$this->$name	= call_user_func_array('\apf\core\Cmd::readInput',$arguments);
+
 								break;
 
-						 		case 'select':
+								case 'select':
+
+									$this->$var['name']	= call_user_func_array('\apf\core\Cmd::select',$arguments);
+
+								break;
+
+								case 'decision':
 								break;
 									  
 					 		}
