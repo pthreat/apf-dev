@@ -14,6 +14,7 @@
 
 
 	$of		=	new \oldfashioned\Engine();
+	$of->setLog((new Log())->setOutputColoring(FALSE));
 	$of->addTemplate('test/templates/test.tpl');
 	$of->render();
 

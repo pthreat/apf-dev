@@ -14,7 +14,6 @@
 			const SUCCESS		=	4;
 			const EMERGENCY	=	5;
 
-
 			/**
 			 * @var $uselogDate
 			 * @see Log::useLogDate($boolean)
@@ -146,8 +145,6 @@
 
 				$origMsg	=	$msg;	
 				$msg		=	sprintf('%s%s%s%s%s',$this->prepend,$type,$date,$msg,$this->append);
-
-				$msg		=	"$code$msg{$this->lineCharacter}";
 
 				if($this->stdout){
 
@@ -284,7 +281,7 @@
 				return $this->append;
 		
 			}
-	
+
 		}
 
 	}
