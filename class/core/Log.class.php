@@ -7,12 +7,13 @@
 
 		class Log implements LogInterface{
 
-			/**
-			 * @var $colors
-			 * @see Log::enableColors($boolean)
-			 */
+			const INFO			=	0;
+			const ERROR			=	1;
+			const WARNING		=	2;
+			const DEBUG			=	3;
+			const SUCCESS		=	4;
+			const EMERGENCY	=	5;
 
-			private $colors	=	TRUE;
 
 			/**
 			 * @var $uselogDate
@@ -70,18 +71,11 @@
 
 			public function __construct(Array $parameters=Array()){
 
-				$this->enableColors(array_key_exists('colors',$parameters)	?	$parameters['colors']	:	$this->colors);
 				$this->enableStdout(array_key_exists('stdout',$parameters)	?	$parameters['stdout']	:	$this->stdout);
 				$this->useLogDate(array_key_exists('logDate',$parameters)	?	$parameters['logDate']	:	$this->useLogDate);
 
 			}
 
-			public function hasColoring(){
-
-				return (boolean)$this->colors;
-
-			}
-	
 			/**
 			*Specifies if date should be prepended in the log
 			*@param boolean $boolean TRUE prepend date
@@ -118,19 +112,19 @@
 
 			}
 
-			public function repeat($string,$times,$type=0,$color=NULL){
+			public function repeat($string,$times,$type=0){
 
-				return $this->log(str_repeat($string,$times),$type,$color);
-
-			}
-
-			public function logArray(Array $array,$separator=',',$color=NULL,$type=0){
-
-				return $this->log(implode($separator,$array),$type,$color);
+				return $this->log(str_repeat($string,$times),$type);
 
 			}
 
-			public function log($msg=NULL,$type=0,$color=NULL){
+			public function logArray(Array $array,$separator=',',$type=0){
+
+				return $this->log(implode($separator,$array),$type);
+
+			}
+
+			public function log($msg=NULL,$type=0){
 
 				if(is_null($msg)){
 
@@ -153,17 +147,7 @@
 				$origMsg	=	$msg;	
 				$msg		=	sprintf('%s%s%s%s%s',$this->prepend,$type,$date,$msg,$this->append);
 
-				$color	=	trim($color);
-
-				if(!empty($color) && $this->colors) {
-
-					$msg	=	$this->colors ? Ansi::colorize("$code$msg\033[37m{$this->lineCharacter}",$color)	:	"$code$msg{$this->lineCharacter}";
-
-				} else {
-
-					$msg	=	"$msg{$this->lineCharacter}";
-
-				}
+				$msg		=	"$code$msg{$this->lineCharacter}";
 
 				if($this->stdout){
 
@@ -175,12 +159,6 @@
 			
 			}
 
-			public function reset(){
-
-				echo Ansi::getColor('light_gray');
-
-			}
-	
 			/**
 			*Returns an X11 debug like tag according to the given number
 			*/
@@ -188,63 +166,68 @@
 			private function infoType($type=NULL) {
 	
 				switch($type) {
-					case 1:
+
+					case self::ERROR:
 						return "[EE]";
-					case 2:
+					break;
+
+					case self::WARNING:
 						return "[WW]";
-					case 3:
+					break;
+
+					case self::DEBUG:
 						return "[DD]";
-					case 4:
+					break;
+
+					case self::SUCCESS:
 						return "[SS]";
-					case 0:
+					break;
+
+					case self::INFO:
 					default:
 						return "[II]";
+					break;
+
 				}
 	
 			}
 
 			public function debug($text=NULL){
 
-				$this->log($text,3,"light_purple");
-				return $this;
+				return $this->log($text,self::DEBUG);
 
 			}
 
 			public function info($text=NULL){
 
-				$this->log($text,0,"light_cyan");
-				return $this;
+				return $this->log($text,self::INFO);
 
 			}
 
 			public function warning($text=NULL){
 
-				$this->log($text,2,"yellow");
-				return $this;
+				return $this->log($text,self::WARNING);
 
 			}
 
 			public function error($text=NULL){
 
-				$this->log($text,1,"light_red");
-				return $this;
-
-			}
-
-			public function emergency($text=NULL){
-
-				$this->log($text,1,"red");
-				return $this;
+				return $this->log($text,self::ERROR);
 
 			}
 
 			public function success($text=NULL){
 
-				$this->log($text,0,"light_green");
+				return $this->log($text,self::SUCCESS);
 				return $this;
 				
 			}
-	
+
+			public function emergency($text=NULL){
+
+				return $this->log($text,self::EMERGENCY);
+
+			}
 	
 			/**
 			*@method enableStdout() 
@@ -276,6 +259,12 @@
 				return $this;
 	
 			}
+
+			public function getPrepend(){
+	
+				return $this->prepend;
+	
+			}
 	
 			/**
 			*@method setAppend() Adds 
@@ -294,26 +283,6 @@
 	
 				return $this->append;
 		
-			}
-	
-			public function getPrepend(){
-	
-				return $this->prepend;
-	
-			}
-	
-	
-			/**
-			* @method enableColors()  Color output (Console only)
-			* @param bool $bool TRUE  Activate output coloring
-			* @param bool $bool FALSE Disable output coloring
-			*/
-	
-			public function enableColors($bool=TRUE) {
-
-				$this->colors	=	$bool;
-				return $this;
-
 			}
 	
 		}

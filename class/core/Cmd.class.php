@@ -64,7 +64,7 @@
 
 					}
 
-					$selected	=	strtolower(trim(self::readInput($prompt,$log),"\r\n"));
+					$selected	=	strtolower(trim(self::input($prompt,$log),"\r\n"));
 
 					if($amountOfOptions==1 && $selected==''){
 
@@ -120,7 +120,7 @@
 
 					}
 
-					$selected	=	strtolower(trim(self::readInput($prompt,$log),"\r\n"));
+					$selected	=	strtolower(trim(self::input($prompt,$log),"\r\n"));
 
 					foreach($options as $key=>$opt){
 
@@ -139,7 +139,7 @@
 				\apf\validate\String::mustBeString($msg);
 
 				$msg		=	sprintf('%s (y/n):',$msg);
-				$options	=	['y','affirmative','yes','ya','ye','yeah','yep','n','no','nope','negative'];
+				$options	=	['y','yes','ya','ye','yeah','yep','n','no','nope','negative'];
 
 				$select	=	substr(self::select($options,$msg,$log),0,1);
 
@@ -147,7 +147,7 @@
 
 			}
 
-			public static function readInput($prompt=NULL,LogInterface $log){
+			public static function input($prompt=NULL,LogInterface $log){
 
 				if(!is_null($prompt)){
 
@@ -183,7 +183,7 @@
 			public static function readWithDefault($prompt,$default,LogInterface &$log){
 
 				$prompt	=	sprintf('%s <default: %s>',$prompt,$default);
-				$value	=	self::readInput($prompt,$log);
+				$value	=	self::input($prompt,$log);
 
 				return $value	?	$value	:	$default;
 
@@ -193,7 +193,7 @@
 
 				while(TRUE){
 
-					$input	=	preg_replace("/[\r\n]/",'',self::readInput($prompt,$log));
+					$input	=	preg_replace("/[\r\n]/",'',self::input($prompt,$log));
 
 					if(!empty($input)){
 
