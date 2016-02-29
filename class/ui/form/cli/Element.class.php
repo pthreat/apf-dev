@@ -10,10 +10,48 @@
 
 			private	$prompt	=	NULL;
 
-			private	$notConfiguredColor	=	'light_cyan';
-			private	$configuredColor		=	'light_green';
-			private	$warningColor			=	'yellow';
-			private	$errorColor				=	'red';
+			private	$configuredColor		=	NULL;
+			private	$notConfiguredColor	=	NULL;
+			private	$errorColor				=	NULL;
+
+			public function setConfiguredColor($color){
+
+				$this->configuredColor	=	$color;
+				return $this;
+
+			}
+
+			public function getConfiguredColor(){
+
+				return $this->configuredColor;
+
+			}
+
+			public function setNotConfiguredColor($color){
+
+				$this->notConfiguredColor	=	$color;
+				return $this;
+
+			}
+
+			public function getNotConfiguredColor(){
+
+				return $this->notConfiguredColor;
+
+			}
+
+			public function setErrorColor($color){
+
+				$this->errorColor	=	$color;
+				return $this;
+
+			}
+
+			public function getErrorColor(){
+
+				return $this->errorColor;
+
+			}
 
 			public function setPrompt(Prompt $prompt){
 

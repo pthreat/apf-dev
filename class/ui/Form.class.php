@@ -3,14 +3,14 @@
 	namespace apf\ui{
 
 		use \apf\ui\form\Element;
-		use \apf\core\Configurable;
+		use \apf\iface\Decorator	as	DecoratorInterface;
 
 		abstract class Form{
 
-			private	$action					=	NULL;
-			private	$title					=	NULL;
-			private	$elements				=	Array();
-			private	$configurableObject	=	NULL;
+			private	$action		=	NULL;
+			private	$title		=	NULL;
+			private	$elements	=	Array();
+			private	$decorator	=	NULL;
 
 			public function __construct(){
 
@@ -18,16 +18,16 @@
 
 			}
 
-			public function setConfigurableObject(Configurable &$object){
+			public function setDecorator(DecoratorInterface $decorator){
 
-				$this->configurableObject	=	$object;
+				$this->decorator	=	$decorator;
 				return $this;
 
 			}
 
-			public function getConfigurableObject(){
+			public function getDecorator(){
 
-				return $this->configurableObject;
+				return $this->decorator;
 
 			}
 
@@ -85,30 +85,6 @@
 			public function hasElement($name){
 
 				return array_key_exists($name,$this->elements);
-
-			}
-
-			public function createElements(){
-
-				$elementNamespace	=	strtolower(get_called_class());
-				$attributes			=	$this->configurableObject->getConfig()->getAttributes();
-
-				if(!sizeof($attributes)){
-
-					throw new \InvalidArgumentException("No attributes where found");
-
-				}
-
-				foreach($attributes as $attribute){
-
-					$attribute['type']	=	'input';
-
-					$element	=	sprintf('%s\element\%s',$elementNamespace,ucwords($attribute['type']));
-					$this->addElement(new $element($attribute['name'],$attribute['description'],$this->configurableObject));
-
-				}
-
-				return $this;
 
 			}
 

@@ -7,11 +7,13 @@
 			private	$buffer	=	NULL;
 			private	$text		=	NULL;
 			private	$trim		=	TRUE;
+			private	$color	=	NULL;
 
-			public function __construct($text='>',$buffer=1024){
+			public function __construct($text='>',$buffer=1024,$color=NULL){
 
 				$this->setText($text);
 				$this->setBuffer($buffer);
+	
 
 			}
 
@@ -27,6 +29,20 @@
 				return $this->text;
 
 			}
+
+			public function setColor($color){
+
+				$this->color	=	$color;
+				return $this;
+
+			}
+
+			public function getColor(){
+
+				return $this->color;
+
+			}
+
 
 			public function setBuffer($buffer){
 

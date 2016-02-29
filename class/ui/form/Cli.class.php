@@ -7,7 +7,22 @@
 
 		class Cli extends Form{
 
+			private	$titleColor	=	NULL;
+
 			public function configure(){
+			}
+
+			public function setTitleColor($color){
+
+				$this->titleColor	=	$color;
+				return $this;
+
+			}
+
+			public function getTitleColor(){
+
+				return $this->titleColor;
+
 			}
 
 			public function render(){
@@ -20,7 +35,7 @@
 
 						foreach($this->getElements() as $element){
 
-							echo sprintf('%s) %s (%s)',$element->getName(),$element->getDescription(),$element->getValue());
+							echo sprintf('%s) %s (%s)%s',$element->getName(),$element->getDescription(),$element->getValue(),"\n");
 
 						}
 
@@ -34,8 +49,6 @@
 						(new Prompt())->setText('Press enter to continue ...')->read();
 
 					}
-
-
 
 				}while(TRUE);
 
