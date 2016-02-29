@@ -76,7 +76,7 @@
 				//Try to find out if we are talking about a custom namespace defined in the namespaces.ini file
 
 				if(!file_exists($path)){
-
+					throw new \Exception("Class $class not found in path $path");
 					$namespacesConfigDir	=	sprintf('%s%sconfig%snamespaces',self::$appsDir,DIRECTORY_SEPARATOR,DIRECTORY_SEPARATOR);
 
 					if(is_dir($namespacesConfigDir)){

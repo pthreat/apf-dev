@@ -8,6 +8,7 @@
 
 			private	$name				=	NULL;
 			private	$value			=	NULL;
+			private	$description	=	NULL;
 			private	$separator		=	'=';
 			private	$isSecured		=	NULL;
 			private	$securedText	=	'(secured attribute) xxxxxxx';
@@ -26,6 +27,20 @@
 				$this->value		=	$value;
 				$this->separator	=	$separator;
 				$this->setSecure($isSecure);
+
+			}
+
+			public function setDescription($description){
+
+				$this->description	=	$description;
+
+				return $this;
+
+			}
+
+			public function getDescription(){
+
+				return $this->description;
 
 			}
 

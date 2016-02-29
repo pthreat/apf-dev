@@ -5,6 +5,8 @@
 		use \apf\iface\Log			as	LogInterface;
 		use \apf\iface\config\Cli	as	CliConfigInterface;
 		use \apf\core\Config;
+		use \apf\ui\form\Factory	as	FormFactory;
+
 
 		abstract class Configurable{
 
@@ -16,7 +18,7 @@
 
 			final public function __construct(Config $config,$validateMode='hard',$reValidate=FALSE){
 
-				$this->configure($config,$validateMode,$reValidate);
+				$this->setConfig($config,$validateMode,$reValidate);
 
 			}
 
@@ -53,14 +55,40 @@
 			 * @return	\apf\core\Configurable	the pertinent configurable object, i.e an instance of the child class that extends this class.
 			 */
 
-			public static function factory($config){
+			public static function factory($config=NULL,$validate='none'){
 
 				$configObject	=	self::getConfigurationInstance();
-				$configObject->import($config);
+
+				if($config){
+
+					$configObject->import($config);
+
+				}
 				
 				$returnClass	=	get_called_class();
 
-				return new $returnClass($configObject);
+				return new $returnClass($configObject,$validate);
+
+			}
+
+			/**
+			 *	The configure method, chooses an appropriate UI to show to the end user, according to the context
+			 *	defined by the SAPI object obtained from the Kernel and presents said configuration interface to the user
+			 *	for him/her to be able to configure this configurable object.
+			 *
+			 *	@return Configurable a user configured object.
+			 *
+			 */
+
+			public static function configure($ui=NULL,Configurable &$object=NULL){
+
+				if($object===NULL){
+
+					$object	=	self::factory();
+
+				}
+
+				return FormFactory::createFromConfigurableObject($object,$ui);
 
 			}
 
@@ -89,7 +117,7 @@
 
 			}
 
-			final public function configure(Config $config,$validateMode='hard',$reValidate=FALSE){
+			final public function setConfig(Config $config,$validateMode='hard',$reValidate=FALSE){
 
 				//Validate that the passed configuration instance responds to the proper class
 				$this->config	=	self::validateConfigurationInstance($config);

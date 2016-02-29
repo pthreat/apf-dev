@@ -36,8 +36,8 @@
 
 			use \apf\traits\log\Inner;
 
-			private	$sapi				=	NULL;
-			private	$os				=	NULL;
+			private	static $sapi	=	NULL;
+			private	static $os		=	NULL;
 
 			const	VERSION		=	'0.1';
 
@@ -55,27 +55,27 @@
 
 			}
 
-			public function getOS(){
+			public static function getOS(){
 
-				if($this->os){
+				if(self::$os){
 
-					return $this->os;
+					return self::$os;
 
 				}
 
-				return $this->os	=	new OS();
+				return self::$os	=	new OS();
 
 			}
 
-			public function getSapi(){
+			public static function getSapi(){
 
-				if($this->sapi){
+				if(self::$sapi){
 
-					return $this->sapi;
+					return self::$sapi;
 
 				}
 
-				return $this->sapi	=	new Sapi();
+				return self::$sapi	=	new Sapi();
 
 			}
 

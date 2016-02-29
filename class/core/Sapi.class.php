@@ -32,7 +32,7 @@
 
 			public function __toString(){
 
-				return sprintf('%s',$this->getName();
+				return sprintf('%s',$this->getName());
 
 			}
 

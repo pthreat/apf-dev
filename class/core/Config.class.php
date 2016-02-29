@@ -62,12 +62,6 @@
 
 			public function toArray(){
 
-				foreach($default as $value){
-
-					$values[$value->getName()]	=	$value->getValue();
-
-				}
-
 				foreach($this->values as $value){
 
 					$values[$value->getName()]	=	$value->getValue();
@@ -77,6 +71,15 @@
 				return $values;
 
 			}
+
+			public function getAttributes(){
+
+				//Validate attributes format returned by __getAttributes
+				return $this->__getAttributes();
+
+			}
+
+			abstract public function __getAttributes();
 
 			public function  __set($key,$value){
 

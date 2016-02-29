@@ -31,6 +31,49 @@
 			public static function factory(Config $config){
 			}
 
+			public function __getAttributes(){
+	
+				return Array(
+									Array(
+											'name'			=>	'name',
+											'description'	=>	'Project name',
+									),
+									Array(
+											'name'			=>	'description',
+											'description'	=>	'Project description'
+									),
+									Array(
+											'name'			=>	'directories',
+											'description'	=>	'Project directories'
+									),
+									Array(
+											'name'			=>	'documentRoot',
+											'description'	=>	'Project document root'
+									),
+									Array(
+											'name'			=>	'modules',
+											'description'	=>	'Project modules'
+									),
+									Array(
+											'name'			=>	'templates',
+											'description'	=>	'Project templates'
+									),
+									Array(
+											'name'			=>	'fragments',
+											'description'	=>	'Project fragments'
+									),
+									Array(
+											'name'			=>	'assets',
+											'description'	=>	'Project assets'
+									),
+									Array(
+											'name'			=>	'connections',
+											'description'	=>	'Project connections'
+									)
+				);
+
+			}
+
 			public function getNonExportableAttributes(){
 
 				return Array();
