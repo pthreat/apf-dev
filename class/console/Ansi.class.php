@@ -35,6 +35,8 @@
 
 			public static function getColor($name){
 
+				$name	=	trim($name);
+
 				if(!in_array($name,array_keys(self::$ansiColors))){
 
 					throw new \InvalidArgumentException("Unknown color \"$name\"");
@@ -47,7 +49,7 @@
 
 			public static function colorize($string,$color){
 
-				return sprintf('%s%s',$string,self::getColor($color));
+				return sprintf('%s%s',self::getColor($color),$string);
 
 			}
 

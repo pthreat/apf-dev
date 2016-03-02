@@ -27,25 +27,34 @@
 
 			public function render(){
 
+				$deco	=	$this->getDecorator();
+
+				if(!$deco){
+
+					throw new \Exception("No output decorator has been set, please set an output decorator");
+
+				}
+
 				do{
 
 					try{
 
-						echo $this->getTitle();
+						echo $deco->decorate($this->getTitle());
 
 						foreach($this->getElements() as $element){
 
-							echo sprintf('%s) %s (%s)%s',$element->getName(),$element->getDescription(),$element->getValue(),"\n");
+							echo $deco->decorate(sprintf('%s) %s (%s)%s',$element->getName(),$element->getDescription(),$element->getValue(),"\n"));
 
 						}
 
 						echo "\n";
+
 						$prompt	=	new Prompt();
 						$this->getElementByName($prompt->read())->setValue();
 
 					}catch(\Exception $e){
 
-						echo $e->getMessage();
+						$deco->decorate($e->getMessage());
 						(new Prompt())->setText('Press enter to continue ...')->read();
 
 					}

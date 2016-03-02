@@ -3,73 +3,35 @@
 	namespace apf\ui\form\cli{
 
 		use \apf\console\Ansi;
-		use \apf\ui\form\Element					as	BaseElement;
-		use \apf\ui\form\cli\element\Prompt;
+		use \apf\ui\form\Element								as	BaseElement;
+		use \apf\ui\form\cli\element\Layout					as	ElementLayout;
+		use \apf\iface\ui\form\cli\element\Promptable	as	PromptableInterface;
 
-		abstract class Element extends BaseElement{
+		abstract class Element extends BaseElement implements PromptableInterface{
 
-			private	$prompt	=	NULL;
+			use \apf\traits\ui\form\cli\element\Promptable;
 
-			private	$configuredColor		=	NULL;
-			private	$notConfiguredColor	=	NULL;
-			private	$errorColor				=	NULL;
+			public function __construct($attrName,$description,Array $layouts=Array()){
 
-			public function setConfiguredColor($color){
+				if(!array_key_exists('noval',$layouts)){
 
-				$this->configuredColor	=	$color;
-				return $this;
-
-			}
-
-			public function getConfiguredColor(){
-
-				return $this->configuredColor;
-
-			}
-
-			public function setNotConfiguredColor($color){
-
-				$this->notConfiguredColor	=	$color;
-				return $this;
-
-			}
-
-			public function getNotConfiguredColor(){
-
-				return $this->notConfiguredColor;
-
-			}
-
-			public function setErrorColor($color){
-
-				$this->errorColor	=	$color;
-				return $this;
-
-			}
-
-			public function getErrorColor(){
-
-				return $this->errorColor;
-
-			}
-
-			public function setPrompt(Prompt $prompt){
-
-				$this->prompt	=	$prompt;
-				return $this;
-
-			}
-
-			public function getPrompt(){
-
-				//If a prompt has not been set, use a default Prompt
-				if(!$this->prompt){
-
-					$this->prompt	=	new Prompt();
+					$layouts['noval']	=	new ElementLayout($this,'[name:{"color":"light_cyan"}]> [description]');
 
 				}
 
-				return $this->prompt;
+				if(!array_key_exists('success',$layouts)){
+
+					$layouts['success']	=	new ElementLayout($this,'[name:{"color":"light_green"}]> [description] [value:{"format":"(%s)"}]');
+
+				}
+
+				if(!array_key_exists('error',$layouts)){
+
+					$layouts['error']	=	new ElementLayout($this,'[name:{"color":"red"}]> [description] [value:{"format":"<%s>"}]');
+
+				}
+
+				parent::__construct($attrName,$description,$layouts);
 
 			}
 
@@ -77,12 +39,9 @@
 
 				do{
 
-					try{
+					parent::setValue($this->getPrompt()->read($value));
 
-						parent::setValue($this->getPrompt()->read($value));
-						return;
-
-					}catch(\Exception $e){
+					if($this->getValueState()=='error'){
 
 						echo $e->getMessage();
 
@@ -92,7 +51,8 @@
 
 					}
 
-				}while(TRUE);
+
+				}while($this->getValueState()!=='success');
 
 			}
 

@@ -4,6 +4,7 @@
 
 		use \apf\ui\form\Element;
 		use \apf\iface\Decorator	as	DecoratorInterface;
+		use \apf\form\Layout			as	FormLayout;
 
 		abstract class Form{
 
@@ -11,10 +12,24 @@
 			private	$title		=	NULL;
 			private	$elements	=	Array();
 			private	$decorator	=	NULL;
+			private	$layout		=	NULL;
 
 			public function __construct(){
 
 				$this->configure();
+
+			}
+
+			public function setLayout(FormLayout $layout){
+
+				$this->layout	=	$layout;
+				return $this;
+
+			}
+
+			public function getLayout(){
+
+				return $this->layout;
 
 			}
 
