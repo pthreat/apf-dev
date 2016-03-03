@@ -8,13 +8,17 @@
 
 			/**
 			 *Gets a form instance according to the context obtained from the within the Kernel::getSAPI method
+			 *@param string $elementType The *type* of the element, input, select, etc
+			 *@param string $name The name of the element
+			 *@param string $description Element Description
+			 *@param string $ui The kind of User interface for the given element type, web, cli, etc
 			 */
 
-			public static function getInstanceFromUIContext($elementName,$ui=NULL){
+			public static function getInstanceFromUIContext($elementType,$ui=NULL){
 
-				$elementName	=	trim($elementName);
+				$elementType	=	trim($elementType);
 
-				if(empty($elementName)){
+				if(empty($elementType)){
 
 					throw new \InvalidArgumentException("Must specify element name");
 
@@ -28,7 +32,7 @@
 
 				}
 
-				$class	=	sprintf('\apf\ui\form\%s\element\%s',strtolower($ui),ucwords($elementName));
+				$class	=	sprintf('\apf\ui\form\%s\element\%s',strtolower($ui),ucwords($elementType));
 
 				//Corroborate that the given form element does in fact exists
 

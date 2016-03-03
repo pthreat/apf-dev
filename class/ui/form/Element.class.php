@@ -3,38 +3,23 @@
 	namespace apf\ui\form{
 
 		use \apf\core\Configurable;
-		use \apf\iface\ui\form\element\Layout		as	ElementLayoutInterface;
-		use \apf\iface\ui\form\Element				as	ElementInterface;
-		use \apf\iface\ui\form\element\Attribute	as	ElementAttributeInterface;
-		use \apf\validate\Vector						as	VectorValidate;
+		use \apf\iface\ui\form\Element						as	ElementInterface;
+		use \apf\iface\ui\form\element\Attribute			as	ElementAttributeInterface;
+		use \apf\validate\Vector								as	VectorValidate;
+		use \apf\iface\ui\form\element\layout\Container	as	ElementLayoutContainerInterface;
 
 		abstract class Element implements ElementInterface{
 
-			private	$name				=	NULL;
-			private	$description	=	NULL;
-			private	$attributes		=	Array();
-			private	$value			=	NULL;
-			private	$onSetValue		=	NULL;
-			private	$valueState		=	'noval';	//Valid value states are: noval, success, and error
+			private	$name					=	NULL;
+			private	$description		=	NULL;
+			private	$attributes			=	Array();
+			private	$value				=	NULL;
+			private	$onSetValue			=	NULL;
+			private	$valueState			=	'noval';	//Valid value states are: noval, success, and error
 
-			/**
-			 * Each element ->state<- has a different layout
-			 * For no value, there a layout 
-			 * For success, there is a layout
-			 * and for error, there is a layout
-			 * A layout is just the "way" how an element is rendered, 
-			 * i.e where should the name be placed?, where should the value be placed?
-			 *
-			 * Example layouts: 
-			 * name:separator:value:error
-			 * [name]:separator :<value>:error!
-			 */
+			private	$layoutContainer	=	NULL;
 
-			private	$noValueLayout	=	NULL;
-			private	$valueLayout	=	NULL;
-			private	$errorLayout	=	NULL;
-
-			public function __construct($attrName,$description,Array $layouts=Array()){
+			public function __construct($attrName,$description,ElementLayoutContainerInterface $container){
 
 				if($attrName){
 
@@ -48,54 +33,20 @@
 
 				}
 
-				VectorValidate::mustHaveKeys(
-														Array('noval','success','error'),
-														$layouts,
-														'Invalid layouts array, given array must contain the noval, success and error keys!'
-				);
-
-				$this->setNoValueLayout($layouts['noval']);
-				$this->setValueLayout($layouts['success']);
-				$this->setErrorLayout($layouts['error']);
+				$this->setLayoutContainer($layoutContainer);
 
 			}
 
-			public function setNoValueLayout(ElementLayoutInterface $layout){
+			public function setLayoutContainer(ElementLayoutContainerInterface $container){
 
-				$this->noValueLayout	=	$layout;
+				$this->layoutContainer	=	$container;
 				return $this;
 
 			}
 
-			public function getNoValueLayout(){
+			public function getLayoutContainer(){
 
-				return $this->noValueLayout;
-
-			}
-
-			public function setValueLayout(ElementLayoutInterface $layout){
-
-				$this->valueLayout	=	$layout;
-				return $this;
-
-			}
-
-			public function getValueLayout(){
-
-				return $this->valueLayout;
-
-			}
-
-			public function setErrorLayout(ElementLayoutInterface $layout){
-
-				$this->errorLayout	=	$layout;
-				return $this;
-
-			}
-
-			public function getErrorLayout(){
-
-				return $this->errorLayout;
+				return $this->layoutContainer;
 
 			}
 
@@ -206,15 +157,15 @@
 				switch($this->valueState){
 
 					case 'noval':
-						return $this->noValueLayout->render();
+						return $this->layoutContainer->getNoValueLayout()->render();
 					break;
 
 					case 'success':
-						return $this->valueLayout->render();
+						return $this->layoutContainer->getValueLayout()->render();
 					break;
 
 					case 'error':
-						return $this->errorLayout->render();
+						return $this->layoutContainer->getErrorLayout()->render();
 					break;
 
 				}

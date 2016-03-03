@@ -6,12 +6,13 @@
 		use \apf\ui\form\Element								as	BaseElement;
 		use \apf\ui\form\cli\element\Layout					as	ElementLayout;
 		use \apf\iface\ui\form\cli\element\Promptable	as	PromptableInterface;
+		use \apf\iface\ui\form\element\layout\Container	as	ElementLayoutContainerInterface;
 
 		abstract class Element extends BaseElement implements PromptableInterface{
 
 			use \apf\traits\ui\form\cli\element\Promptable;
 
-			public function __construct($attrName,$description,Array $layouts=Array()){
+			public function __construct($attrName,$description,ElementLayoutContainerInterface $layoutContainer){
 
 				if(!array_key_exists('noval',$layouts)){
 
