@@ -1,5 +1,129 @@
 <?php
 
+	abstract class Config{
+
+		private	$attributes	=	NULL;
+
+		final public function __construct(){
+
+			$this->attributes	=	new \ArrayObject();
+			$this->configureAttributes();
+
+		}
+
+		private function makeValidatorName($name){
+
+			return sprintf('validate%s',ucwords($name));
+
+		}
+
+		public function hasValidator($name){
+
+			return method_exists($this,$this->makeValidatorName($name));
+
+		}
+
+		public function getValidator($name){
+
+			if(!$this->hasValidator($name)){
+
+				throw new \InvalidArgumentException("No validator found for attribute $name");		
+
+			}
+
+			return $this->makeValidatorName($name);
+
+		}
+
+		public function validateAttribute($name,$value){
+
+			$validator	=	$this->getValidator($name);
+			return $this->$validator($value);
+
+		}
+
+		protected function addAttribute($attribute){
+
+			$this->attributes->append(ConfigAttribute::factory($attribute));
+
+		}
+
+		//Returns setters and getters according to the values returned by 
+		//__getAttributes.
+
+		public function getMethods(){
+		}
+
+		public function hasAttribute($name){
+
+			return (boolean)$this->getAttribute($name);
+
+		}
+
+		public function getAttribute($name){
+
+			$name	=	strtolower($name);
+
+			foreach($this->attributes as $attribute){
+
+				if($attribute->getName() == $name){
+
+					return $attribute;
+
+				}
+
+			}	
+
+			throw new \InvalidArgumentException("Unknown configuration parameter \"$name\"");
+
+		}
+	
+		public function __set($name,$value){
+
+			$attribute	=	$this->getAttribute($name);
+			return $attribute->setValue($value);
+
+		}
+
+		public function __get($name){
+
+			return $this->getAttribute($name);
+
+		}
+
+		public function __call($method,$args){
+
+			$isSetterOrGetter	=	strtolower(substr($method,0,3));
+			$isSetter			=	$isSetterOrGetter === 'set';
+			$isGetter			=	$isSetterOrGetter === 'get';
+
+			if(!$isSetter && !$isGetter){
+
+				throw new \BadMethodCallException("Call to undefined method: \"$method\"");
+
+			}
+
+			$attribute		=	$this->getAttribute(substr($method,3));
+
+			if($isGetter){
+
+				return $attribute->getValue();
+
+			}
+
+			if($isSetter){
+
+				return call_user_func_array(Array($attribute,'setValue'),$args);
+
+			}
+
+		}
+
+		abstract public function configureAttributes();
+
+	}
+
+
 	class ConfigAttribute{
 
 		private	$name				=	NULL;
@@ -14,7 +138,12 @@
 			$this->setConfig($config);
 			$this->setName($name);
 			$this->setDescription($description);
-			$this->setValue($value);
+
+			if($value !== NULL){
+
+				$this->setValue($value);
+
+			}
 
 		}
 
@@ -139,115 +268,9 @@
 
 	}
 
-	abstract class Config{
 
-		private	$attributes	=	NULL;
 
-		public function __construct(){
-
-			$this->configureAttributes();
-			$this->attributes	=	new \ArrayObject();
-
-		}
-
-		private function makeValidatorName($name){
-
-			return sprintf('validate%s',ucwords($name));
-
-		}
-
-		public function hasValidator($name){
-
-			return method_exists($this->makeValidatorName($name,$this);
-
-		}
-
-		public function getValidator($name){
-
-			if(!$this->hasValidator($name)){
-
-				throw new \InvalidArgumentException("No validator found for attribute $name");		
-
-			}
-
-			return $this->makeValidatorName($name);
-
-		}
-
-		public function validateAttribute($name,$value){
-
-			$validator	=	$this->getValidator($name);
-			return $this->$validator($value);
-
-		}
-
-		protected function addAttribute($attribute){
-
-			$this->attributes->append(ConfigAttribute::factory($attribute));
-
-		}
-
-		//Returns setters and getters according to the values returned by 
-		//__getAttributes.
-
-		public function getMethods(){
-		}
-
-		public function hasAttribute($attributeName){
-
-			return array_key_exists($attributeName,$this->getAttributes());
-
-		}
-
-		public function getAttribute($attributeName){
-
-			
-
-			if(!$this->hasAttribute($attributeName)){
-
-				throw new \InvalidArgumentException("Unknown configuration parameter $attributeName");
-
-			}
-
-			$attributes	=	$this->getAttributes();
-
-			return $attributes[$attributeName];
-
-		}
-	
-		public function __set($name,$value){
-
-			$attribute	=	$this->getAttribute($name);
-
-			if(array_key_exists$attribute['validate']){
-
-				$method	=	"validate$name";
-
-				if(!method_exists($this,$method)){
-
-					throw new \Exception("No validator named \"$method\" exists for attribute $name");
-
-				}
-
-			}
-
-		}
-
-		public function __get($name){
-				
-		}
-
-		public function __call($method,$args){
-
-			$isSetterOrGetter	=	strtolower(substr($method,0,3));
-			$isSetter			=	$isSetterOrGetter === 'set';
-			$isGetter			=	$isSetterOrGetter === 'get';
-
-		}
-
-		abstract public function configureAttributes();
-
-	}
+////////////////////////////////////////////////
 
 	class PersonConfig extends Config{
 
@@ -268,10 +291,11 @@
 		public function configureAttributes(){
 
 			parent::addAttribute(
-										new ConfigAttribute(
-																	'name',
-																	'Person name'
-										);
+										Array(
+												'config'			=>	$this,		
+												'name'			=>	'name',
+												'description'	=>	'Person name'
+										)
 			);
 
 		}
@@ -280,9 +304,30 @@
 
 	abstract class Configurable{
 
+		private	$config;
+
 		public function __construct(Config $config){
 
 			$this->setConfig($config);
+
+		}
+
+		public function setConfig(Config $config){
+
+			$this->config	=	$config;
+			return $this;
+
+		}
+
+		public function getConfig(){
+
+			return $this->config;
+
+		}
+
+		public function __call($method,$args){
+
+			return call_user_func_array(Array($this->config,$method),$args);
 
 		}
 
@@ -290,11 +335,9 @@
 
 	class Person extends Configurable{
 
-		public function setConfig(PersonConfig $config){
-
-			$this->config	=	$config;
-			return $this;
-
-		}
-
 	}
+
+	$pconfig	=	new PersonConfig();
+	$person	=	new Person($pconfig);
+	$person->setName('robert');
+	echo $person->getName();
