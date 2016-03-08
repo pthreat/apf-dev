@@ -1,13 +1,19 @@
 <?php
 
-	abstract class Config{
+	abstract class Config implements \Iterator{
 
 		private	$attributes	=	NULL;
 
-		final public function __construct(){
+		final public function __construct(Config $config=NULL){
 
 			$this->attributes	=	new \ArrayObject();
 			$this->configureAttributes();
+
+			if($config !== NULL){
+
+				$this->merge($config);
+
+			}
 
 		}
 
@@ -52,6 +58,7 @@
 		//__getAttributes.
 
 		public function getMethods(){
+			
 		}
 
 		public function hasAttribute($name){
@@ -77,7 +84,72 @@
 			throw new \InvalidArgumentException("Unknown configuration parameter \"$name\"");
 
 		}
-	
+
+		public function getAttributes(){
+
+			return $this->attributes;
+
+		}
+
+		public function merge(Config $config){
+
+			foreach($config as $attribute){
+
+				$this->setValue($attribute);
+
+			}
+
+			return $this;
+
+		}
+
+		public function configureAttributes(){
+
+			return $this->__configureAttributes();
+
+		}
+
+		abstract protected function __configureAttributes();
+
+		/************************************
+		 *Iterator interface
+		 ************************************/
+
+		public function current(){
+
+			return current($this->values);
+
+		}
+
+		public function key(){
+
+			return key($this->values);
+
+		}
+
+		public function next(){
+
+			return next($this->values);
+
+		}
+
+		public function rewind(){
+
+			return reset($this->values);
+
+		}
+
+		public function valid(){
+
+			$key	=	key($this->values);
+			return $key!==NULL && $key!==FALSE;
+
+		}
+
+		/*************************************
+		 *Magic methods
+       *************************************/
+
 		public function __set($name,$value){
 
 			$attribute	=	$this->getAttribute($name);
@@ -118,8 +190,6 @@
 			}
 
 		}
-
-		abstract public function configureAttributes();
 
 	}
 
@@ -288,7 +358,7 @@
 
 		}
 
-		public function configureAttributes(){
+		protected function __configureAttributes(){
 
 			parent::addAttribute(
 										Array(

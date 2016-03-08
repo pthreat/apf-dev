@@ -10,7 +10,8 @@
 		class Factory{
 
 			/**
-			 * The createFromConfigurableObject form factory does the following: 
+			 * The createFromConfigurableObject factory method creates a form through a Configurable object.
+			 * For achieveing this purpose, it does the following operations: 
 			 *
 			 *	Gets a form instance through the self::getInstanceFromUIContext method according to the passed UI, 
 			 *	if no UI is given, it will autodetermine what is the UI where it's been called from (cli, web, etc).
@@ -18,7 +19,7 @@
 			 * Takes in a Configurable object as the first parameter (mandatory) and obtains it's attributes,
 			 * this configurable object is used to obtain the configuration attributes/properties of said configurable object.
 			 *
-			 * Adds the proper form elements according to the previously mentioned properties/attributes 
+			 * For each configurable property of the configurable object, it will create an element inside the form.
 			 *
 			 * @params	\apf\core\Configurable	$object , An object that extends to \apf\core\Configurable class.
 			 * @params	string						$ui A valid User Interface (cli, web, etc)
@@ -30,23 +31,38 @@
 
 			public static function createFromConfigurableObject(Configurable &$object,$ui=NULL){
 
-				//Get a form instance according to the passed ui,
-				//if the ui is NULL the UI will be autodetermined by the getInstanceFromUIContext method
-				//
-				//Create a new form instance of the corresponding form considering the context where PHP is being called, i.e cli, web, etc
+				/**
+				 * Get a form instance according to the passed ui:
+				 *
+				 * if the $ui argument is NULL, the UI will be autodetermined by the getInstanceFromUIContext method
+             */
+
 				$form				=	self::getInstanceFromUIContext($ui);
 
-				//Get all the attributes from the configuration of the configurable object
+				/**
+				 * Get all the attributes from the configuration of the configurable object
+				 */
+
 				$attributes		=	$object->getConfig()->getAttributes();
 
-				//If the configurable object's configuration has no attributes then throw an exception
+				/**
+				 * If the configurable object's configuration has no attributes then throw an exception
+				 */
+
 				if(!sizeof($attributes)){
 
-					throw new \InvalidArgumentException("No attributes were found, can not create from elements!");
+					$msg	=	"No attributes were found in this object´s configuration, if it has no attributes, this means I can't";
+					$msg	=	sprintf('%s create any form elements!',$msg);
+
+					throw new \InvalidArgumentException($msg);
 
 				}
 
-				//Else, foreach attribute, create a form element ...
+				/**
+             * If attributes are found, then begin creating the corresponding form elements.
+				 * Add each element to the $form we created before.
+				 */
+
 				foreach($attributes as $attribute){
 
 					///////////////////////////////////
@@ -57,9 +73,7 @@
 					//For now, we just set everything to input (which is complete bullshit)
 					///////////////////////////////////
 				
-					$element		=	ElementFactory::getInstanceFromUIContext('input')
-					->setName($attribute['name'])
-					->setDescription($attribute['description']);
+					$element		=	ElementFactory::getInstanceFromUIContext('input',$attribute['name'],$attribute['description']);
 
 					$name			=	$attribute['name'];
 
@@ -86,12 +100,17 @@
 			}
 
 			/**
-			 *Gets a form instance according to the context obtained from the within the Kernel::getSAPI method
+			 * Gets a form instance according to the context obtained from the within the Kernel::getSAPI method
+          *
+			 * @return	\apf\ui\form\Cli			If the autodetected context is cli or if the $ui argument is equal to cli
+			 * @return	\apf\ui\form\Web			If the autodetected context is web or if the $ui argument is equal to web
 			 */
 
 			public static function getInstanceFromUIContext($ui=NULL){
 
-				//If no $ui is specified, autodetect through the Kernel::getSAPI object, which is the UI context where this factory is being called from
+				/**
+             * If no $ui is specified, autodetect it through the Kernel::getSAPI object
+             */
 
 				if($ui===NULL){
 
@@ -99,15 +118,26 @@
 
 				}
 
+				/**
+             * Compose the class name
+             */
+
 				$class	=	sprintf('\apf\ui\form\%s',ucwords($ui));
 
-				//Corroborate that the given form UI does in fact exists
+				/**
+				 * Corroborate that the given form UI class does in fact exists
+             */
 
 				if(!class_exists($class)){
 
-					throw new \InvalidArgumentException("No UI named \"$ui\" was found, perhaps you'd like to contribute and create it? :)");
+					throw new \InvalidArgumentException("No Form UI named \"$ui\" was found, perhaps you'd like to help and create it?");
 
 				}
+
+				/**
+				 * Create a new form instance of the corresponding form considering the context 
+				 * where PHP is being called, i.e cli, web, etc
+				 */
 
 				return new $class();
 
