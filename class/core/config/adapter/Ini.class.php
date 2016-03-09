@@ -12,13 +12,15 @@
 
 				$str		=	Array();
 
-				foreach($config as $value){
+				foreach($config as $attribute){
 
-					if($value->isMultiple()){
+					if($attribute->isMultiple()){
 
-						foreach($value->getValue() as $val){
+						$str[]	=	sprintf(';%s',$attribute->getDescription());
 
-							$str[]	=	"{$value->getName()}[] = '{$val}'\n";
+						foreach($attribute->getValue() as $attr){
+
+							$str[]	=	"{$attribute->getName()}[] = '{$attr}'";
 
 						}
 
@@ -26,7 +28,7 @@
 
 					}
 
-					$str[]	=	"{$value->getName()} = '{$value->getValue()}'";
+					$str[]	=	"{$attribute->getName()} = '{$attribute->getValue()}' ;{$attribute->getDescription()}";
 
 				}
 

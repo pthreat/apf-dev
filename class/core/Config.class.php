@@ -1,218 +1,122 @@
 <?php
 
-	/**
-	 * This is a configuration object, it's sole purpose is to hold configuration values
-	 */
-
 	namespace apf\core{
 
-		use \apf\core\config\Value as ConfigValue;
+		use \apf\core\config\Attribute;
 		use \apf\core\config\Adapter;
 
 		abstract class Config implements \Iterator{
 
-			private	$values					=	Array();
-			private	$securedAttributes	=	Array();
+			private	$attributes	=	NULL;
 
-			public function __construct(Config $config=NULL,Array $securedAttributes=Array()){
+			final public function __construct(Config $config=NULL){
 
-				if($config){
+				$this->attributes	=	new \ArrayObject();
+				$this->configureAttributes();
+
+				if($config !== NULL){
 
 					$this->merge($config);
 
 				}
 
-				if(sizeof($securedAttributes)){
+			}
 
-					$this->setSecuredAttributes($securedAttributes);
+			private function makeValidatorName($name){
 
-				}
+				return sprintf('validate%s',ucwords($name));
 
 			}
 
-			public function setSecuredAttributes(Array $array){
+			public function hasValidator($name){
 
-				if(sizeof($this->securedAttributes)){
+				return method_exists($this,$this->makeValidatorName($name));
 
-					throw new \LogicException("Secured attributes have already been established and can not be changed");
+			}
+
+			public function getValidator($name){
+
+				if(!$this->hasValidator($name)){
+
+					throw new \InvalidArgumentException("No validator found for attribute $name");		
 
 				}
 
-				foreach($array as $value){
+				return $this->makeValidatorName($name);
 
-					if(!in_array($value,$this->values)){
+			}
 
-						throw new \InvalidArgumentException("Value \"$value\" does not exists in this configuration values");
+			public function validateAttribute($name,$value){
+
+				$validator	=	$this->getValidator($name);
+				return $this->$validator($value);
+
+			}
+
+			protected function addAttribute($attribute){
+
+				$this->attributes->append(Attribute::factory($attribute));
+
+			}
+
+			/**
+			 * Returns setters and getters according to the attributes set on the configuration
+			 * This is provided due to hidden functionality in the __call magic method.
+			 * When exploring a new framework, I particularly tend to var_dump(get_class_methods($class))
+			 * I find it frustrating when certain functionality is not obvious.
+			 * This method is provided to leverage said frustration.
+			 */
+
+			public function getMethods(){
+
+				$methods	=	Array();
+
+				foreach($this as $attribute){
+
+					$methods[]	=	sprintf('set%s',ucwords($attribute->getName()));
+					$methods[]	=	sprintf('get%s',ucwords($attribute->getName()));
+
+				}
+
+				return $methods;
+				
+			}
+
+			public function hasAttribute($name){
+
+				return (boolean)$this->getAttribute($name);
+
+			}
+
+			public function getAttribute($name){
+
+				$name	=	strtolower($name);
+
+				foreach($this->attributes as $attribute){
+
+					if($attribute->getName() == $name){
+
+						return $attribute;
 
 					}
 
-				}
+				}	
 
-				$this->securedAttributes	=	$array;
-
-				return $this;
-
-			}
-
-			public function getSecuredAttributes(){
-
-				return $this->securedAttributes;
-
-			}
-
-			public function toArray(){
-
-				foreach($this->values as $value){
-
-					$values[$value->getName()]	=	$value->getValue();
-
-				}
-
-				return $values;
+				throw new \InvalidArgumentException("Unknown configuration parameter \"$name\"");
 
 			}
 
 			public function getAttributes(){
 
-				//Validate attributes format returned by __getAttributes
-				return $this->__getAttributes();
-
-			}
-
-			abstract public function __getAttributes();
-
-			public function  __set($key,$value){
-
-				if(is_array($value)){
-
-					if(!$this->hasKey($key)){
-
-						$this->values[$key]	=	new \ArrayObject();
-
-						foreach($value as $k=>$val){
-			
-							$this->values[$key]->append(new ConfigValue($k,$val));
-
-						}
-
-					}
-
-					return;
-
-				}
-
-				return $this->setValue(new ConfigValue($key,$value));
-
-			}
-
-			public function hasKey($key){
-
-				return array_key_exists($key,$this->values);
-
-			}
-
-			public function &__get($key){
-
-				if(!$this->hasKey($key)){
-
-					throw new \InvalidArgumentException("Parameter \"$key\" not found in section \"{$this->name}\"");
-
-				}
-
-				return $this->values[$key];
-
-			}
-
-			public function attributeIsSecured($attr){
-
-				return in_array($attr,$this->securedAttributes);
-
-			}
-
-			public function setValue(ConfigValue $value){
-
-				$setter		=	"set{$value->getName()}";
-
-				if(!method_exists($this,$setter)){
-
-					$class	=	get_called_class();
-					throw new \InvalidArgumentException("No setter method named \"$setter\" was found in class $class");
-
-				}
-
-				//////////////////////////////////////////////////////////////////////////////////////////////
-				//If the attribute is secured, set it as secure, this will avoid certain values be printed 
-				//by accident in var_dump, remember that you need PHP 5.6 for this feature to work properly!
-				//////////////////////////////////////////////////////////////////////////////////////////////
-
-				if($this->attributeIsSecured($value->getName())){
-
-					$value->setSecure(TRUE);
-
-				}
-
-				$this->values[strtolower($value->getName())]	=	$value;
-
-				return $this;
-
-			}
-
-			public function getValues(){
-
-				return $this->values;
-
-			}
-
-			/**
-			* Returns an array with NON exportable configuration attributes. 
-			* i.e those attributes/properties that will *NOT* be exported when exporting this configuration to any format
-			* This is provided due to the fact that some attributes are part of run time code and not configuration
-			* For instance, say the injected Project attribute on a project Module "project" is not something that 
-			* you would export into a module configuration file.
-			 */
-
-			abstract public function getNonExportableAttributes();
-
-			//////////////////////////////////////
-			//Iterator interface
-			/////////////////////////////////////
-
-			public function current(){
-
-				return current($this->values);
-
-			}
-
-			public function key(){
-
-				return key($this->values);
-
-			}
-
-			public function next(){
-
-				return next($this->values);
-
-			}
-
-			public function rewind(){
-
-				return reset($this->values);
-
-			}
-
-			public function valid(){
-
-				$key	=	key($this->values);
-				return $key!==NULL && $key!==FALSE;
+				return $this->attributes;
 
 			}
 
 			public function merge(Config $config){
 
-				foreach($config->values as $value){
+				foreach($config as $attribute){
 
-					$this->setValue($value);
+					$this->setValue($attribute);
 
 				}
 
@@ -220,8 +124,21 @@
 
 			}
 
-			//A configuration adapter is basically a configuration format
-			//Say ... JSON, XML, INI, YML
+			public function configureAttributes(){
+
+				return $this->__configureAttributes();
+
+			}
+
+			abstract protected function __configureAttributes();
+
+			/**
+			 * This method returns a configuration adapter internally to be able to save, export, import
+			 * a configuration object.
+			 *
+			 * A configuration adapter is basically a configuration format in which a Configuration object 
+			 * can be exported, said formats can be: JSON, XML, INI. More formats will be supported in the future.
+			 */
 
 			private static function __getAdapter($adapter){
 
@@ -261,108 +178,92 @@
 			public function save($format="ini"){
 			}
 
+			/************************************
+			 *Iterator interface
+			 ************************************/
+
+			public function current(){
+
+				return current($this->attributes);
+
+			}
+
+			public function key(){
+
+				return key($this->attributes);
+
+			}
+
+			public function next(){
+
+				return next($this->attributes);
+
+			}
+
+			public function rewind(){
+
+				return reset($this->attributes);
+
+			}
+
+			public function valid(){
+
+				$key	=	key($this->attributes);
+				return $key!==NULL && $key!==FALSE;
+
+			}
+
+			/*************************************
+			 *Magic methods
+			 *************************************/
+
+			public function __set($name,$value){
+
+				$attribute	=	$this->getAttribute($name);
+				return $attribute->setValue($value);
+
+			}
+
+			public function __get($name){
+
+				return $this->getAttribute($name);
+
+			}
+
+			public function __call($method,$args){
+
+				$isSetterOrGetter	=	strtolower(substr($method,0,3));
+				$isSetter			=	$isSetterOrGetter === 'set';
+				$isGetter			=	$isSetterOrGetter === 'get';
+
+				if(!$isSetter && !$isGetter){
+
+					throw new \BadMethodCallException("Call to undefined method: \"$method\"");
+
+				}
+
+				$attribute		=	$this->getAttribute(substr($method,3));
+
+				if($isGetter){
+
+					return $attribute->getValue();
+
+				}
+
+				if($isSetter){
+
+					return call_user_func_array(Array($attribute,'setValue'),$args);
+
+				}
+
+			}
+
 			public function __toString(){
 
 				return $this->export("ini");
 
 			}
 
-			public function hasValue($name){
-
-				return array_key_exists($name,$this->values);
-
-			}
-
-			public function hasValues(Array $specificValues=Array()){
-
-				if($specificValues){
-
-					foreach($specificValues as $key=>$value){
-
-						if(!$this->hasValue($key)){
-
-							return FALSE;
-
-						}
-
-					}
-
-				}
-
-				return sizeof($this->values);
-
-			}
-
-			public function hasValuesExcept($values){
-
-				if(!is_array($values)){
-
-					$values	=	Array($values);
-
-				}
-
-				if(!$this->hasValues()){
-
-					return FALSE;
-
-				}
-
-				foreach($this->values as $key=>$value){
-
-					if(in_array($key,$values)){
-
-						continue;
-
-					}
-
-					return TRUE;
-
-				}
-
-				return FALSE;
-
-			}
-
-			public function __call($method,$values){
-
-				$isGetter	=	strtolower(substr($method,0,3)) === 'get';
-
-				if($isGetter){
-
-					$attribute	=	strtolower(substr($method,3));
-
-					if(!$this->hasValue($attribute)){
-
-						return NULL;
-
-					}
-
-					return ($this->values[$attribute] instanceof \ArrayObject)	?	$this->values[$attribute]	:	$this->values[$attribute]->getValue();
-
-				}
-
-				$isUnset		=	strtolower(substr($method,0,5)) === 'unset';
-
-				if($isUnset){
-
-					$attribute	=	strtolower(substr($method,5));
-
-					if(array_key_exists($attribute,$this->values)){
-
-						unset($this->values[$attribute]);
-						return;
-
-					}
-
-					return NULL;
-
-				}
-
-				throw new \BadMethodCallException("No such method \"$method\"");
-
-			}
-
 		}
 
 	}
-
