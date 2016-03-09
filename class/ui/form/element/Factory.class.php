@@ -9,15 +9,21 @@
 			/**
 			 *Gets a form element instance according to the context obtained from the within the Kernel::getSAPI method
 			 *
-			 *@param string $type			The *type* of the element, input, select, etc
-			 *@param string $name			The name of the element
-			 *@param string $description	Element Description
-			 *@param string $ui				Optional argument. User Interface for the given element type, web, cli, etc
+			 *@param string $type									The *type* of the element, input, select, etc
+			 *@param string $name									The name of the element
+			 *@param string $description							Element Description
+			 *@param \apf\ui\form\element\layout\Container	A Layout container object
+			 *@param string $ui										User Interface for the given element type, web, cli, etc
 			 */
 
 			public static function getInstanceFromUIContext($type,$name,$value,LayoutContainer $layoutContainer,$ui=NULL){
 
 				$type	=	trim($type);
+
+				/**
+				 *An element type is mandatory. This "type" is the type of element one wishes to create
+				 *an input element, a select element, etc.
+             */
 
 				if(empty($type)){
 
@@ -35,6 +41,10 @@
 
 				}
 
+				/**
+				 * Make the element class name
+             */
+
 				$class	=	sprintf('\apf\ui\form\%s\element\%s',strtolower($ui),ucwords($type));
 
 				/**
@@ -47,7 +57,6 @@
 
 				}
 
-				
 				/**
 				 *	Return a new element type instance, configured with a name, a value and a layout container.
 				 */

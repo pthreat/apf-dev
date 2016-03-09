@@ -20,6 +20,15 @@
 
 			}
 
+			public static function factory(){
+
+				$config	=	self::getConfigurationInstance();
+				$class	=	get_called_class();
+
+				return new $class($config,$validate='none');
+
+			}
+
 			protected static function getConfigurationInstance(){
 
 				$childClass		=	strtolower(get_called_class());
@@ -41,6 +50,7 @@
 			/**
 			*
 			*Validates that the passed configuration instance responds to the proper configuration class
+			*
 			*@example The \apf\core\Project class extends to the Configurable class. This will validate
 			*that the passed instance is of class \apf\core\project\Config.
 			*This enforces proper namespace naming for native framework classes and also acts as a sort of "type hint".

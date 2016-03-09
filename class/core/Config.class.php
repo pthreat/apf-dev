@@ -53,9 +53,11 @@
 
 			}
 
-			protected function addAttribute($attribute){
+			protected function addAttribute(Array $parameters){
 
-				$this->attributes->append(Attribute::factory($attribute));
+				$parameters['config']	=	$this;
+
+				$this->attributes->append(new Attribute($parameters));
 
 			}
 

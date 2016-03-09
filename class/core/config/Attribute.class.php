@@ -4,117 +4,154 @@
 
 		use \apf\core\Config;
 
-		class Attribute{
+		class Attribute implements \ArrayAccess{
 
-			private	$name				=	NULL;
-			private	$description	=	NULL;
-			private	$value			=	NULL;
-			private	$validate		=	TRUE;
-			private	$onSetValue		=	NULL;
-			private	$config			=	NULL;
+			private	$container		=	Array(
+														'name'			=>	NULL,
+														'description'	=>	NULL,
+														'value'			=>	NULL,
+														'validate'		=>	TRUE,
+														'onSetValue'	=>	NULL,
+														'config'			=>	NULL,
+														'exportable'	=>	TRUE
+			);
 
-			public function __construct(Config $config,$name,$description,$validate=TRUE,$value=NULL){
+			public function __construct(Array $parameters){
+
+				if(!is_array($parameters)){
+
+					throw new \InvalidArgumentException("Factory parameter must be an array or an attribute");
+
+				}
+
+				$config			=	array_key_exists('config',$parameters)			?	$parameters['config']		:	NULL;
+				$name				=	array_key_exists('name',$parameters)			?	$parameters['name']			:	NULL;
+				$description	=	array_key_exists('description',$parameters)	?	$parameters['description']	:	NULL;
+				$value			=	array_key_exists('value',$parameters)			?	$parameters['value']			:	NULL;
+				$onSetValue		=	array_key_exists('onSetValue',$parameters)	?	$parameters['onSetValue']	:	NULL;
+				$validate		=	array_key_exists('validate',$parameters)		?	$parameters['validate']		:	TRUE;
+				$exportable		=	array_key_exists('exportable',$parameters)	?	$parameters['exportable']	:	TRUE;
 
 				$this->setConfig($config);
 				$this->setName($name);
 				$this->setDescription($description);
 
-				if($value !== NULL){
+				if($value!==NULL){
 
-					$this->setValue($value);
+					$this->setValue($value);	
+
+				}
+
+				if($onSetValue !== NULL){
+
+					$this->onSetValue($onSetValue);	
 
 				}
 
 				$this->setValidate($validate);
+				$this->setExportable($exportable);
+
+			}
+
+			public static function factory($parameters){
+
+				if($parameters instanceof Attribute){
+
+					return $parameters;
+
+				}
+
+				if(!is_array($parameters)){
+
+					throw new \InvalidArgumentException('Factory parameter must be an array or an attribute');
+
+				}
+
+				return new static($parameters);
+
+			}
+
+			public function setExportable($boolean){
+
+				$this->container['exportable']	=	(boolean)$boolean;
+				return $this;
+
+			}
+
+			public function isExportable(){
+
+				return (boolean)$this->container['exportable'];
+
+			}
+
+			public function getExportable(){
+
+				return $this->container['exportable'];
 
 			}
 
 			public function setConfig(Config $config){
 
-				$this->config	=	$config;
+				$this->container['config']	=	$config;
 				return $this;
 
 			}
 
 			public function getConfig(){
 
-				return $this->config;
+				return $this->container['config'];
 
 			}
 
 			public function setValidate($validate){
 
-				$this->validate	=	(boolean)$validate;
+				$this->container['validate']	=	(boolean)$validate;
 				return $this;
 
 			}
 
 			public function getValidate(){
 
-				return $this->validate;
-
-			}
-
-			public static function factory($params){
-
-				if($params instanceof Attribute){
-
-					return $params;
-
-				}
-
-				if(!is_array($params)){
-
-					throw new \InvalidArgumentException("Factory parameter must be an array or an attribute");
-
-				}
-
-
-				$config			=	array_key_exists('config',$params)			?	$params['config']			:	NULL;
-				$name				=	array_key_exists('name',$params)				?	$params['name']			:	NULL;
-				$description	=	array_key_exists('description',$params)	?	$params['description']	:	NULL;
-				$value			=	array_key_exists('value',$params)			?	$params['value']			:	NULL;
-				$validate		=	array_key_exists('validate',$params)		?	$params['validate']		:	TRUE;
-
-				return new static($config,$name,$description,$validate,$value);
+				return $this->container['validate'];
 
 			}
 
 			public function setName($name){
 
-				$this->name	=	$name;
+				$this->container['name']	=	$name;
 				return $this;
 
 			}
 
 			public function getName(){
 
-				return $this->name;
+				return $this->container['name'];
 
 			}
 
 			public function setDescription($description){
 
-				$this->description	=	$description;
+				$this->container['description']	=	$description;
 				return $this;
 
 			}
 
 			public function getDescription(){
 
-				return $this->description;
+				return $this->container['description'];
 
 			}
 
 			public function isMultiple(){
 
-				return is_array($this->value);
+				$value	=	$this->container['value'];
+				return is_array($value) || (is_object($value) && ($value instanceof \Iterator));
 
 			}
 
 			public function onSetValue(Callable $callback){
 
-				$this->onSetValue	=	$callback;
+				$this->container['onSetValue']	=	$callback;
 				return $this;
 
 			}
@@ -128,13 +165,14 @@
 
 				}
 
-				if($this->validate){
+				if($this->container['validate']){
 
-					$method			=	$this->config->getValidator($this->name);
+					$attrName	=	$this->container['name'];
+					$method		=	$this->config->getValidator($name);
 
-					if(!$this->config->hasValidator($this->name)){
+					if(!$this->config->hasValidator($name)){
 
-						throw new \LogicException("Attribute {$this->name} has to be validated, but no validator named $method has been found");
+						throw new \LogicException("Attribute $name has to be validated, but no validator named $method has been found");
 					}
 
 					$this->value	=	$this->config->$method($value);
@@ -143,7 +181,7 @@
 
 				}
 
-				$this->value	=	$value;
+				$this->container['value']	=	$value;
 
 				return $this;
 
@@ -151,7 +189,67 @@
 
 			public function getValue(){
 
-				return $this->value;
+				return $this->container['value'];
+
+			}
+
+			/**
+			 * Array Access interface methods
+			 */
+
+			private function validateOffset($offset){
+
+				if(!array_key_exists($offset,$this->container)){
+
+					throw new \InvalidArgumentException("Unknown attribute property \"$offset\"");
+
+				}
+
+				return $offset;
+
+			}
+
+			public function offsetExists($offset){
+
+				$this->validateOffset($offset);				
+
+			}
+
+			public function offsetGet($offset){
+
+				return $this->container[$this->validateOffset($offset)];
+
+			}
+
+			public function offsetSet($offset,$value){
+
+				$this->container[$this->validateOffset($offset)]	=	$value;
+
+			}
+
+			public function offsetUnset($offset){
+
+				$this->container[$this->validateOffset($offset)]	=	NULL;
+
+			}
+
+			/**
+			 * Magic methods
+			 */
+
+			public function __set($offset,$value){
+
+				$this->validateOffset($offset);
+
+				$method	=	sprintf('set%s',ucwords($offset));
+
+				$this->$method($value);
+
+			}
+
+			public function __get($offset){
+
+				return $this->container[$this->validateOffset($offset)];
 
 			}
 

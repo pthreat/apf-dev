@@ -2,7 +2,9 @@
 
 	namespace apf\core\project{
 
-		use \apf\core\Config									as BaseConfig;
+		use \apf\core\Config					as BaseConfig;
+
+		use \apf\core\config\Attribute;
 
 		use \apf\iface\config\Nameable;
 		use \apf\iface\config\Describable;
@@ -28,55 +30,77 @@
 			use \apf\traits\config\Networkable;
 			use \apf\traits\config\web\Assetable;
 
-			public static function factory(Config $config){
-			}
+			public function __configureAttributes(){
 
-			public function __getAttributes(){
-	
-				return Array(
-									Array(
-											'name'			=>	'name',
-											'description'	=>	'Project name',
-									),
-									Array(
-											'name'			=>	'description',
-											'description'	=>	'Project description'
-									),
-									Array(
-											'name'			=>	'directories',
-											'description'	=>	'Project directories'
-									),
-									Array(
-											'name'			=>	'documentRoot',
-											'description'	=>	'Project document root'
-									),
-									Array(
-											'name'			=>	'modules',
-											'description'	=>	'Project modules'
-									),
-									Array(
-											'name'			=>	'templates',
-											'description'	=>	'Project templates'
-									),
-									Array(
-											'name'			=>	'fragments',
-											'description'	=>	'Project fragments'
-									),
-									Array(
-											'name'			=>	'assets',
-											'description'	=>	'Project assets'
-									),
-									Array(
-											'name'			=>	'connections',
-											'description'	=>	'Project connections'
-									)
+				parent::addAttribute(
+											Array(
+													'name'			=>	'name',
+													'description'	=>	'Project name'
+											)
 				);
 
-			}
+				parent::addAttribute(
+											Array(
+													'name'			=>	'description',
+													'description'	=>	'Project description' 
+											)
+				);
 
-			public function getNonExportableAttributes(){
+				parent::addAttribute(
+											Array(
+													'name'			=>	'directories',
+													'description'	=>	'Project directories' 
+											)
+				);
 
-				return Array();
+				parent::addAttribute(
+											Array(
+													'name'			=>	'documentRoot',
+													'description'	=>	'Project document root'
+											)
+				);
+
+				parent::addAttribute(
+											Array(
+													'name'			=>	'module',
+													'description'	=>	'Project modules' 
+											)
+				);
+
+				parent::addAttribute(
+											Array(
+													'name'			=>	'templates',
+													'description'	=>	'Project templates' 
+											)
+				);
+
+				parent::addAttribute(
+											Array(
+													'name'			=>	'fragments',
+													'description'	=>	'Project fragments' 
+											)
+				);
+
+				parent::addAttribute(
+											Array(
+													'name'			=>	'assets',
+													'description'	=>	'Project assets' 
+											)
+				);
+
+				parent::addAttribute(
+											Array(
+													'name'			=>	'connections',
+													'description'	=>	'Project connections'
+											)
+				);
+
+				parent::addAttribute(
+											Array(
+													'name'			=>	'assets',
+													'description'	=>	'Project assets' 
+											)
+				);
 
 			}
 
