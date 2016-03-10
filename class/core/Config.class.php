@@ -7,11 +7,28 @@
 
 		abstract class Config implements \Iterator{
 
-			private	$attributes	=	NULL;
+			private	$attributes			=	NULL;
 
-			final public function __construct(Config $config=NULL){
+			private	$isValidatedSoft	=	FALSE;
+			private	$isValidatedHard	=	FALSE;
+			private	$isValidatedExtra	=	FALSE;
+
+			final public function __construct($parentObject,Config $config=NULL){
 
 				$this->attributes	=	new \ArrayObject();
+
+				$this->addAttribute(
+											Array(
+													'name'			=>	'configurableObject',
+													'description'	=>	'The configurable object for which this configuration is meant.',
+													'value'			=>	$parentObject,
+													'exportable'	=>	FALSE,
+													'traversable'	=>	FALSE,
+													'readOnly'		=>	TRUE,
+													'validate'		=>	FALSE
+											)
+				);
+
 				$this->configureAttributes();
 
 				if($config !== NULL){
@@ -19,6 +36,133 @@
 					$this->merge($config);
 
 				}
+
+			}
+
+			public function validateConfigurableObject($object){
+					
+				$parentObjectClass	=	strtolower(get_class($object));
+				$configClass			=	strtolower(get_class($this));
+
+				$configClass			=	substr($configClass,0,strrpos($configClass,'\\'));
+
+				if($configClass !== $parentObjectClass){
+			
+					throw new \InvalidArgumentException("Invalid parent object, expected $configClass, got $parentObjectClass instead");
+	
+				}
+
+				return $object;
+
+			}
+
+			public function validate($mode=NULL,$reValidate=FALSE){
+
+				$mode		=	strtolower(trim($mode));
+
+				$modes	=	Array(
+										'soft',
+										'hard',
+										'extra',
+										'none'
+				);
+
+				if(!in_array($mode,$modes)){
+
+					throw new \InvalidArgumentException("Invalid validation mode specified: \"$validateMode\"");
+
+				}
+
+				if($validateMode=='none'){
+
+					return;
+
+				}
+
+				$class	=	self::getValidatorClass();
+
+				if(!class_exists($class)){
+
+					throw new \LogicException("No validator class found for this configurable object");
+
+				}
+
+				switch($mode){
+
+					case 'soft':
+
+							if($this->isValidatedSoft){
+
+								return TRUE;
+
+							}
+
+							return $this->isValidatedSoft		=	$class::softConfigValidation($this->getConfig());
+
+					break;
+
+					case 'hard':
+
+						if($this->isValidatedHard && !$reValidate){
+
+							return TRUE;
+
+						}
+
+						return $this->isValidatedHard		=	$class::hardConfigValidation($this->getConfig());
+					break;
+
+					case 'extra':
+
+						if($this->isValidatedExtra && !$reValidate){
+
+							return TRUE;
+
+						}
+
+						return $this->isValidatedExtra	=	$class::extraConfigValidation($this->getConfig());
+
+					break;
+
+					default:
+						throw new \InvalidArgumentException("Unknown validation method");
+					break;
+
+				}
+
+			}
+
+			//The is validated method is a shortcut to check if the object has been validated in any way, soft or hard
+			public function isValidated(){
+
+				return $this->isValidatedSoft || $this->isValidatedHard || $this->isValidatedExtra;
+
+			}
+
+			//The isValidatedSoft method will tell you if the configurable object has been validated soft.
+			public function isValidatedSoft(){
+
+				return $this->isValidatedSoft;
+
+			}
+
+			//The isValidatedHard method will tell you if the configurable object has been validated the hard way.
+			public function isValidatedHard(){
+
+				return $this->isValidatedHard;
+
+			}
+
+			//The isValidatedHard method will tell you if the configurable object has passed extra validations
+			public function isValidatedExtra(){
+
+				return $this->isValidatedExtra;
+
+			}
+
+			public function getConfigurableObject(){
+
+				return $this->getAttribute('configurableObject')->getValue();
 
 			}
 
@@ -96,7 +240,7 @@
 
 				foreach($this->attributes as $attribute){
 
-					if($attribute->getName() == $name){
+					if(strtolower($attribute->getName()) == $name){
 
 						return $attribute;
 
@@ -186,7 +330,17 @@
 
 			public function current(){
 
-				return current($this->attributes);
+				$current = current($this->attributes);
+
+				if($current->isTraversable()){
+
+					next($this->attributes);
+
+					return current($this->attributes);
+
+				}
+
+				return $current;
 
 			}
 

@@ -21,7 +21,7 @@
 			 */
 
 			private	$noValueLayout	=	NULL;
-			private	$valueLayout	=	NULL;
+			private	$successLayout	=	NULL;
 			private	$errorLayout	=	NULL;
 
 			public function setNoValueLayout(ElementLayoutInterface $layout){
@@ -37,16 +37,16 @@
 
 			}
 
-			public function setValueLayout(ElementLayoutInterface $layout){
+			public function setSuccessLayout(ElementLayoutInterface $layout){
 
-				$this->valueLayout	=	$layout;
+				$this->successLayout	=	$layout;
 				return $this;
 
 			}
 
-			public function getValueLayout(){
+			public function getSuccessLayout(){
 
-				return $this->valueLayout;
+				return $this->successLayout;
 
 			}
 

@@ -16,7 +16,7 @@
 			 *@param string $ui										User Interface for the given element type, web, cli, etc
 			 */
 
-			public static function getInstanceFromUIContext($type,$name,$value,LayoutContainer $layoutContainer,$ui=NULL){
+			public static function getInstanceFromUIContext($type,$name,$value,LayoutContainer $layoutContainer=NULL,$ui=NULL){
 
 				$type	=	trim($type);
 
@@ -61,7 +61,7 @@
 				 *	Return a new element type instance, configured with a name, a value and a layout container.
 				 */
 
-				return new $class($name,$value,$layoutContainer);
+				return new $class();
 
 			}
 

@@ -4,7 +4,9 @@
 
 		use \apf\core\Configurable;
 
-		abstract class Element extends Configurable{
+		use \apf\iface\ui\form\Element	as	ElementInterface;
+
+		abstract class Element extends Configurable implements ElementInterface{
 
 			/**
 			 * According to different element states, the element is rendered in different ways,

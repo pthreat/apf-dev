@@ -10,31 +10,18 @@
 
 			private	$config;
 
-			private	$isValidatedSoft	=	FALSE;
-			private	$isValidatedHard	=	FALSE;
-			private	$isValidatedExtra	=	FALSE;
+			final public function __construct(Config $config=NULL){
 
-			final public function __construct(Config $config,$validateMode='hard',$reValidate=FALSE){
-
-				$this->setConfig($config,$validateMode,$reValidate);
+				$this->setConfig($config === NULL	?	self::getConfigurationInstance($this)	:	$config);
 
 			}
 
-			public static function factory(){
-
-				$config	=	self::getConfigurationInstance();
-				$class	=	get_called_class();
-
-				return new $class($config,$validate='none');
-
-			}
-
-			protected static function getConfigurationInstance(){
+			protected function getConfigurationInstance(){
 
 				$childClass		=	strtolower(get_called_class());
 				$configClass	=	sprintf('%s\\Config',$childClass);
 
-				$config			=	new $configClass();
+				$config			=	new $configClass($this);
 
 				if(!($config instanceof $configClass)){
 
@@ -79,128 +66,14 @@
 
 			}
 
-			public function isConfigured(){
+			final public function setConfig(Config $config){
 
-				return !is_null($this->config);
+				/**
+				 * Validate that the passed configuration instance responds to the proper class.
+				 * In this way, we enforce namespace naming conventions.
+				 */
 
-			}
-
-			public function validateConfig($mode=NULL,$reValidate=FALSE){
-
-				$mode		=	strtolower(trim($mode));
-				$class	=	self::getValidatorClass();
-
-				if(!class_exists($class)){
-
-					throw new \LogicException("No validator class found for this configurable object");
-
-				}
-
-				switch($mode){
-
-					case 'soft':
-
-							if($this->isValidatedSoft){
-
-								return TRUE;
-
-							}
-
-							return $this->isValidatedSoft		=	$class::softConfigValidation($this->getConfig());
-
-					break;
-
-					case 'hard':
-
-						if($this->isValidatedHard){
-
-							return TRUE;
-
-						}
-
-						return $this->isValidatedHard		=	$class::hardConfigValidation($this->getConfig());
-					break;
-
-					case 'extra':
-
-						if($this->isValidatedExtra){
-
-							return TRUE;
-
-						}
-
-						return $this->isValidatedExtra	=	$class::extraConfigValidation($this->getConfig());
-
-					break;
-
-					default:
-						throw new \InvalidArgumentException("Unknown validation method");
-					break;
-
-				}
-
-			}
-
-			//The is validated method is a shortcut to check if the object has been validated in any way, soft or hard
-			public function isValidated(){
-
-				return $this->isValidatedSoft || $this->isValidatedHard || $this->isValidatedExtra;
-
-			}
-
-			//The isValidatedSoft method will tell you if the configurable object has been validated soft.
-			public function isValidatedSoft(){
-
-				return $this->isValidatedSoft;
-
-			}
-
-			//The isValidatedHard method will tell you if the configurable object has been validated the hard way.
-			public function isValidatedHard(){
-
-				return $this->isValidatedHard;
-
-			}
-
-			//The isValidatedHard method will tell you if the configurable object has passed extra validations
-			public function isValidatedExtra(){
-
-				return $this->isValidatedExtra;
-
-			}
-
-			final public function setConfig(Config $config,$validateMode='hard',$reValidate=FALSE){
-
-				//Validate that the passed configuration instance responds to the proper class
 				$this->config	=	self::validateConfigurationInstance($config);
-
-				$validationModes	=	Array(
-													'soft',
-													'hard',
-													'extra',
-													'none'
-				);
-
-				if(!in_array($validateMode,$validationModes)){
-
-					throw new \InvalidArgumentException("Invalid validation mode specified: \"$validateMode\"");
-
-				}
-
-				if($validateMode=='none'){
-
-					return;
-
-				}
-
-				//Validate the configuration instance with a mode (soft,hard or extra).
-				if(!$this->validateConfig($validateMode,$reValidate)){
-
-					$configClass	=	get_called_class();
-					throw new \InvalidArgumentException("The \"$configClass\" configuration is not valid.");
-
-				}
-
 				return $this;
 
 			}
@@ -222,11 +95,7 @@
 
 			public static function configure($ui=NULL,Configurable &$object=NULL){
 
-				if($object===NULL){
-
-					$object	=	self::factory();
-
-				}
+				$object	=	$object === NULL ? new static()	:	$object;
 
 				return FormFactory::createFromConfigurableObject($object,$ui);
 

@@ -13,7 +13,9 @@
 														'validate'		=>	TRUE,
 														'onSetValue'	=>	NULL,
 														'config'			=>	NULL,
-														'exportable'	=>	TRUE
+														'exportable'	=>	TRUE,
+														'traversable'	=>	TRUE,
+														'readOnly'		=>	FALSE
 			);
 
 			public function __construct(Array $parameters){
@@ -31,6 +33,8 @@
 				$onSetValue		=	array_key_exists('onSetValue',$parameters)	?	$parameters['onSetValue']	:	NULL;
 				$validate		=	array_key_exists('validate',$parameters)		?	$parameters['validate']		:	TRUE;
 				$exportable		=	array_key_exists('exportable',$parameters)	?	$parameters['exportable']	:	TRUE;
+				$traversable	=	array_key_exists('traversable',$parameters)	?	$parameters['traversable']	:	TRUE;
+				$readOnly		=	array_key_exists('readOnly',$parameters)		?	$parameters['readOnly']		:	TRUE;
 
 				$this->setConfig($config);
 				$this->setName($name);
@@ -50,6 +54,34 @@
 
 				$this->setValidate($validate);
 				$this->setExportable($exportable);
+				$this->setTraversable($traversable);
+				$this->setReadOnly($readOnly);
+
+			}
+
+			public function setTraversable($boolean){
+
+				$this->container['traversable']	=	(boolean)$boolean;
+				return $this;
+
+			}
+
+			public function isTraversable(){
+
+				return $this->container['traversable'];
+
+			}
+
+			public function setReadOnly($boolean){
+
+				$this->container['readOnly']	=	(boolean)$boolean;
+				return $this;
+
+			}
+
+			public function isReadOnly(){
+
+				return $this->container['readOnly'];
 
 			}
 
@@ -110,6 +142,12 @@
 
 			}
 
+			public function needsValidation(){
+
+				return $this->container['validate'];
+
+			}
+
 			public function getValidate(){
 
 				return $this->container['validate'];
@@ -158,6 +196,12 @@
 
 			public function setValue($value){
 
+				if($this->isReadOnly()){
+
+					throw new \LogicException('This attribute is read only');
+
+				}
+
 				if($this->onSetValue !== NULL){
 
 					$this->onSetValue($value);
@@ -168,14 +212,14 @@
 				if($this->container['validate']){
 
 					$attrName	=	$this->container['name'];
-					$method		=	$this->config->getValidator($name);
+					$method		=	$this->config->getValidator($attrName);
 
-					if(!$this->config->hasValidator($name)){
+					if(!$this->config->hasValidator($attrName)){
 
 						throw new \LogicException("Attribute $name has to be validated, but no validator named $method has been found");
 					}
 
-					$this->value	=	$this->config->$method($value);
+					$this->container['value']	=	$this->config->$method($value);
 
 					return $this;
 

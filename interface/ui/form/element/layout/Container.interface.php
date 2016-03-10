@@ -8,8 +8,8 @@
 
 			public function setNoValueLayout(ElementLayoutInterface $layout);
 			public function getNoValueLayout();
-			public function setValueLayout(ElementLayoutInterface $layout);
-			public function getValueLayout();
+			public function setSuccessLayout(ElementLayoutInterface $layout);
+			public function getSuccessLayout();
 			public function setErrorLayout(ElementLayoutInterface $layout);
 			public function getErrorLayout();
 
