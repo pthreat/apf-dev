@@ -6,7 +6,7 @@
 		use \apf\core\config\Attribute;
 		use \apf\core\config\Adapter;
 
-		abstract class Config{
+		abstract class Config implements \ArrayAccess,\Iterator{
 
 			private	$attributeContainer	=	NULL;
 
@@ -209,6 +209,96 @@
 			}
 
 			public function merge(Config $config){
+
+			}
+
+			/***********************************************************************
+			 *Iterator interface [ PROXY ]
+			 *----------------------------------------------------------------------
+			 *All of the methods applied here are proxies to the attribute container
+			 ***********************************************************************/
+
+			public function current(){
+
+				return $this->attributeContainer->current();
+
+			}
+
+			public function key(){
+
+				return $this->attributeContainer->key();
+
+			}
+
+			public function next(){
+
+				return $this->attributeContainer->next();
+
+			}
+
+			public function rewind(){
+
+				return $this->attributeContainer->rewind();
+
+			}
+
+			public function valid(){
+
+				return $this->attributeContainer->valid();
+
+			}
+
+			/*******************************************************
+			 *Array Access interface [PROXY]
+			 *---------------------------------------
+			 *Proxy all array like calls to the attribute container
+			 *******************************************************/
+
+			public function offsetExists($offset){
+
+				return $this->attributeContainer->offsetExists();
+
+			}
+
+			public function offsetGet($offset){
+
+				return $this->attributeContainer->offsetGet();
+
+			}
+
+			public function offsetSet($offset,$value){
+
+				$this->attributeContainer->offsetSet($offset,$value);
+
+			}
+
+			public function offsetUnset($offset){
+
+				$this->attributeContainer->offsetUnset($offset);
+
+			}
+
+			/************************************************************
+			 *Magic methods [ PROXY ]
+			 *------------------------------------
+			 *Proxy calls to __set,__get through the attribute container
+			 ************************************************************/
+
+			public function __set($name,$value){
+
+				return $this->attributeContainer->get($name)->setValue($name);
+
+			}
+
+			public function __get($name){
+
+				return $this->attributeContainer->get($name);
+
+			}
+
+			public function __call($method,$arguments){
+
+				return call_user_func_array(Array($this->attributeContainer,$method),$arguments);
 
 			}
 

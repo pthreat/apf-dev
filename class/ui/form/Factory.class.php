@@ -11,10 +11,14 @@
 
 			/**
 			 * The createFromConfigurableObject factory method creates a form through a Configurable object.
+			 *
 			 * For achieveing this purpose, it does the following operations: 
 			 *
-			 *	Gets a form instance through the self::getInstanceFromUIContext method according to the passed UI, 
-			 *	if no UI is given, it will autodetermine what is the UI where it's been called from (cli, web, etc).
+			 *	Gets a form instance through the self::getInstanceFromUIContext method.
+			 *	if no $ui argument is given, ($ui=NULL) it will autodetermine which is the pertinent UI 
+			 * where it's been called from (cli, web, etc).
+			 * 
+			 * If a $ui argument is given (i.e not left to default NULL), it will use that $ui.			 
 			 *
 			 * Takes in a Configurable object as the first parameter (mandatory) and obtains it's attributes,
 			 * this configurable object is used to obtain the configuration attributes/properties of said configurable object.
@@ -76,24 +80,18 @@
 					$name			=	$attribute['name'];
 					$element		=	ElementFactory::getInstanceFromUIContext('input',$name,$attribute['description']);
 
-					//Set a nice callback so when a value is entered on a certain configuration
-					//The internal validation of the setter inside the configuration is executed
+					/**
+					 * Add the created element to the form
+					 */
 
-					$callback	=	function($value) use ($name,&$object){
-
-						return $object->getConfig()->$name	=	$value;
-
-					};
-
-					//Assign the callback
-					$element->onSetValue($callback);
-
-					//Add the element to the form
 					$form->addElement($element);
 
 				}
 
-				//Return the created form
+				/**
+				 * Return the created form
+				 */
+
 				return $form;
 
 			}

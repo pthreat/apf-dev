@@ -2,7 +2,7 @@
 
 	namespace apf\ui\form\cli\element{
 
-		use \apf\core\Config										as	BaseConfig;
+		use \apf\ui\form\element\Config						as	BaseConfig;
 		use \apf\ui\form\cli\element\Layout;
 		use \apf\ui\form\element\layout\Container			as	LayoutContainer;
 		use \apf\ui\form\cli\element\Prompt;
@@ -18,10 +18,6 @@
 
 			}
 
-			public function validateLayoutContainer(LayoutContainer $container){
-				return $container;
-			}
-
 			public function configure(){
 
 				/**
@@ -29,21 +25,22 @@
 				 */
 
 				$layoutContainer	=	new LayoutContainer();
+				$parentObject		=	$this->getConfigurableObject();
 
 				$layoutContainer->setErrorLayout(
 															new Layout(
-																			$element=$this->getConfigurableObject(),
-																			$format='[name:{"color":"red"}]> [description] [value:{"format":"<%s>"}]'
+																			$parentObject,
+																			'[name:{"color":"red"}]> [description] [value:{"format":"<%s>"}]'
 															)
 				)->setNoValueLayout(
 											new Layout(
-															$element=$this->getConfigurableObject(),
-															$format='[name:{"color":"light_cyan"}]> [description]'
+															$parentObject,
+															'[name:{"color":"light_cyan"}]> [description]'
 											)
 				)->setSuccessLayout(
 											new Layout(
-															$element=$this->getConfigurableObject(),
-															$format='[name:{"color":"light_green"}]> [description] [value:{"format":"(%s)"}]'
+															$parentObject,
+															'[name:{"color":"light_green"}]> [description] [value:{"format":"(%s)"}]'
 											)
 				);
 
@@ -61,6 +58,8 @@
 								'description'	=>	'Element prompt'
 						)
 				);
+
+				return parent::configure();
 
 			}
 

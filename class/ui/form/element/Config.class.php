@@ -34,6 +34,12 @@
 
 			}
 
+			public function validateLayoutContainer(LayoutContainer $container){
+
+				return $container;
+
+			}
+
 			public function validateValueState($state){
 
 				$states	=	Array('noval','success','error');

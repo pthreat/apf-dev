@@ -121,6 +121,51 @@
 
 			}
 
+			/**
+			 * Array Access interface methods
+			 */
+
+			private function validateOffset($offset){
+
+				if(!array_key_exists($offset,$this->attributes)){
+
+					throw new \InvalidArgumentException("Unknown attribute property \"$offset\"");
+
+				}
+
+				return $offset;
+
+			}
+
+			/****************************************
+			 *Array Access interface
+			 ****************************************/
+
+			public function offsetExists($offset){
+
+				$this->validateOffset($offset);				
+
+			}
+
+			public function offsetGet($offset){
+
+				return $this->attributes[$this->validateOffset($offset)];
+
+			}
+
+			public function offsetSet($offset,$value){
+
+				$this->attributes[$this->validateOffset($offset)]	=	$value;
+
+			}
+
+			public function offsetUnset($offset){
+
+				$this->attributes[$this->validateOffset($offset)]	=	NULL;
+
+			}
+
+
 			public function __call($method,$args){
 
 				$isSetterOrGetter	=	strtolower(substr($method,0,3));

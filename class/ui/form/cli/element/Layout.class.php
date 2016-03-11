@@ -95,14 +95,15 @@
 						$format		=	sprintf('%s%s',$format,array_key_exists('format',$attributes) ? $attributes['format'] : '%s');
 						$method		=	sprintf('get%s',trim($temp));
 
-						if(!method_exists($this->getElement(),$method)){
+
+						if(!method_exists($this->getElement()->getConfig(),$method)){
 
 							throw new \InvalidArgumentException("Unknown property \"$temp\"");
 
 						}
 
 
-						$parse[]		=	$this->getElement()->$method();
+						$parse[]		=	$this->getElement()->getConfig()->$method();
 						$temp			=	'';
 						continue;
 
