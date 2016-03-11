@@ -74,6 +74,12 @@
 
 			public function addElement(Element $element){
 
+				if(empty($element->getName())){
+
+					throw new \Exception("Element name can not be empty");
+
+				}
+
 				$this->elements[$element->getName()]	=	$element;
 				return $this;
 

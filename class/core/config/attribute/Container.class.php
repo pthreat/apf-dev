@@ -165,7 +165,6 @@
 
 			}
 
-
 			public function __call($method,$args){
 
 				$isSetterOrGetter	=	strtolower(substr($method,0,3));
@@ -178,7 +177,7 @@
 
 				}
 
-				$attribute		=	$this->getAttribute(substr($method,3));
+				$attribute		=	$this->get(substr($method,3));
 
 				if($isGetter){
 
@@ -186,14 +185,14 @@
 
 				}
 
-				if($isSetter){
 
+				if($isSetter){
+					
 					return call_user_func_array(Array($attribute,'setValue'),$args);
 
 				}
 
 			}
-
 
 
 		}

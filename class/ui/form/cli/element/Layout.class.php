@@ -124,13 +124,6 @@
 
 			}
 
-			public function setElement(ElementInterface &$element){
-
-				$this->element	=	$element;
-				return $this;
-
-			}
-
 			public function getElement(){
 
 				return $this->element;
