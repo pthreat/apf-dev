@@ -18,88 +18,64 @@
 
 		use \apf\iface\config\DocumentRootable;
 
-		class Config extends BaseConfig implements Nameable,Describable,Moduleable,Templateable,Fragmentable,Networkable,Assetable,DocumentRootable{
+		class Config extends BaseConfig{
 
-			use \apf\traits\config\Nameable;
-			use \apf\traits\config\Describable;
-			use \apf\traits\config\project\Directories;
-			use \apf\traits\config\Moduleable;
-			use \apf\traits\config\Templateable;
-			use \apf\traits\config\Fragmentable;
-			use \apf\traits\config\DocumentRootable;
-			use \apf\traits\config\Networkable;
-			use \apf\traits\config\web\Assetable;
+			public function configure(){
 
-			public function __configureAttributes(){
-
-				parent::addAttribute(
-											Array(
-													'name'			=>	'name',
-													'description'	=>	'Project name'
-											)
-				);
-
-				parent::addAttribute(
-											Array(
-													'name'			=>	'description',
-													'description'	=>	'Project description' 
-											)
-				);
-
-				parent::addAttribute(
-											Array(
-													'name'			=>	'directories',
-													'description'	=>	'Project directories' 
-											)
-				);
-
-				parent::addAttribute(
-											Array(
-													'name'			=>	'documentRoot',
-													'description'	=>	'Project document root'
-											)
-				);
-
-				parent::addAttribute(
-											Array(
-													'name'			=>	'module',
-													'description'	=>	'Project modules' 
-											)
-				);
-
-				parent::addAttribute(
-											Array(
-													'name'			=>	'templates',
-													'description'	=>	'Project templates' 
-											)
-				);
-
-				parent::addAttribute(
-											Array(
-													'name'			=>	'fragments',
-													'description'	=>	'Project fragments' 
-											)
-				);
-
-				parent::addAttribute(
-											Array(
-													'name'			=>	'assets',
-													'description'	=>	'Project assets' 
-											)
-				);
-
-				parent::addAttribute(
-											Array(
-													'name'			=>	'connections',
-													'description'	=>	'Project connections'
-											)
-				);
-
-				parent::addAttribute(
-											Array(
-													'name'			=>	'assets',
-													'description'	=>	'Project assets' 
-											)
+				$this->getAttributeContainer()
+				->add(
+						Array(
+								'name'			=>	'name',
+								'description'	=>	'Project name'
+						)
+				)
+				->add(
+						Array(
+								'name'			=>	'description',
+								'description'	=>	'Project description' 
+						)
+				)
+				->add(
+						Array(
+								'name'			=>	'directories',
+								'description'	=>	'Project directories' 
+						)
+				)
+				->add(
+						Array(
+								'name'			=>	'documentRoot',
+								'description'	=>	'Project document root'
+						)
+				)
+				->add(
+						Array(
+								'name'			=>	'module',
+								'description'	=>	'Project modules' 
+						)
+				)
+				->add(
+						Array(
+								'name'			=>	'templates',
+								'description'	=>	'Project templates' 
+						)
+				)
+				->add(
+						Array(
+								'name'			=>	'fragments',
+								'description'	=>	'Project fragments' 
+						)
+				)
+				->add(
+						Array(
+								'name'			=>	'assets',
+								'description'	=>	'Project assets' 
+						)
+				)
+				->add(
+						Array(
+								'name'			=>	'connections',
+								'description'	=>	'Project connections'
+						)
 				);
 
 			}

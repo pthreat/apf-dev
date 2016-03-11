@@ -39,6 +39,7 @@
 				$this->setConfig($config);
 				$this->setName($name);
 				$this->setDescription($description);
+				$this->setValidate($validate);
 
 				if($value!==NULL){
 
@@ -52,7 +53,7 @@
 
 				}
 
-				$this->setValidate($validate);
+
 				$this->setExportable($exportable);
 				$this->setTraversable($traversable);
 				$this->setReadOnly($readOnly);

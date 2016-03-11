@@ -6,7 +6,7 @@
 		use \apf\core\config\Attribute;
 		use \apf\core\config\Adapter;
 
-		abstract class Config{
+		abstract class Config implements \Iterator{
 
 			private	$attributeContainer	=	NULL;
 
@@ -16,9 +16,7 @@
 
 			final public function __construct($parentObject,Config $config=NULL){
 
-				$this->validateConfigurableObject($parentObject);
-
-				$this->attributeContainer	=	new AttributeContainer($this);
+				$this->attributeContainer	=	new AttributeContainer();
 
 				$this->attributeContainer->add(
 															Array(
@@ -32,7 +30,7 @@
 															)
 				);
 
-				$this->configure();
+				$this->configureAttributes();
 
 				if($config !== NULL){
 
@@ -42,15 +40,7 @@
 
 			}
 
-			public function getAttributeContainer(){
-
-				return $this->attributeContainer;
-
-			}
-
-			abstract protected function configure();
-
-			private function validateConfigurableObject($object){
+			public function validateConfigurableObject($object){
 					
 				$parentObjectClass	=	strtolower(get_class($object));
 				$configClass			=	strtolower(get_class($this));
@@ -208,9 +198,62 @@
 
 			}
 
+			protected function addAttribute(Array $parameters){
+
+				$parameters['config']	=	$this;
+
+				$this->attributeContainer->add(new Attribute($parameters));
+
+				return $this;
+
+			}
+
+			/**
+			 * Returns setters and getters according to the attributes set on the configuration
+			 * This is provided due to hidden functionality in the __call magic method.
+			 * When exploring a new framework, I particularly tend to var_dump(get_class_methods($class))
+			 * I find it frustrating when certain functionality is not obvious.
+			 * This method is provided to leverage said frustration.
+			 */
+
+			public function getMethods(){
+
+				$methods	=	Array();
+
+				foreach($this->attributeContainer as $attribute){
+
+					$methods[]	=	sprintf('set%s',ucwords($attribute->getName()));
+					$methods[]	=	sprintf('get%s',ucwords($attribute->getName()));
+
+				}
+
+				return $methods;
+				
+			}
+
+			public function hasAttribute($name){
+
+				return $this->attributeContainer->has($name);
+
+			}
+
+			public function getAttribute($name){
+
+				return $this->attributeContainer->get($name);
+				
+			}
+
 			public function merge(Config $config){
 
 			}
+
+			public function configureAttributes(){
+
+				return $this->__configureAttributes();
+
+			}
+
+			abstract protected function __configureAttributes();
 
 			/**
 			 * This method returns a configuration adapter internally to be able to save, export, import
@@ -256,6 +299,85 @@
 			}
 
 			public function save($format="ini"){
+			}
+
+			/************************************
+			 *Iterator interface
+			 ************************************/
+
+			public function current(){
+
+				return $this->attributeContainer->current();
+
+			}
+
+			public function key(){
+
+				return $this->attributeContainer->key();
+
+			}
+
+			public function next(){
+
+				return $this->attributeContainer->next();
+
+			}
+
+			public function rewind(){
+
+				return $this->attributeContainer->rewind();
+
+			}
+
+			public function valid(){
+
+				return $this->attributeContainer->valid();
+
+			}
+
+			/*************************************
+			 *Magic methods
+			 *************************************/
+
+			public function __set($name,$value){
+
+				$attribute	=	$this->attributeContainer->get($name);
+				return $attribute->setValue($value);
+
+			}
+
+			public function __get($name){
+
+				return $this->attributeContainer->get($name);
+
+			}
+
+			public function __call($method,$args){
+
+				$isSetterOrGetter	=	strtolower(substr($method,0,3));
+				$isSetter			=	$isSetterOrGetter === 'set';
+				$isGetter			=	$isSetterOrGetter === 'get';
+
+				if(!$isSetter && !$isGetter){
+
+					throw new \BadMethodCallException("Call to undefined method: \"$method\"");
+
+				}
+
+				$attributeName	=	substr($method,3);
+
+				if($isGetter){
+
+					return $this->attributeContainer->get($attributeName)->getValue();
+
+				}
+
+				if($isSetter){
+
+					return call_user_func_array(Array($this->attributeContainer->getAttribute($attributeName),'setValue'),$args);
+
+				}
+
 			}
 
 			public function __toString(){

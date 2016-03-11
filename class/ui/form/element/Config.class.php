@@ -9,25 +9,6 @@
 
 		abstract class Config extends BaseConfig{
 
-			public function setAttributeContainer(ElementAttributeContainerInterface $container){
-
-				$this->attributeContainer	=	$container;
-				return $this;
-
-			}
-
-			public function getAttributeContainer(){
-
-				return parent::getAttributeContainer();
-
-			}
-
-			public function validateLayoutContainer(LayoutContainer $container){
-
-				return $container;
-
-			}
-
 			public function validateValue($value){
 
 				if($this->onSetValue !== NULL){
@@ -68,37 +49,34 @@
 
 			}
 
-			protected function __configureAttributes(){
+			protected function configure(){
 
-				parent::addAttribute(
-											Array(
-													'name'			=>	'name',
-													'description'	=>	'Element name'		
-											)
+				$this->getAttributeContainer()
+				->add(
+						Array(
+								'name'			=>	'name',
+								'description'	=>	'Element name'		
+						)
+				)
+				->add(
+						Array(
+								'name'			=>	'description',
+								'description'	=>	'Element description'
+						)
+				)
+				->add(
+						Array(
+								'name'			=>	'value',
+								'description'	=>	'Element value'
+						)
+				)
+				->add(
+						Array(
+								'name'			=>	'valueState',
+								'description'	=>	'Element value state',
+								'exportable'	=>	FALSE
+						)
 				);
-
-				parent::addAttribute(
-											Array(
-													'name'			=>	'description',
-													'description'	=>	'Element description'
-											)
-				);
-
-				parent::addAttribute(
-											Array(
-													'name'			=>	'value',
-													'description'	=>	'Element value'
-											)
-				);
-
-				parent::addAttribute(
-											Array(
-													'name'			=>	'valueState',
-													'description'	=>	'Element value state',
-													'exportable'	=>	FALSE
-											)
-				);
-
 
 			}
 

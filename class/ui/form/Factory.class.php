@@ -43,7 +43,7 @@
 				 * Get all the attributes from the configuration of the configurable object
 				 */
 
-				$attributes		=	$object->getConfig()->getAttributes();
+				$attributes		=	$object->getConfig()->getAttributeContainer();
 
 				/**
 				 * If the configurable object's configuration has no attributes then throw an exception
@@ -73,9 +73,8 @@
 					//For now, we just set everything to input (which is complete bullshit)
 					///////////////////////////////////
 				
-					$element		=	ElementFactory::getInstanceFromUIContext('input',$attribute['name'],$attribute['description']);
-
 					$name			=	$attribute['name'];
+					$element		=	ElementFactory::getInstanceFromUIContext('input',$name,$attribute['description']);
 
 					//Set a nice callback so when a value is entered on a certain configuration
 					//The internal validation of the setter inside the configuration is executed

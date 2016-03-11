@@ -18,7 +18,11 @@
 
 			}
 
-			public function __configureAttributes(){
+			public function validateLayoutContainer(LayoutContainer $container){
+				return $container;
+			}
+
+			public function configure(){
 
 				/**
 				 * Make a default cli layout
@@ -43,22 +47,20 @@
 											)
 				);
 
-				parent::addAttribute(
-											Array(
-													'name'			=>	'layoutContainer',
-													'description'	=>	'Layout container',
-													'value'			=>	$layoutContainer
-											)
+				$this->getAttributeContainer()
+				->add(
+						Array(
+								'name'			=>	'layoutContainer',
+								'description'	=>	'Layout container',
+								'value'			=>	$layoutContainer
+						)
+				)
+				->add(
+						Array(
+								'name'			=>	'prompt',
+								'description'	=>	'Element prompt'
+						)
 				);
-				
-				parent::addAttribute(
-											Array(
-													'name'			=>	'prompt',
-													'description'	=>	'Element prompt'
-											)
-				);
-
-				return parent::__configureAttributes();
 
 			}
 
