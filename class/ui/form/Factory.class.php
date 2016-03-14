@@ -79,11 +79,10 @@
 
 					$element			=	ElementFactory::getInstanceFromUIContext('input',$ui);
 
-					/*
+					$element->getConfig()
 					->setName($attribute['name'])
 					->setDescription($attribute['description'])
 					->setValue($attribute['value']);
-					*/
 
 					/**
 					 * Add the created element to the form

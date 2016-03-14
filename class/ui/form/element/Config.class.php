@@ -5,10 +5,24 @@
 		use \apf\core\Config											as	BaseConfig;
 		use \apf\iface\ui\form\element\attribute\Container	as	ElementAttributeContainerInterface;
 		use \apf\ui\form\element\Layout;
-		use \apf\ui\form\element\layout\Container				as	LayoutContainer;
+		use \apf\iface\ui\form\element\layout\Container		as	LayoutContainerInterface;
 		use \apf\iface\ui\form\element\Config					as	ElementConfigInterface;
 
 		abstract class Config extends BaseConfig implements ElementConfigInterface{
+
+			public function validateName($name){
+
+				$name	=	trim($name);
+				return $name;
+
+			}
+
+			public function validateDescription($description){
+
+				$description	=	trim($description);
+				return $description;
+
+			}	
 
 			public function validateValue($value){
 
@@ -35,7 +49,7 @@
 
 			}
 
-			public function validateLayoutContainer(LayoutContainer $container){
+			public function validateLayoutContainer(LayoutContainerInterface $container){
 
 				return $container;
 
