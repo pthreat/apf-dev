@@ -7,54 +7,26 @@
 
 		class Cli extends Form{
 
-			private	$titleColor	=	NULL;
-
-			public function configure(){
-			}
-
-			public function setTitleColor($color){
-
-				$this->titleColor	=	$color;
-				return $this;
-
-			}
-
-			public function getTitleColor(){
-
-				return $this->titleColor;
-
-			}
-
 			public function render(){
-
-				$deco	=	$this->getDecorator();
-
-				if(!$deco){
-
-					throw new \Exception("No output decorator has been set, please set an output decorator");
-
-				}
 
 				do{
 
 					try{
 
-						echo $deco->decorate($this->getTitle());
+						echo $this->getTitle();
 
 						foreach($this->getElements() as $element){
 
-							echo $deco->decorate(sprintf('%s) %s (%s)%s',$element->getName(),$element->getDescription(),$element->getValue(),"\n"));
+							echo $element->render();
 
 						}
 
-						echo "\n";
-
 						$prompt	=	new Prompt();
-						$this->getElementByName($prompt->read())->setValue();
+						$this->getConfig()->getAttributeContainer()->get($prompt->read())->setValue();
 
 					}catch(\Exception $e){
 
-						$deco->decorate($e->getMessage());
+						echo $e->getMessage();
 						(new Prompt())->setText('Press enter to continue ...')->read();
 
 					}
