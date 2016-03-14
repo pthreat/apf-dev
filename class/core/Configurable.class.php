@@ -12,7 +12,8 @@
 
 			final public function __construct(Config $config=NULL){
 
-				$this->setConfig($config === NULL	?	self::getConfigurationInstance($this)	:	$config);
+
+				$this->setConfig($config === NULL	?	self::getConfigurationInstance()	:	$config);
 
 			}
 
@@ -21,7 +22,13 @@
 				$childClass		=	strtolower(get_called_class());
 				$configClass	=	sprintf('%s\\Config',$childClass);
 
-				$config			=	new $configClass($this);
+				if(!class_exists($configClass)){
+
+					throw new \InvalidArgumentException("Configuration class ->$childClass<- was not found");
+
+				}
+
+				$config	=	new $configClass($this);
 
 				if(!($config instanceof $configClass)){
 
@@ -35,13 +42,14 @@
 			}
 
 			/**
-			*
-			*Validates that the passed configuration instance responds to the proper configuration class
-			*
-			*@example The \apf\core\Project class extends to the Configurable class. This will validate
-			*that the passed instance is of class \apf\core\project\Config.
-			*This enforces proper namespace naming for native framework classes and also acts as a sort of "type hint".
-			*/
+	 		 *
+			 *Validates that the passed configuration instance responds to the proper configuration class
+			 *
+			 *@example The \apf\core\Project class extends to the Configurable class. This will validate
+			 *that the passed instance is of class \apf\core\project\Config.
+			 *
+			 *This enforces proper namespace naming for native framework classes and also acts as a sort of "type hint".
+			 */
 
 			protected static function validateConfigurationInstance(&$config){
 
@@ -74,6 +82,7 @@
 				 */
 
 				$this->config	=	self::validateConfigurationInstance($config);
+
 				return $this;
 
 			}
@@ -103,13 +112,19 @@
 
 			public function __set($name,$value){
 
-				$this->config->getAttribute($name)->setValue($value);
+				return $this->config
+				->getAttributes()
+				->get($name)
+				->setValue($value);
 
 			}
 
 			public function __get($name){
 
-				return $this->config->getAttribute($name)->getValue();
+				return $this->config
+				->getAttributes()
+				->get($name)
+				->getValue();
 
 			}
 

@@ -3,20 +3,19 @@
 	namespace apf\ui\form\element{
 
 		use \apf\core\Kernel;
+		use \apf\iface\ui\form\element\Config	as	ElementConfigInterface;
 
 		class Factory{
 
 			/**
 			 *Gets a form element instance according to the context obtained from the within the Kernel::getSAPI method
 			 *
-			 *@param string $type									The *type* of the element, input, select, etc
-			 *@param string $name									The name of the element
-			 *@param string $description							Element Description
-			 *@param \apf\ui\form\element\layout\Container	A Layout container object
+			 *@param string $type									The *type* of the element, input, select, etc>
+			 *@param ElementConfigInterface						The configuration for said element.
 			 *@param string $ui										User Interface for the given element type, web, cli, etc
 			 */
 
-			public static function getInstanceFromUIContext($type,$name,$value,LayoutContainer $layoutContainer=NULL,$ui=NULL){
+			public static function getInstanceFromUIContext($type,$ui=NULL){
 
 				$type	=	trim($type);
 
@@ -41,6 +40,18 @@
 
 				}
 
+				$class	=	self::getElementClassByTypeAndUI($type,$ui);
+
+				/**
+				 *	Return a new element type instance, configured with a name, a value and a layout container.
+				 */
+
+				return new $class();
+
+			}
+
+			public static function getElementClassByTypeAndUI($type,$ui){
+
 				/**
 				 * Make the element class name
              */
@@ -57,11 +68,29 @@
 
 				}
 
+				return $class;
+
+			}
+
+			public static function getElementConfigClassByTypeAndUI($type,$ui){
+
 				/**
-				 *	Return a new element type instance, configured with a name, a value and a layout container.
+				 * Make the element config class name
+             */
+
+				$class = printf('%s\Config',strtolower(self::getElementClassByTypeAndUI($type,$ui)));
+
+				/**
+				 *	Corroborate that the given form element does in fact exists
 				 */
 
-				return new $class();
+				if(!class_exists($class)){
+
+					throw new \InvalidArgumentException("No UI element Config class of type: $type could be found for UI: $ui");
+
+				}
+
+				return $class;
 
 			}
 

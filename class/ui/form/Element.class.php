@@ -3,7 +3,6 @@
 	namespace apf\ui\form{
 
 		use \apf\core\Configurable;
-
 		use \apf\iface\ui\form\Element	as	ElementInterface;
 
 		abstract class Element extends Configurable implements ElementInterface{

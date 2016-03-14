@@ -2,12 +2,13 @@
 
 	namespace apf\ui\form\element{
 
-		use \apf\core\Config											as BaseConfig;
+		use \apf\core\Config											as	BaseConfig;
 		use \apf\iface\ui\form\element\attribute\Container	as	ElementAttributeContainerInterface;
 		use \apf\ui\form\element\Layout;
 		use \apf\ui\form\element\layout\Container				as	LayoutContainer;
+		use \apf\iface\ui\form\element\Config					as	ElementConfigInterface;
 
-		abstract class Config extends BaseConfig{
+		abstract class Config extends BaseConfig implements ElementConfigInterface{
 
 			public function validateValue($value){
 
@@ -83,6 +84,7 @@
 								'exportable'	=>	FALSE
 						)
 				);
+
 
 			}
 

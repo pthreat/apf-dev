@@ -105,24 +105,8 @@
 
 			}
 
-			/*************************************
-			 *Magic methods
-			 *************************************/
-
-			public function __set($name,$value){
-
-				return $this->get($name)->setValue($name);
-
-			}
-
-			public function __get($name){
-
-				return $this->get($name);
-
-			}
-
 			/**
-			 * Array Access interface methods
+			 * Small internal helper for validating offsets inside the attributes array object
 			 */
 
 			private function validateOffset($offset){
@@ -138,7 +122,7 @@
 			}
 
 			/****************************************
-			 *Array Access interface
+			 *Array Access interface methods
 			 ****************************************/
 
 			public function offsetExists($offset){
@@ -162,6 +146,22 @@
 			public function offsetUnset($offset){
 
 				$this->attributes[$this->validateOffset($offset)]	=	NULL;
+
+			}
+
+			/*************************************
+			 *Magic methods
+			 *************************************/
+
+			public function __set($name,$value){
+
+				return $this->get($name)->setValue($name);
+
+			}
+
+			public function __get($name){
+
+				return $this->get($name);
 
 			}
 
@@ -193,7 +193,6 @@
 				}
 
 			}
-
 
 		}
 

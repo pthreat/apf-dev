@@ -8,7 +8,7 @@
 
 		abstract class Config implements \ArrayAccess,\Iterator{
 
-			private	$attributeContainer	=	NULL;
+			private	$attributes	=	NULL;
 
 			private	$isValidatedSoft		=	FALSE;
 			private	$isValidatedHard		=	FALSE;
@@ -18,9 +18,9 @@
 
 				$this->validateConfigurableObject($parentObject);
 
-				$this->attributeContainer	=	new AttributeContainer($this);
+				$this->attributes	=	new AttributeContainer($this);
 
-				$this->attributeContainer->add(
+				$this->attributes->add(
 															Array(
 																	'name'			=>	'configurableObject',
 																	'description'	=>	'The configurable object for which this configuration is meant.',
@@ -42,9 +42,20 @@
 
 			}
 
+			public function getAttributes(){
+
+				return $this->attributes;
+
+			}
+
+			/**
+			 * Alias for getAttributes, depending on the context where this will be called 
+			 * the syntactic sense for the code reader may add clarity.
+			 */
+
 			public function getAttributeContainer(){
 
-				return $this->attributeContainer;
+				return $this->attributes;
 
 			}
 
@@ -173,7 +184,7 @@
 
 			public function getConfigurableObject(){
 
-				return $this->attributeContainer->get('configurableObject')->getValue();
+				return $this->attributes->get('configurableObject')->getValue();
 
 			}
 
@@ -185,26 +196,7 @@
 
 			public function hasValidator($name){
 
-				return method_exists($this,$this->makeValidatorName($name));
-
-			}
-
-			public function getValidator($name){
-
-				if(!$this->hasValidator($name)){
-
-					throw new \InvalidArgumentException("No validator found for attribute $name");		
-
-				}
-
-				return $this->makeValidatorName($name);
-
-			}
-
-			public function validateAttribute($name,$value){
-
-				$validator	=	$this->getValidator($name);
-				return $this->$validator($value);
+				return method_exists($this->config,$this->makeValidatorName($name));
 
 			}
 
@@ -220,31 +212,31 @@
 
 			public function current(){
 
-				return $this->attributeContainer->current();
+				return $this->attributes->current();
 
 			}
 
 			public function key(){
 
-				return $this->attributeContainer->key();
+				return $this->attributes->key();
 
 			}
 
 			public function next(){
 
-				return $this->attributeContainer->next();
+				return $this->attributes->next();
 
 			}
 
 			public function rewind(){
 
-				return $this->attributeContainer->rewind();
+				return $this->attributes->rewind();
 
 			}
 
 			public function valid(){
 
-				return $this->attributeContainer->valid();
+				return $this->attributes->valid();
 
 			}
 
@@ -256,55 +248,55 @@
 
 			public function offsetExists($offset){
 
-				return $this->attributeContainer->offsetExists();
+				return $this->attributes->offsetExists();
 
 			}
 
 			public function offsetGet($offset){
 
-				return $this->attributeContainer->offsetGet();
+				return $this->attributes->offsetGet();
 
 			}
 
 			public function offsetSet($offset,$value){
 
-				$this->attributeContainer->offsetSet($offset,$value);
+				$this->attributes->offsetSet($offset,$value);
 
 			}
 
 			public function offsetUnset($offset){
 
-				$this->attributeContainer->offsetUnset($offset);
+				$this->attributes->offsetUnset($offset);
 
 			}
 
 			/************************************************************
 			 *Magic methods [ PROXY ]
 			 *------------------------------------
-			 *Proxy calls to __set,__get through the attribute container
+			 *Proxy calls to __set,__get and __call through the attribute container
 			 ************************************************************/
 
 			public function __set($name,$value){
 
-				return $this->attributeContainer->get($name)->setValue($name);
+				return $this->attributes->get($name)->setValue($name);
 
 			}
 
 			public function __get($name){
 
-				return $this->attributeContainer->get($name);
+				return $this->attributes->get($name);
 
 			}
 
 			public function __call($method,$arguments){
 
-				return call_user_func_array(Array($this->attributeContainer,$method),$arguments);
+				return call_user_func_array(Array($this->attributes,$method),$arguments);
 
 			}
 
 			/**
 			 * This method returns a configuration adapter internally to be able to save, export, import
-			 * a configuration object.
+			 * a configuration object in different formats.
 			 *
 			 * A configuration adapter is basically a configuration format in which a Configuration object 
 			 * can be exported, said formats can be: JSON, XML, INI. More formats will be supported in the future.
@@ -329,7 +321,7 @@
 
 				$exportClass	=	self::__getAdapter($format);
 
-				return $exportClass::export($this->attributeContainer);
+				return $exportClass::export($this->attributes);
 
 			}
 
@@ -339,7 +331,7 @@
 
 				foreach($config->parse() as $key=>$value){
 
-					$this->$key	=	$value;
+					$this->attributes()->get($key)->setValue($value);
 
 				}
 

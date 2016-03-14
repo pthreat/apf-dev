@@ -11,7 +11,6 @@
 														'description'	=>	NULL,
 														'value'			=>	NULL,
 														'validate'		=>	TRUE,
-														'onSetValue'	=>	NULL,
 														'config'			=>	NULL,
 														'exportable'	=>	TRUE,
 														'traversable'	=>	TRUE,
@@ -30,16 +29,17 @@
 				$name				=	array_key_exists('name',$parameters)			?	$parameters['name']			:	NULL;
 				$description	=	array_key_exists('description',$parameters)	?	$parameters['description']	:	NULL;
 				$value			=	array_key_exists('value',$parameters)			?	$parameters['value']			:	NULL;
-				$onSetValue		=	array_key_exists('onSetValue',$parameters)	?	$parameters['onSetValue']	:	NULL;
 				$validate		=	array_key_exists('validate',$parameters)		?	$parameters['validate']		:	TRUE;
 				$exportable		=	array_key_exists('exportable',$parameters)	?	$parameters['exportable']	:	TRUE;
 				$traversable	=	array_key_exists('traversable',$parameters)	?	$parameters['traversable']	:	TRUE;
-				$readOnly		=	array_key_exists('readOnly',$parameters)		?	$parameters['readOnly']		:	TRUE;
+				$readOnly		=	array_key_exists('readOnly',$parameters)		?	$parameters['readOnly']		:	FALSE;
 
 				$this->setConfig($config);
 				$this->setName($name);
 				$this->setDescription($description);
 				$this->setValidate($validate);
+				$this->setExportable($exportable);
+				$this->setTraversable($traversable);
 
 				if($value!==NULL){
 
@@ -47,15 +47,6 @@
 
 				}
 
-				if($onSetValue !== NULL){
-
-					$this->onSetValue($onSetValue);	
-
-				}
-
-
-				$this->setExportable($exportable);
-				$this->setTraversable($traversable);
 				$this->setReadOnly($readOnly);
 
 			}
@@ -188,13 +179,6 @@
 
 			}
 
-			public function onSetValue(Callable $callback){
-
-				$this->container['onSetValue']	=	$callback;
-				return $this;
-
-			}
-
 			public function setValue($value){
 
 				if($this->isReadOnly()){
@@ -203,30 +187,7 @@
 
 				}
 
-				if($this->onSetValue !== NULL){
-
-					$this->onSetValue($value);
-					return $this;
-
-				}
-
-				if($this->container['validate']){
-
-					$attrName	=	$this->container['name'];
-					$method		=	$this->config->getValidator($attrName);
-
-					if(!$this->config->hasValidator($attrName)){
-
-						throw new \LogicException("Attribute $name has to be validated, but no validator named $method has been found");
-					}
-
-					$this->container['value']	=	$this->config->$method($value);
-
-					return $this;
-
-				}
-
-				$this->container['value']	=	$value;
+				$this->container['value']	=	$this->container['validate']	?	$this->container['validate']	:	$value;
 
 				return $this;
 
@@ -238,9 +199,30 @@
 
 			}
 
-			/**
-			 * Array Access interface methods
-			 */
+			public function validate($value){
+
+				$attributeName	=	$this->container['name'];
+
+				/**
+				 *@TODO
+				 *If property validator is found in a certain attribute, use the callback
+				 *defined in the property rather than finding the validator in the configuration 
+				 *object
+				 */
+
+				if(!$this->config->hasValidator($this->container['name'])){
+
+					$configClass	=	get_class($this->config);
+
+					throw new \InvalidArgumentException("Class: ->$configClass<- has NO validator for attribute ->$attributeName<-");
+
+				}
+
+				$validateMethod	=	sprintf('validate%s',ucwords($attributeName));
+
+				return $this->config->$validateMethod($value);
+
+			}
 
 			private function validateOffset($offset){
 
@@ -253,6 +235,10 @@
 				return $offset;
 
 			}
+
+			/**
+			 * Array Access interface methods
+			 */
 
 			public function offsetExists($offset){
 

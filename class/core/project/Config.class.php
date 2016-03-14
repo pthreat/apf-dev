@@ -22,7 +22,7 @@
 
 			public function configure(){
 
-				$this->getAttributeContainer()
+				parent::getAttributeContainer()
 				->add(
 						Array(
 								'name'			=>	'name',

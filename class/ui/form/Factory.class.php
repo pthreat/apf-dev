@@ -35,6 +35,12 @@
 
 			public static function createFromConfigurableObject(Configurable &$object,$ui=NULL){
 
+				if($ui===NULL){
+
+					$ui	=	Kernel::getSAPI()->getName();
+
+				}
+
 				/**
 				 * Get a form instance according to the passed ui:
 				 *
@@ -47,7 +53,7 @@
 				 * Get all the attributes from the configuration of the configurable object
 				 */
 
-				$attributes		=	$object->getConfig()->getAttributeContainer();
+				$attributes		=	$object->getConfig()->getAttributes();
 
 				/**
 				 * If the configurable object's configuration has no attributes then throw an exception
@@ -69,16 +75,15 @@
 
 				foreach($attributes as $attribute){
 
-					///////////////////////////////////
-					//IMPORTANT:
-					//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-					//How is the type determined?
-					//Add ... multiple or singular characteristic to attributes?
-					//For now, we just set everything to input (which is complete bullshit)
-					///////////////////////////////////
-				
-					$name			=	$attribute['name'];
-					$element		=	ElementFactory::getInstanceFromUIContext('input',$name,$attribute['description']);
+					$type				=	'input'; //To be determined later
+
+					$element			=	ElementFactory::getInstanceFromUIContext('input',$ui);
+
+					/*
+					->setName($attribute['name'])
+					->setDescription($attribute['description'])
+					->setValue($attribute['value']);
+					*/
 
 					/**
 					 * Add the created element to the form
