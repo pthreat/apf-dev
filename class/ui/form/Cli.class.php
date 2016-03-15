@@ -15,7 +15,10 @@
 
 						echo $this->getTitle();
 
-						foreach($this->getElements() as $element){
+						echo get_class($this->getElement());
+						die();
+
+						foreach($this->getElement() as $element){
 
 							echo $element->render();
 

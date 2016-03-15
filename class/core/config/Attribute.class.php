@@ -3,12 +3,14 @@
 	namespace apf\core\config{
 
 		use \apf\core\Config;
+		use \apf\core\config\attribute\Container	as	AttributeContainer;
 
 		class Attribute implements \ArrayAccess{
 
 			private	$container		=	Array(
 														'name'			=>	NULL,
 														'description'	=>	NULL,
+														'multiple'		=>	FALSE,
 														'value'			=>	NULL,
 														'validate'		=>	TRUE,
 														'config'			=>	NULL,
@@ -33,6 +35,7 @@
 				$exportable		=	array_key_exists('exportable',$parameters)	?	$parameters['exportable']	:	TRUE;
 				$traversable	=	array_key_exists('traversable',$parameters)	?	$parameters['traversable']	:	TRUE;
 				$readOnly		=	array_key_exists('readOnly',$parameters)		?	$parameters['readOnly']		:	FALSE;
+				$multiple		=	array_key_exists('multiple',$parameters)		?	$parameters['multiple']		:	FALSE;
 
 				$this->setConfig($config);
 				$this->setName($name);
@@ -41,6 +44,12 @@
 				$this->setExportable($exportable);
 				$this->setTraversable($traversable);
 
+				if($multiple){
+
+					$this->container['value']	=	new AttributeContainer($config);
+
+				}
+
 				if($value!==NULL){
 
 					$this->setValue($value);	
@@ -48,6 +57,24 @@
 				}
 
 				$this->setReadOnly($readOnly);
+
+			}
+
+			public function addValue($value){
+
+				if(!$this->isMultiple()){
+
+					throw new \InvalidArgumentException("Attribute ->{$this->name}<- is not a multiple attribute, if you really meant to add, please define it as multiple");
+
+				}
+
+				$value				=	is_array($value)	?	$value	:	Array('value'=>$value);
+				$value['name']		=	sprintf('%s_%d',$this->container['name'],$this->container['value']->count());
+				$value['config']	=	$this->container['config'];
+
+				$this->container['value']->add($value);
+
+				return $this;
 
 			}
 
@@ -174,8 +201,7 @@
 
 			public function isMultiple(){
 
-				$value	=	$this->container['value'];
-				return is_array($value) || (is_object($value) && ($value instanceof \Iterator));
+				return $this->container['value'] instanceof AttributeContainer;
 
 			}
 

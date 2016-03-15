@@ -2,7 +2,7 @@
 
 	namespace apf\ui\form{
 
-		use \apf\core\Config;
+		use \apf\core\Config		as	BaseConfig;
 		use \apf\ui\form\Layout	as	FormLayout;
 
 		abstract class Config extends BaseConfig{
@@ -50,8 +50,9 @@
 				)
 				->add(
 						Array(
-								'name'			=>	'elements',
-								'description'	=>	'Elements composing this form'
+								'name'			=>	'element',
+								'description'	=>	'Elements composing this form',
+								'multiple'		=>	TRUE
 						)
 				);
 

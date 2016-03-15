@@ -9,7 +9,7 @@
 		use \apf\core\Config;
 		use \apf\core\config\Attribute;
 
-		class Container implements \Iterator{
+		class Container implements \Iterator,\Countable{
 
 			private	$attributes	=	NULL;
 			private	$config		=	NULL;
@@ -18,6 +18,12 @@
 
 				$this->config		=	$config;
 				$this->attributes	=	new \ArrayObject();
+
+			}
+
+			public function count(){
+
+				return count($this->attributes);
 
 			}
 
@@ -43,6 +49,12 @@
 				foreach($this->attributes as $attribute){
 
 					if(strtolower($attribute->getName()) == $name){
+
+						if($attribute->isMultiple()){
+
+							return $attribute->getValue();
+
+						}
 
 						return $attribute;
 
@@ -167,11 +179,13 @@
 
 			public function __call($method,$args){
 
-				$isSetterOrGetter	=	strtolower(substr($method,0,3));
-				$isSetter			=	$isSetterOrGetter === 'set';
-				$isGetter			=	$isSetterOrGetter === 'get';
+				$isSetterGetterOrAdd	=	strtolower(substr($method,0,3));
 
-				if(!$isSetter && !$isGetter){
+				$isSetter				=	$isSetterGetterOrAdd ===	'set';
+				$isGetter				=	$isSetterGetterOrAdd ===	'get';
+				$isAdd					=	$isSetterGetterOrAdd	===	'add';
+
+				if(!$isSetter && !$isGetter && !$isAdd){
 
 					throw new \BadMethodCallException("Call to undefined method: \"$method\"");
 
@@ -179,16 +193,25 @@
 
 				$attribute		=	$this->get(substr($method,3));
 
-				if($isGetter){
+				switch($isSetterGetterOrAdd){
 
-					return $attribute->getValue();
+					case 'get':
 
-				}
+						return $attribute->getValue();
 
+					break;
 
-				if($isSetter){
-					
-					return call_user_func_array(Array($attribute,'setValue'),$args);
+					case 'set':
+
+						return call_user_func_array(Array($attribute,'setValue'),$args);
+
+					break;
+
+					case 'add':
+
+						return call_user_func_array(Array($attribute,'addValue'),$args);
+
+					break;
 
 				}
 
