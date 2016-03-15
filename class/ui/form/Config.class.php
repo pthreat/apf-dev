@@ -3,8 +3,28 @@
 	namespace apf\ui\form{
 
 		use \apf\core\Config;
+		use \apf\ui\form\Layout	as	FormLayout;
 
 		abstract class Config extends BaseConfig{
+
+			public function validateLayout(FormLayout $layout){
+
+				return $layout;
+
+			}
+
+			public function validateTitle($title){
+
+				$title	=	trim($title);
+				return $title;
+				
+			}
+
+			public function validateElements($elements){
+
+				return $elements;
+
+			}
 
 			public function configure(){
 
@@ -18,7 +38,8 @@
 				->add(
 						Array(
 								'name'			=>	'action',
-								'description'	=>	'Form action'
+								'description'	=>	'Form action',
+								'validate'		=>	FALSE
 						)
 				)
 				->add(
