@@ -22,13 +22,10 @@
 
 			public function __construct(Array $parameters){
 
-				if(!is_array($parameters)){
-
-					throw new \InvalidArgumentException("Factory parameter must be an array or an attribute");
-
-				}
-
 				$config			=	array_key_exists('config',$parameters)			?	$parameters['config']		:	NULL;
+
+				$this->setConfig($config);
+
 				$name				=	array_key_exists('name',$parameters)			?	$parameters['name']			:	NULL;
 				$description	=	array_key_exists('description',$parameters)	?	$parameters['description']	:	NULL;
 				$value			=	array_key_exists('value',$parameters)			?	$parameters['value']			:	NULL;
@@ -38,7 +35,6 @@
 				$readOnly		=	array_key_exists('readOnly',$parameters)		?	$parameters['readOnly']		:	FALSE;
 				$multiple		=	array_key_exists('multiple',$parameters)		?	$parameters['multiple']		:	FALSE;
 
-				$this->setConfig($config);
 				$this->setName($name);
 				$this->setDescription($description);
 				$this->setValidate($validate);
@@ -221,7 +217,7 @@
 
 				}
 
-				$this->container['value']	=	$this->container['validate']	?	$this->container['validate']	:	$value;
+				$this->container['value']	=	$this->container['validate']	?	$this->container['validate']	:	$this->validate($value);
 
 				return $this;
 
