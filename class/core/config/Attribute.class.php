@@ -22,10 +22,13 @@
 
 			public function __construct(Array $parameters){
 
+				if(!is_array($parameters)){
+
+					throw new \InvalidArgumentException("Factory parameter must be an array or an attribute");
+
+				}
+
 				$config			=	array_key_exists('config',$parameters)			?	$parameters['config']		:	NULL;
-
-				$this->setConfig($config);
-
 				$name				=	array_key_exists('name',$parameters)			?	$parameters['name']			:	NULL;
 				$description	=	array_key_exists('description',$parameters)	?	$parameters['description']	:	NULL;
 				$value			=	array_key_exists('value',$parameters)			?	$parameters['value']			:	NULL;
@@ -35,6 +38,7 @@
 				$readOnly		=	array_key_exists('readOnly',$parameters)		?	$parameters['readOnly']		:	FALSE;
 				$multiple		=	array_key_exists('multiple',$parameters)		?	$parameters['multiple']		:	FALSE;
 
+				$this->setConfig($config);
 				$this->setName($name);
 				$this->setDescription($description);
 				$this->setValidate($validate);
@@ -71,6 +75,7 @@
 					throw new \InvalidArgumentException("Attribute ->{$this->name}<- is not a multiple attribute, if you really meant to add, please define it as multiple");
 
 				}
+
 
 				$value				=	is_array($value)	?	$value	:	Array('value'=>$value);
 				$value['name']		=	sprintf('%s_%d',$this->container['name'],$this->container['value']->count());
@@ -217,7 +222,7 @@
 
 				}
 
-				$this->container['value']	=	$this->container['validate']	?	$this->container['validate']	:	$this->validate($value);
+				$this->container['value']	=	$this->container['validate']	?	$this->container['validate']	:	$value;
 
 				return $this;
 

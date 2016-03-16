@@ -14,7 +14,7 @@
 			private	$attributes	=	NULL;
 			private	$config		=	NULL;
 
-			public function __construct(Config &$config){
+			public function __construct(Config $config){
 
 				$this->config		=	$config;
 				$this->attributes	=	new \ArrayObject();
@@ -27,16 +27,13 @@
 
 			}
 
-			/**
-			 * Add an attribute to this attribute container
-			 * @param $parameters Attribte Use an attribute to add it to the attribute collection.
-			 * @param $parameters Array Use an array for adding special parameters, for instance the attribute name
-			 * @param $parameters mixed Any other type will be automatically casted into an array.
-			 */
-
 			public function add($parameters){
 
-				$this->attributes->append(Attribute::factory($parameters));
+				$params				=	!is_array($parameters)	?	Array('value'=>$parameters)	:	$parameters;
+				$params['name']	=	array_key_exists('name',$params)	?	$params['name']		:	sprintf('params_%d',$this->count());
+				$params['config']	=	$this->config;
+
+				$this->attributes->append(new Attribute($params));
 
 				return $this;
 
@@ -219,7 +216,9 @@
 
 					case 'add':
 
-						return call_user_func_array(Array($attribute,'addValue'),$args);
+						$attribute	=	$attribute->getValue();
+						
+						return call_user_func_array(Array($attribute,'add'),$args);
 
 					break;
 
