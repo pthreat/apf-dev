@@ -15,14 +15,12 @@
 
 						echo $this->getTitle();
 
-						echo get_class($this->getElement());
-						die();
+						foreach($this->getElements() as $element){
 
-						foreach($this->getElement() as $element){
-
-							echo $element->render();
+							echo get_class($element->getValue());
 
 						}
+
 
 						$prompt	=	new Prompt();
 						$this->getConfig()->getAttributeContainer()->get($prompt->read())->setValue();

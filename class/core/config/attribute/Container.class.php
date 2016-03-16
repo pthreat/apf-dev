@@ -27,10 +27,10 @@
 
 			}
 
-			public function add(Array $parameters){
+			public function add($parameters){
 
 				$parameters['config']	=	$this->config;
-				$this->attributes->append(new Attribute($parameters));
+				$this->attributes->append(Attribute::factory($parameters));
 
 				return $this;
 
@@ -48,13 +48,17 @@
 
 				foreach($this->attributes as $attribute){
 
-					if(strtolower($attribute->getName()) == $name){
+					if($attribute->isMultiple()){
 
-						if($attribute->isMultiple()){
+						if(strtolower($attribute->getItemName()) === $name){
 
-							return $attribute->getValue();
+							return $attribute;
 
 						}
+
+					}
+
+					if(strtolower($attribute->getName()) == $name){
 
 						return $attribute;
 
@@ -209,7 +213,9 @@
 
 					case 'add':
 
-						return call_user_func_array(Array($attribute,'addValue'),$args);
+						$attribute	=	$attribute->getValue();
+
+						return call_user_func_array(Array($attribute,'add'),$args);
 
 					break;
 

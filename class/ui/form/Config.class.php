@@ -50,7 +50,8 @@
 				)
 				->add(
 						Array(
-								'name'			=>	'element',
+								'name'			=>	'elements',
+								'item'			=> 'element',
 								'description'	=>	'Elements composing this form',
 								'multiple'		=>	TRUE
 						)

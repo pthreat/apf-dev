@@ -61,7 +61,7 @@
 
 				if(!sizeof($attributes)){
 
-					$msg	=	"No attributes were found in this object´s configuration, if it has no attributes, this means I can't";
+					$msg	=	"No attributes were found in this object's configuration, if it has no attributes, this means I can't";
 					$msg	=	sprintf('%s create any form elements!',$msg);
 
 					throw new \InvalidArgumentException($msg);

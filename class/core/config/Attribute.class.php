@@ -16,6 +16,7 @@
 														'config'			=>	NULL,
 														'exportable'	=>	TRUE,
 														'traversable'	=>	TRUE,
+														'itemName'		=>	NULL,
 														'readOnly'		=>	FALSE
 			);
 
@@ -46,7 +47,8 @@
 
 				if($multiple){
 
-					$this->container['value']	=	new AttributeContainer($config);
+					$this->container['itemName']	=	$parameters['item'];
+					$this->container['value']		=	new AttributeContainer($config);
 
 				}
 
@@ -57,6 +59,12 @@
 				}
 
 				$this->setReadOnly($readOnly);
+
+			}
+
+			public function getItemName(){
+
+				return $this->container['itemName'];
 
 			}
 
