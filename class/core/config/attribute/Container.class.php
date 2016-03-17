@@ -11,6 +11,7 @@
 		use \apf\core\Config;
 		use \apf\core\config\Attribute;
 
+		//@TODO: \ArrayAccess interface is also needed
 		final class Container implements \Iterator,\Countable{
 
 			private	$attributes	=	NULL;
@@ -40,11 +41,15 @@
 
 			public function add($parameters){
 
-				$params				=	!is_array($parameters)	?	Array('value'=>$parameters)	:	$parameters;
-				$params['name']	=	array_key_exists('name',$params)	?	$params['name']		:	sprintf('params_%d',$this->count());
-				$params['config']	=	$this->config;
+				$parameters					=	!is_array($parameters)	?	Array('value'=>$parameters)	:	$parameters;
+				$parameters['name']		=	array_key_exists('name',$parameters)	?	$parameters['name']		:	sprintf('params_%d',$this->count());
+				$parameters['config']	=	$this->config;
 
-				$this->attributes->append(new Attribute($params));
+				if(array_key_exists('value',$parameters)){
+					echo get_class($parameters['value'])."\n";
+				}
+
+				$this->attributes->append(new Attribute($parameters));
 
 				return $this;
 
@@ -243,6 +248,7 @@
 
 					case 'get':
 
+						echo "Get $method\n";
 						return $attribute->getValue();
 
 					break;
@@ -255,8 +261,11 @@
 
 					case 'add':
 
-						$attribute	=	$attribute->getValue();
-						return call_user_func_array(Array($attribute,'add'),$args);
+						return $attribute
+						->getValue()
+						->add(
+								Array('value'=>$args[0])
+						);
 
 					break;
 

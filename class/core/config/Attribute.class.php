@@ -52,7 +52,7 @@
 
 				}
 
-				if($value!==NULL){
+				if(!($value===NULL)){
 
 					$this->setValue($value);	
 
@@ -65,25 +65,6 @@
 			public function getItemName(){
 
 				return $this->container['itemName'];
-
-			}
-
-			public function addValue($value){
-
-				if(!$this->isMultiple()){
-
-					throw new \InvalidArgumentException("Attribute ->{$this->name}<- is not a multiple attribute, if you really meant to add, please define it as multiple");
-
-				}
-
-
-				$value				=	is_array($value)	?	$value	:	Array('value'=>$value);
-				$value['name']		=	sprintf('%s_%d',$this->container['name'],$this->container['value']->count());
-				$value['config']	=	$this->container['config'];
-
-				$this->container['value']->add($value);
-
-				return $this;
 
 			}
 
