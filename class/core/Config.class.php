@@ -6,7 +6,7 @@
 		use \apf\core\config\Attribute;
 		use \apf\core\config\Adapter;
 
-		abstract class Config implements \ArrayAccess,\Iterator{
+		abstract class Config implements \ArrayAccess,\Iterator,\Countable{
 
 			/**
 			 * @var \apf\core\config\attribute\Container $attributes initialized when the object is constructed.
@@ -314,6 +314,60 @@
 			}
 
 			/**
+			 * This method returns a configuration adapter internally to be able to save, export, import
+			 * a configuration object in different formats.
+			 *
+			 *
+			 * A configuration adapter is basically a configuration format in which a Configuration object 
+			 * can be exported, said formats can be: JSON, XML, INI. More formats will be supported in the future.
+			 *
+			 * NOTE: The following method will be replaced by "setSaveAdapter" or similar.
+			 * 
+			 */
+
+			private static function __getAdapter($adapter){
+
+				$adapter			=	ucwords($adapter);
+				$exportClass	=	sprintf('\\apf\\core\\config\\adapter\\%s',$adapter);
+
+				if(!class_exists($exportClass)){
+
+					throw new \RuntimeException("Unknown configuration adapter \"$adapter\"");
+
+				}
+
+				return $exportClass;
+
+			}
+
+			public function export($format="ini"){
+
+				$exportClass	=	self::__getAdapter($format);
+
+				return $exportClass::export($this->attributes);
+
+			}
+
+			/**
+			 * Import a configuration from a configuration file
+			 */
+
+			public function import($file){
+
+				$config		=	Adapter::factory($file);
+
+				foreach($config->parse() as $key=>$value){
+
+					$this->attributes->get($key)->setValue($value);
+
+				}
+
+			}
+
+			public function save($format="ini"){
+			}
+
+			/**
 			 * Gets the parent object for this configuration class
 			 */
 
@@ -395,6 +449,17 @@
 			}
 
 			/*******************************************************
+			 *Countable interface [PROXY]
+			 *---------------------------------------
+			 *Proxy count on Configuration object through attribute container
+			 *******************************************************/
+			public function count(){
+
+				return $this->attributes->count();
+
+			}
+
+			/*******************************************************
 			 *Array Access interface [PROXY]
 			 *---------------------------------------
 			 *Proxy all array like calls to the attribute container
@@ -446,60 +511,6 @@
 
 				return call_user_func_array(Array($this->attributes,$method),$arguments);
 
-			}
-
-			/**
-			 * This method returns a configuration adapter internally to be able to save, export, import
-			 * a configuration object in different formats.
-			 *
-			 *
-			 * A configuration adapter is basically a configuration format in which a Configuration object 
-			 * can be exported, said formats can be: JSON, XML, INI. More formats will be supported in the future.
-			 *
-			 * NOTE: The following method will be replaced by "setSaveAdapter" or similar.
-			 * 
-			 */
-
-			private static function __getAdapter($adapter){
-
-				$adapter			=	ucwords($adapter);
-				$exportClass	=	sprintf('\\apf\\core\\config\\adapter\\%s',$adapter);
-
-				if(!class_exists($exportClass)){
-
-					throw new \RuntimeException("Unknown configuration adapter \"$adapter\"");
-
-				}
-
-				return $exportClass;
-
-			}
-
-			public function export($format="ini"){
-
-				$exportClass	=	self::__getAdapter($format);
-
-				return $exportClass::export($this->attributes);
-
-			}
-
-			/**
-			 * Import a configuration from a configuration file
-			 */
-
-			public function import($file){
-
-				$config		=	Adapter::factory($file);
-
-				foreach($config->parse() as $key=>$value){
-
-					$this->attributes->get($key)->setValue($value);
-
-				}
-
-			}
-
-			public function save($format="ini"){
 			}
 
 			public function __toString(){

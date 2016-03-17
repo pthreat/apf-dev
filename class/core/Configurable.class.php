@@ -8,10 +8,13 @@
 
 		abstract class Configurable{
 
-			private	$config;
+			/**
+			 *@var $config Contains the configuration object for this configurable class.
+			 */
+
+			private	$config	=	NULL;
 
 			final public function __construct(Config $config=NULL){
-
 
 				$this->setConfig($config === NULL	?	self::getConfigurationInstance()	:	$config);
 
@@ -74,6 +77,14 @@
 
 			}
 
+			/**
+			 * Set the configuration for this configurable object.
+			 * Given object must be of type \apf\core\Config.
+			 * @TODO when the configuration object is able to import, replace this argument 
+			 * in order to use the import feature from \apf\core\Config, so, for instance:
+			 * $obj->setConfig('form.json'); OR $obj->setConfig($configObject);
+			 */
+
 			final public function setConfig(Config $config){
 
 				/**
@@ -87,6 +98,10 @@
 
 			}
 
+			/**
+			 * Returns the configuration object from this configurable object.
+			 */
+
 			final public function &getConfig(){
 
 				return $this->config;
@@ -94,12 +109,21 @@
 			}
 
 			/**
-			 *	The configure method, chooses an appropriate UI to show to the end user, according to the context
-			 *	defined by the SAPI object obtained from the Kernel and presents said configuration interface to the user
-			 *	for him/her to be able to configure this configurable object.
+			 * This method will make up a Form element out of a configurable object's configuration attributes.
+			 *	The configure method will choose an appropriate UI to show said form to the end user. 
+			 *	The following is accomplished by consultation of the SAPI object (obtained from the Kernel).
+			 *-------------------------------------------------------------------------------------------------
+			 * Example:
+			 *-------------------------------------------------------------------------------------------------
+			 * If I'm invoking a configurable object's configure method on a linux terminal, a CLI form will be shown.
+			 * If I'm invoking a configurable object's configure method on a web server, a web form will be shown.
+			 * If I'm invoking a configurable object's configure method on a graphical enviroment a GTK form will be presented (far from this today)
+			 *-------------------------------------------------------------------------------------------------
 			 *
-			 *	@return Configurable a user configured object.
+			 *	@return \apf\ui\Form returns a form, containing each attribute from this object's configuration
+			 * for the user to be able to interactively configure this configurable object.
 			 *
+			 * NOTE: The developer must echo the returned value from this method, or call to the render method.
 			 */
 
 			public static function configure($ui=NULL,Configurable &$object=NULL){
@@ -110,6 +134,15 @@
 
 			}
 
+			/***********************************
+			 * Magic methods 
+			 ***********************************/
+
+			/**
+			 * Proxy every __set call to the corrrsponding attribute from this configurable object's configuration
+			 * Example: $person->name = 'test'; 
+			 */
+
 			public function __set($name,$value){
 
 				return $this->config
@@ -118,6 +151,11 @@
 				->setValue($value);
 
 			}
+
+			/**
+			 * Proxy every __set call to the corrrsponding attribute from this configurable object's configuration
+			 * Example: echo $person->name;
+			 */
 
 			public function __get($name){
 
@@ -128,11 +166,20 @@
 
 			}
 
+			/**
+			 *Proxy every undefined method through the configuration object from this configurable class.
+			 *Example: $person->getName(); $person->setName('kate');
+			 */
+
 			public function __call($method,$args){
 
 				return call_user_func_array(Array($this->config,$method),$args);
 
 			}
+
+			/**
+			 * The equivalent of exporting the configuration from this configurable object
+			 */ 
 
 			public function __toString(){
 

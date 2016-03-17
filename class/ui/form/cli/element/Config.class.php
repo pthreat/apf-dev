@@ -59,12 +59,11 @@
 						)
 				);
 
-				return parent::configure();
+				return parent::__configure();
 
 			}
 
-
 		}
 
-
 	}
+

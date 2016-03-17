@@ -87,7 +87,11 @@
 
 				}	
 
-				throw new \InvalidArgumentException("Unknown attribute \"$name\"");
+				$configurationClass	=	get_class($this->config);
+				$msg						=	'Unknown attribute "%s" in class "%s", please check %s::__configure method and add said attribute if necessary';
+				$msg						= sprintf($msg,$name,get_class($this->config),$configurationClass,$configurationClass);
+
+				throw new \InvalidArgumentException($msg);
 
 			}
 
