@@ -20,7 +20,7 @@
 
 		class Config extends BaseConfig{
 
-			public function configure(){
+			protected function __configure(){
 
 				parent::getAttributeContainer()
 				->add(

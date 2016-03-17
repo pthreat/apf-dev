@@ -1,7 +1,9 @@
 <?php
 
 	/**
-	 * A config attribute container contains attributes for an \apf\core\Config object
+	 * A configuration attribute container contains attributes for an \apf\core\Config object
+	 * This class does not extends to \ArrayObject since every method in said class would have to be rewritten
+	 * Instead, the \Iterator and \Countable interfaces are implemented.
 	 */
 
 	namespace apf\core\config\attribute{
@@ -9,21 +11,26 @@
 		use \apf\core\Config;
 		use \apf\core\config\Attribute;
 
-		class Container implements \Iterator,\Countable{
+		final class Container implements \Iterator,\Countable{
 
 			private	$attributes	=	NULL;
 			private	$config		=	NULL;
+
+			/**
+			 * The Attribute container constructor needs a configuration object for the purpose of passing said configuration object
+			 * to each attribute composing the attribute container.
+			 *
+			 * Why?:
+			 *-----------------------------------------------------------------------------------------------------------------------
+			 * The configuration object is NEEDED in order for the \apf\core\Attribute to be able to validate the value being set to it
+			 *
+			 *	@see \apf\core\config\Attribute::setValue($value) method 
+			 */
 
 			public function __construct(Config $config){
 
 				$this->config		=	$config;
 				$this->attributes	=	new \ArrayObject();
-
-			}
-
-			public function count(){
-
-				return count($this->attributes);
 
 			}
 
@@ -79,6 +86,23 @@
 
 			}
 
+			/**
+			 * Small internal helper for validating offsets inside the attributes array object
+			 */
+
+			private function validateOffset($offset){
+
+				if(!array_key_exists($offset,$this->attributes)){
+
+					throw new \InvalidArgumentException("Unknown attribute property \"$offset\"");
+
+				}
+
+				return $offset;
+
+			}
+
+
 			/************************************
 			 *Iterator interface
 			 ************************************/
@@ -124,21 +148,16 @@
 
 			}
 
-			/**
-			 * Small internal helper for validating offsets inside the attributes array object
-			 */
+			/************************************
+			 * Countable interface 
+			 ************************************/
 
-			private function validateOffset($offset){
+			public function count(){
 
-				if(!array_key_exists($offset,$this->attributes)){
-
-					throw new \InvalidArgumentException("Unknown attribute property \"$offset\"");
-
-				}
-
-				return $offset;
+				return count($this->attributes);
 
 			}
+
 
 			/****************************************
 			 *Array Access interface methods
@@ -217,7 +236,6 @@
 					case 'add':
 
 						$attribute	=	$attribute->getValue();
-						
 						return call_user_func_array(Array($attribute,'add'),$args);
 
 					break;

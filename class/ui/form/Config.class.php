@@ -26,7 +26,7 @@
 
 			}
 
-			public function configure(){
+			public function __configure(){
 
 				parent::getAttributeContainer()
 				->add(

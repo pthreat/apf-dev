@@ -8,28 +8,85 @@
 
 		abstract class Config implements \ArrayAccess,\Iterator{
 
-			private	$attributes	=	NULL;
+			/**
+			 * @var \apf\core\config\attribute\Container $attributes initialized when the object is constructed.
+			 * this object holds all attributes belonging to this configuration.
+			 */
+
+			private	$attributes				=	NULL;
+
+			/**
+			 * Set of flags to know in which state this configuration object is validated in.
+			 */
+
+			
+
+			/**
+			 * @var boolean $isValidatedSoft flag to know if this configuration is "softly" validated
+			 * @see self::isValidatedSoft()
+			 */
 
 			private	$isValidatedSoft		=	FALSE;
+
+			/**
+			 * @var boolean $isValidatedHard flag to know if this configuration is "hard" validated
+			 * @see self::isValidatedHard()
+			 */
+
 			private	$isValidatedHard		=	FALSE;
+
+			/**
+			 * @var boolean $isValidatedExtra flag to know if this configuration is "extra" validated
+			 * @see self::isValidatedExtra()
+			 */
+
 			private	$isValidatedExtra		=	FALSE;
+
+			/**
+			 * Configuration constructor, the first argument is meant to be an object extending to the Configurable class 
+			 * we will call this class the parent object. 
+			 * The parent object must respect a namespace naming scheme. This scheme is best explained by an example:
+			 *
+			 * Suppose we have a configuration class in namespace \myProject\person\Config
+			 * The parent class must be in namespace \myProject\Person for it to be considered valid.
+			 *  
+			 * The second argument must be of type \apf\core\Config and it's optional, meant for initializing a configuration class
+			 * with values.
+			 *
+			 * The constructor is final to provide consistency, i.e no "hacks" (rewrites by the user extending to this class)
+			 * 
+			 * @param \apf\core\Configurable $parentObject	a Configurable object respecting the namespace naming scheme mentioned before
+			 * @param \apf\core\Config			$config			a Config object (optional) for initializing this class with values.
+			 */
 
 			final public function __construct($parentObject,Config $config=NULL){
 
 				$this->validateConfigurableObject($parentObject);
 
+				/**
+				 * Initialize attribute container
+				 */
+
 				$this->attributes	=	new AttributeContainer($this);
 
+				/**
+				 * Add the parent configurable object like just another attribute
+				 * Specify that said attribute will not be traversable (i.e visible when we foreach this configuration)
+				 * Will be readOnly (i.e it's value wont be changed)
+				 * Will not be exportable (i.e when we export/save this configuration it will not be exported/saved)
+				 * Requires no validation
+				 */
+
 				$this->attributes->add(
-															Array(
-																	'name'			=>	'configurableObject',
-																	'description'	=>	'The configurable object for which this configuration is meant.',
-																	'value'			=>	$parentObject,
-																	'exportable'	=>	FALSE,
-																	'traversable'	=>	FALSE,
-																	'readOnly'		=>	TRUE,
-																	'validate'		=>	FALSE
-															)
+												Array(
+														'name'			=>	'configurableObject',
+														'description'	=>	'The configurable object for which this configuration is meant.',
+														'value'			=>	$parentObject,
+														'exportable'	=>	FALSE,
+														'traversable'	=>	FALSE,
+														'readOnly'		=>	TRUE,
+														'validate'		=>	FALSE
+												)
 				);
 
 				$this->configure();
@@ -42,6 +99,11 @@
 
 			}
 
+			/**
+			 * Return attributes belonging to this configuration 
+			 * @return \apf\core\config\attribute\Container	The attribute container.
+			 */
+
 			public function getAttributes(){
 
 				return $this->attributes;
@@ -51,6 +113,7 @@
 			/**
 			 * Alias for getAttributes, depending on the context where this will be called 
 			 * the syntactic sense for the code reader may add clarity.
+			 * @return \apf\core\config\attribute\Container	The attribute container.
 			 */
 
 			public function getAttributeContainer(){
@@ -59,7 +122,41 @@
 
 			}
 
-			abstract protected function configure();
+			/**
+			 * Configure child class, check if the child class has added any attributes for it to be considered valid.
+			 * @throw \LogicException In case the child class hasn't added any attributes to itself.
+			 */
+
+			public function configure(){
+
+				$this->__configure();	
+
+				if(!$this->attributes->count()){
+
+					$msg = sprintf('Class ->%s<- has not defined any attributes',get_called_class());
+
+					throw new \LogicException($msg);
+
+				}
+
+				return TRUE;
+
+			}
+
+			/**
+			 * The child class extending to this class must define a __configure method.
+			 * This method will be in charge of configuring attributes for said child class.
+			 */
+
+			abstract protected function __configure();
+
+			/**
+			 * Validate that the configurable object passed belongs to the same namespace.
+			 * Meant to enforce namespace naming conventions.
+			 *
+			 * @throw \InvalidArgumentException In case the given configurable object does not belongs to the same namespace
+			 * this configuration belongs to.
+			 */
 
 			private function validateConfigurableObject($object){
 					
@@ -77,6 +174,18 @@
 				return $object;
 
 			}
+
+			/**
+			 * Validate this configuration object entirely in different modes.
+			 * One thing, is to validate each element value belonging to this configuration.
+			 * A different approach is to validate a configuration ENTIRELY after all attributes have been set.
+			 *
+			 * Example:
+			 *----------------------------------------------------------------------------------------------------------------
+			 * For instance, suppose we have a person form with a name attribute.
+			 * Validating the name of said person is just one part of the entire process. (validate attribute)
+			 * Checking if the person has been saved correctly is the final step of the whole process (validate configuration).
+			 */
 
 			public function validate($mode=NULL,$reValidate=FALSE){
 
@@ -182,17 +291,36 @@
 
 			}
 
+			/**
+			 * Gets the parent object for this configuration class
+			 */
+
 			public function getConfigurableObject(){
 
 				return $this->attributes->get('configurableObject')->getValue();
 
 			}
 
+			/**
+			 * Each attribute has a validation method.
+			 * This method returns a string adding validate in front.
+			 * The whole point/idea in a not-so-distant future is to be able to change the validate word for whatever 
+			 * the user wants.
+			 */
+
 			private function makeValidatorName($name){
 
 				return sprintf('validate%s',ucwords($name));
 
 			}
+
+			/**
+			 *Checks if the child class has a validator named $name
+			 *
+			 *@param  string $name Validator name, example $name='test'
+			 *@return boolean TRUE Validator exists.
+			 *@return boolean FALSE Validator does not exists.
+			 */
 
 			public function hasValidator($name){
 
@@ -298,8 +426,12 @@
 			 * This method returns a configuration adapter internally to be able to save, export, import
 			 * a configuration object in different formats.
 			 *
+			 *
 			 * A configuration adapter is basically a configuration format in which a Configuration object 
 			 * can be exported, said formats can be: JSON, XML, INI. More formats will be supported in the future.
+			 *
+			 * NOTE: The following method will be replaced by "setSaveAdapter" or similar.
+			 * 
 			 */
 
 			private static function __getAdapter($adapter){
@@ -325,13 +457,17 @@
 
 			}
 
+			/**
+			 * Import a configuration from a configuration file
+			 */
+
 			public function import($file){
 
 				$config		=	Adapter::factory($file);
 
 				foreach($config->parse() as $key=>$value){
 
-					$this->attributes()->get($key)->setValue($value);
+					$this->attributes->get($key)->setValue($value);
 
 				}
 
