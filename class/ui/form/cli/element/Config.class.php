@@ -18,7 +18,7 @@
 
 			}
 
-			public function configure(){
+			public function __configure(){
 
 				/**
 				 * Make a default cli layout

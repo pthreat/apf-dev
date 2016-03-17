@@ -19,8 +19,6 @@
 			 * Set of flags to know in which state this configuration object is validated in.
 			 */
 
-			
-
 			/**
 			 * @var boolean $isValidatedSoft flag to know if this configuration is "softly" validated
 			 * @see self::isValidatedSoft()
@@ -89,7 +87,16 @@
 												)
 				);
 
+				/**
+				 * Configure the attributes which this configuration class will be composed of
+				 */
+
 				$this->configure();
+
+				/**
+				 * If a configuration object is passed, merge said configuration object (i.e assign the passed attribute configuration values
+				 * to the attributes composing this class
+				 */ 
 
 				if($config !== NULL){
 
@@ -125,13 +132,24 @@
 			/**
 			 * Configure child class, check if the child class has added any attributes for it to be considered valid.
 			 * @throw \LogicException In case the child class hasn't added any attributes to itself.
+			 * @return int Amount of attributes configured for this class.
 			 */
 
-			public function configure(){
+			final public function configure(){
+
+				/**
+				 * Configure/Add attributes to this configuration
+				 */
 
 				$this->__configure();	
 
-				if(!$this->attributes->count()){
+				/**
+				 * If the child class has defined no attributes, throw an exception. A configuration class must have at least one attribute
+				 */ 
+
+				$amountOfAttributes	=	$this->attributes->count();
+
+				if($amountOfAttributes == 0){
 
 					$msg = sprintf('Class ->%s<- has not defined any attributes',get_called_class());
 
@@ -139,7 +157,11 @@
 
 				}
 
-				return TRUE;
+				/**
+				 * If everything is correct, return the amount of attributes configured
+				 */
+
+				return $amountOfAttributes;
 
 			}
 
@@ -327,6 +349,10 @@
 				return method_exists($this->config,$this->makeValidatorName($name));
 
 			}
+
+			/**
+			 * Merge configuration parameters 
+			 */
 
 			public function merge(Config $config){
 

@@ -70,7 +70,7 @@
 
 			}
 
-			protected function configure(){
+			protected function __configure(){
 
 				$this->getAttributeContainer()
 				->add(

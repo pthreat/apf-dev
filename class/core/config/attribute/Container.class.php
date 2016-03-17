@@ -34,6 +34,10 @@
 
 			}
 
+			/**
+			 * Add an attribute to the container
+			 */
+
 			public function add($parameters){
 
 				$params				=	!is_array($parameters)	?	Array('value'=>$parameters)	:	$parameters;
@@ -51,6 +55,13 @@
 				return (boolean)$this->get($name);
 
 			}
+
+			/**
+			 * Get an attribute by name
+			 * @param string $name the name of the attribute to be fetched
+			 * @return \apf\core\config\Attribute if the given attribute is found.
+			 * @throws \InvalidArgumentException if the attribute is not found.
+			 */
 
 			public function get($name){
 
@@ -79,6 +90,11 @@
 				throw new \InvalidArgumentException("Unknown attribute \"$name\"");
 
 			}
+
+			/**
+			 * Get all attributes
+			 * @return \ArrayObject 
+			 */
 
 			public function getAttributes(){
 
