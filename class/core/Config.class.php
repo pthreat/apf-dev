@@ -149,7 +149,9 @@
 
 				$amountOfAttributes	=	$this->attributes->count();
 
-				if($amountOfAttributes == 0){
+				//Compare for == 1 because we already add at least ONE attribute (the parent object) in the constructor to the container.
+
+				if($amountOfAttributes == 1){
 
 					$msg = sprintf('Class ->%s<- has not defined any attributes',get_called_class());
 

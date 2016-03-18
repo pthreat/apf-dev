@@ -24,7 +24,7 @@
 
 				if(!is_array($parameters)){
 
-					throw new \InvalidArgumentException("Factory parameter must be an array or an attribute");
+					throw new \InvalidArgumentException("Attribute parameters must be an array");
 
 				}
 
@@ -191,7 +191,7 @@
 
 			public function isMultiple(){
 
-				return $this->container['value'] instanceof AttributeContainer;
+				return is_a($this->container['value'],'\apf\core\config\attribute\Container');
 
 			}
 

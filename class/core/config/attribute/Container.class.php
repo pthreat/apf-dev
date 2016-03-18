@@ -45,10 +45,6 @@
 				$parameters['name']		=	array_key_exists('name',$parameters)	?	$parameters['name']		:	sprintf('params_%d',$this->count());
 				$parameters['config']	=	$this->config;
 
-				if(array_key_exists('value',$parameters)){
-					echo get_class($parameters['value'])."\n";
-				}
-
 				$this->attributes->append(new Attribute($parameters));
 
 				return $this;
@@ -74,21 +70,14 @@
 
 				foreach($this->attributes as $attribute){
 
-					if($attribute->isMultiple()){
 
-						if(strtolower($attribute->getItemName()) === $name){
+					if(!(strtolower($attribute->getName()) === $name || strtolower($attribute->getItemName()) === $name)){
 
-							return $attribute;
-
-						}
-
+						continue;
+							
 					}
 
-					if(strtolower($attribute->getName()) == $name){
-
-						return $attribute;
-
-					}
+					return $attribute;
 
 				}	
 
@@ -242,13 +231,20 @@
 
 				}
 
-				$attribute		=	$this->get(substr($method,3));
+				$attributeName	=	substr($method,3);
+				$attribute		=	$this->get($attributeName);
 
 				switch($isSetterGetterOrAdd){
 
 					case 'get':
 
-						echo "Get $method\n";
+						if($attribute->isMultiple()){
+
+							//return $attribute->getConfig()->getAttributes();
+							die('I suspect something odd is going on for not using references ...');
+
+						}
+
 						return $attribute->getValue();
 
 					break;

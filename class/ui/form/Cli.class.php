@@ -16,18 +16,11 @@
 						echo $this->getTitle();
 
 						foreach($this->getElements() as $element){
-							echo get_class($element)." == ";
-							var_dump($element->getValue());
-							die();
-							echo gettype($element->getvalue())."\n";
-						}
-						die();
-
-						foreach($this->getElements() as $element){
 
 							echo get_class($element->getValue());
 
 						}
+						die();
 
 						$prompt	=	new Prompt();
 						$this->getConfig()->getAttributeContainer()->get($prompt->read())->setValue();
