@@ -203,7 +203,9 @@
 
 				}
 
-				$this->container['value']	=	$this->container['validate']	?	$this->container['validate']	:	$value;
+				//Check if we have to validate the value being set, if so, validate the value
+
+				$this->container['value']	=	$this->container['validate']	?	$this->validate($value)	:	$value;
 
 				return $this;
 
@@ -226,9 +228,9 @@
 				 *object
 				 */
 
-				if(!$this->config->hasValidator($this->container['name'])){
+				if(!$this->container['config']->hasValidator($this->container['name'])){
 
-					$configClass	=	get_class($this->config);
+					$configClass	=	get_class($this->container['config']);
 
 					throw new \InvalidArgumentException("Class: ->$configClass<- has NO validator for attribute ->$attributeName<-");
 
@@ -236,7 +238,7 @@
 
 				$validateMethod	=	sprintf('validate%s',ucwords($attributeName));
 
-				return $this->config->$validateMethod($value);
+				return $this->container['config']->$validateMethod($value);
 
 			}
 

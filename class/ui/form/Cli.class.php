@@ -17,7 +17,7 @@
 
 						foreach($this->getElements() as $element){
 
-							echo get_class($element->getValue());
+							var_dump(get_class($element->getValue()));
 
 						}
 						die();
@@ -28,6 +28,7 @@
 					}catch(\Exception $e){
 
 						echo $e->getMessage();
+						echo $e->getTraceAsString()."\n";
 						(new Prompt())->setText('Press enter to continue ...')->read();
 
 					}

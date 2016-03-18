@@ -35,6 +35,8 @@
 
 				}
 
+				throw new \InvalidArgumentException(sprintf('Invalid value state ->%s<-',$this->getConfig()->getValueState()));
+
 			}
 
 			public function __toString(){

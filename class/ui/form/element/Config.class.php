@@ -66,7 +66,7 @@
 
 				}
 
-				return $this;
+				return $state;
 
 			}
 
@@ -95,6 +95,7 @@
 						Array(
 								'name'			=>	'valueState',
 								'description'	=>	'Element value state',
+								'value'			=>	'noval',
 								'exportable'	=>	FALSE
 						)
 				);

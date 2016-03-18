@@ -402,7 +402,7 @@
 
 			public function hasValidator($name){
 
-				return method_exists($this->config,$this->makeValidatorName($name));
+				return method_exists($this,$this->makeValidatorName($name));
 
 			}
 

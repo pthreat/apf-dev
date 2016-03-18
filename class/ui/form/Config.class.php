@@ -2,8 +2,9 @@
 
 	namespace apf\ui\form{
 
-		use \apf\core\Config		as	BaseConfig;
-		use \apf\ui\form\Layout	as	FormLayout;
+		use \apf\core\Config					as	BaseConfig;
+		use \apf\ui\form\Layout				as	FormLayout;
+		use \apf\iface\ui\form\Element	as	ElementInterface;
 
 		abstract class Config extends BaseConfig{
 

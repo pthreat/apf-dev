@@ -2,7 +2,7 @@
 
 	namespace apf\ui\form\cli\element{
 
-		use \apf\ui\form\Element	as	BaseElement;
+		use \apf\ui\form\cli\Element	as	BaseElement;
 
 		class Input extends BaseElement{
 

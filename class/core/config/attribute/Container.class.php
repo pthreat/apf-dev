@@ -70,7 +70,6 @@
 
 				foreach($this->attributes as $attribute){
 
-
 					if(!(strtolower($attribute->getName()) === $name || strtolower($attribute->getItemName()) === $name)){
 
 						continue;
@@ -83,7 +82,7 @@
 
 				$configurationClass	=	get_class($this->config);
 				$msg						=	'Unknown attribute "%s" in class "%s", please check %s::__configure method and add said attribute if necessary';
-				$msg						= sprintf($msg,$name,get_class($this->config),$configurationClass,$configurationClass);
+				$msg						= sprintf($msg,$name,$configurationClass,$configurationClass);
 
 				throw new \InvalidArgumentException($msg);
 
@@ -238,13 +237,6 @@
 
 					case 'get':
 
-						if($attribute->isMultiple()){
-
-							//return $attribute->getConfig()->getAttributes();
-							die('I suspect something odd is going on for not using references ...');
-
-						}
-
 						return $attribute->getValue();
 
 					break;
@@ -260,7 +252,7 @@
 						return $attribute
 						->getValue()
 						->add(
-								Array('value'=>$args[0])
+								Array('value'=>$args[0],'name'=>$attribute->getItemName())
 						);
 
 					break;
