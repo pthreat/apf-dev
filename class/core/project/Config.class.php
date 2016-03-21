@@ -2,23 +2,68 @@
 
 	namespace apf\core\project{
 
-		use \apf\core\Config					as BaseConfig;
-
-		use \apf\core\config\Attribute;
-
-		use \apf\iface\config\Nameable;
-		use \apf\iface\config\Describable;
-		use \apf\iface\config\Moduleable;
-		use \apf\iface\config\Templateable;
-		use \apf\iface\config\Fragmentable;
-		use \apf\iface\config\Networkable;
-		use \apf\iface\config\project\Directories;
-
-		use \apf\iface\config\web\Assetable;
-
-		use \apf\iface\config\DocumentRootable;
+		use \apf\core\Config								as BaseConfig;
+		use \apf\core\project\Module					as	ProjectModule;
+		use \apf\core\project\config\Directories	as	ProjectDirectories;
+		use \apf\core\project\DocumentRoot			as	ProjectDocumentRoot;
+		use \apf\iface\net\Connection					as	NetConnectionInterface;
+		use \apf\web\Asset;
 
 		class Config extends BaseConfig{
+
+			public function validateName($name){
+
+				return $name;
+
+			}
+
+			public function validateConnection(NetConnectionInterface $connection){
+
+				return $connection;
+
+			}
+
+			public function validateModule(ProjectModule $module){
+
+				return $module;
+
+			}
+
+			public function validateDescription($description){
+
+				return $description;
+
+			}
+
+			public function validateDirectories(ProjectDirectories $directories){
+
+				return $directories;
+
+			}
+
+			public function validateAsset(Asset $asset){
+
+				return $asset;
+
+			}
+
+			public function validateDocumentRoot(ProjectDocumentRoot $documentRoot){
+
+				return $documentRoot;
+
+			}
+
+			public function validateTemplates($templates){
+
+				return $templates;
+
+			}
+
+			public function validateFragments($fragments){
+
+				return $fragments;
+
+			}
 
 			protected function __configure(){
 
@@ -49,32 +94,41 @@
 				)
 				->add(
 						Array(
-								'name'			=>	'module',
-								'description'	=>	'Project modules' 
+								'name'			=>	'modules',
+								'description'	=>	'Project modules',
+								'multiple'		=>	TRUE,
+								'item'			=>	'module'
 						)
 				)
 				->add(
 						Array(
 								'name'			=>	'templates',
-								'description'	=>	'Project templates' 
+								'description'	=>	'Templates (at a project level)' 
 						)
 				)
 				->add(
 						Array(
 								'name'			=>	'fragments',
-								'description'	=>	'Project fragments' 
+								'description'	=>	'Fragments (at a project level)' 
+								'multiple'		=>	TRUE,
+								'item'			=>	'fragment'
 						)
 				)
 				->add(
 						Array(
 								'name'			=>	'assets',
-								'description'	=>	'Project assets' 
+								'description'	=>	'Project assets',
+								'multiple'		=>	TRUE,
+								'item'			=>	'asset'
 						)
 				)
 				->add(
 						Array(
 								'name'			=>	'connections',
-								'description'	=>	'Project connections'
+								'description'	=>	'Project connections',
+								'multiple'		=>	TRUE,
+								'item'			=>	'connection'
+
 						)
 				);
 

@@ -17,13 +17,17 @@
 
 						foreach($this->getElements() as $element){
 
-							var_dump(get_class($element->getValue()));
+							echo sprintf('%s%s',$element->getValue()->render(),"\n");
 
 						}
-						die();
+
+						//The prompt is part of the form, we should be able to get it
+						//$this->getPrompt->read();
 
 						$prompt	=	new Prompt();
-						$this->getConfig()->getAttributeContainer()->get($prompt->read())->setValue();
+						$element	=	$this->getElementByName($prompt->read());
+
+
 
 					}catch(\Exception $e){
 

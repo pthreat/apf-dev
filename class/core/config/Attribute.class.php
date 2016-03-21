@@ -39,6 +39,22 @@
 				$multiple		=	array_key_exists('multiple',$parameters)		?	$parameters['multiple']		:	FALSE;
 
 				$this->setConfig($config);
+
+				/**
+				 *@TODO
+				 *If property validator is found in a certain attribute, use the callback
+				 *defined in the property rather than finding the validator in the configuration 
+				 *object
+				 */
+
+				if($validate && !$this->container['config']->hasValidator($name)){
+
+					$configClass	=	get_class($this->container['config']);
+					throw new \InvalidArgumentException("Class: ->$configClass<- has NO validator for attribute ->$name<-");
+
+				}
+
+					
 				$this->setName($name);
 				$this->setDescription($description);
 				$this->setValidate($validate);
@@ -220,22 +236,6 @@
 			public function validate($value){
 
 				$attributeName	=	$this->container['name'];
-
-				/**
-				 *@TODO
-				 *If property validator is found in a certain attribute, use the callback
-				 *defined in the property rather than finding the validator in the configuration 
-				 *object
-				 */
-
-				if(!$this->container['config']->hasValidator($this->container['name'])){
-
-					$configClass	=	get_class($this->container['config']);
-
-					throw new \InvalidArgumentException("Class: ->$configClass<- has NO validator for attribute ->$attributeName<-");
-
-				}
-
 				$validateMethod	=	sprintf('validate%s',ucwords($attributeName));
 
 				return $this->container['config']->$validateMethod($value);

@@ -81,8 +81,13 @@
 
 					$element->getConfig()
 					->setName($attribute['name'])
-					->setDescription($attribute['description'])
-					->setValue($attribute['value']);
+					->setDescription($attribute['description']);
+
+					if($attribute['value'] !== NULL){
+
+						$element->setValue($attribute['value']);
+
+					}
 
 					/**
 					 * Add the created element to the form

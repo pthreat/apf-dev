@@ -8,8 +8,9 @@
 		use \apf\core\Config;
 		use \apf\iface\Log					as	LogInterface;
 		use \apf\net\connection\Config	as	ConnectionConfig;
+		use \apf\iface\net\Connection		as	NetConnectionInterface;
 
-		abstract class Connection extends Configurable{
+		abstract class Connection extends Configurable implements NetConnectionInterface{
 
 			use \apf\traits\log\Inner;
 

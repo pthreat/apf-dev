@@ -13,6 +13,13 @@
 			public function validateName($name){
 
 				$name	=	trim($name);
+
+				if(empty($name)){
+
+					throw new \InvalidArgumentException("Element name can not be empty");
+
+				}
+
 				return $name;
 
 			}
@@ -20,36 +27,36 @@
 			public function validateDescription($description){
 
 				$description	=	trim($description);
+
+				if(empty($description)){
+
+					throw new \InvalidArgumentException("Element description can not be empty");
+
+				}
+
 				return $description;
 
 			}	
 
-			public function validateValue($value){
+			public function validateLayoutContainer(LayoutContainerInterface $container){
 
-				if($this->onSetValue !== NULL){
+				if(!$container->getErrorLayout()){ 
 
-					try{
-
-						$callback	=	&$this->onSetValue;
-						$callback($value);
-
-					}catch(\Exception $e){
-
-						$this->setValueState('error');
-						throw new \Exception($e->getMessage());
-
-					}
+					throw new \InvalidArgumentException("Your layout container is missing an ->error<- layout");
 
 				}
 
-				$this->value	=	$value;
-				$this->setValueState('success');
+				if(!$container->getSuccessLayout()){ 
 
-				return $this;
+					throw new \InvalidArgumentException("Your layout container is missing a ->success<- layout");
 
-			}
+				}
 
-			public function validateLayoutContainer(LayoutContainerInterface $container){
+				if(!$container->getNoValueLayout()){ 
+
+					throw new \InvalidArgumentException("Your layout container is missing a ->no value<- layout");
+
+				}
 
 				return $container;
 

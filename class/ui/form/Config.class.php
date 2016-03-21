@@ -8,12 +8,6 @@
 
 		abstract class Config extends BaseConfig{
 
-			public function validateLayout(FormLayout $layout){
-
-				return $layout;
-
-			}
-
 			public function validateTitle($title){
 
 				$title	=	trim($title);
