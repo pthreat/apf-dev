@@ -3,29 +3,29 @@
 	namespace apf\ui\form\element{
 
 		use \apf\iface\ui\form\Element			as	ElementInterface;
-		use \apf\iface\ui\form\element\Layout	as	LayoutInterface;
+		use \apf\iface\ui\form\element\Layout	as	ElementLayoutInterface;
+		use \apf\ui\Layout							as	BaseLayout;
 
-		abstract class Layout implements LayoutInterface{
+		abstract class Layout extends BaseLayout implements ElementLayoutInterface{
 
 			private	$element			=	NULL;
 
 			public function __construct(ElementInterface &$element,$format=NULL){
 
-				$this->element	=	$element;
+				$this->setElement($element);
 
 				if($format !== NULL){
 
-					$this->setFormat($format);
+					parent::setFormat($format);
 
 				}
-
-				$this->setElement($element);
 
 			}
 
 			public function setElement(ElementInterface &$element){
 
 				$this->element	=	$element;
+
 				return $this;
 
 			}
@@ -33,28 +33,6 @@
 			public function getElement(){
 
 				return $this->element;
-
-			}
-
-			public function setFormat($format){
-
-				$format			=	trim($format);
-
-				if(empty($format)){
-
-					throw new \InvalidArgumentException("Invalid layout format for element {$this->element->getName()}");
-
-				}
-
-				$this->format	=	$format;
-
-				return $this;
-
-			}
-
-			public function getFormat(){
-
-				return $this->format;
 
 			}
 

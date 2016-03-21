@@ -23,6 +23,36 @@
 
 			}
 
+			public function validateModules($modules){
+
+				return $modules;
+
+			}
+
+			public function validateAssets($assets){
+
+				return $assets;
+
+			}
+
+			public function validateTemplate($template){
+
+				return $template;
+
+			}
+
+			public function validateFragment($fragment){
+
+				return $fragment;
+
+			}
+
+			public function validateConnections($connections){
+
+				return $connections;
+
+			}
+
 			public function validateModule(ProjectModule $module){
 
 				return $module;
@@ -109,7 +139,7 @@
 				->add(
 						Array(
 								'name'			=>	'fragments',
-								'description'	=>	'Fragments (at a project level)' 
+								'description'	=>	'Fragments (at a project level)',
 								'multiple'		=>	TRUE,
 								'item'			=>	'fragment'
 						)
