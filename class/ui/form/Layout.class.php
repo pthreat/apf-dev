@@ -10,7 +10,7 @@
 
 			private $form	=	NULL;
 
-			public function __construct(FormInterface &$form,$format=NULL){
+			public function __construct(FormInterface &$form,LayoutParser $parser=NULL){
 
 				$this->setForm($form);
 

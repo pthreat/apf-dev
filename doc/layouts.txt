@@ -1,0 +1,142 @@
+Form Layouts
+--------------------------------------------------
+
+What are layouts?
+-----------------
+
+Layouts are a way of organizing elements on a form, for instance, suppose we have a form
+with the title "Person form" and a series of elements in said form. For the purpose of this example
+let's say this form has a "name" input field and an "age" input field plus a "submit" button.
+
+
+If we would render said form, i.e show it to the end user, the most logical orden in which the elements
+of said form would be shown would be the following:
+
+	
+	Title
+	--------------------------
+
+	Name [                   ]
+	Age  [                   ]
+
+	[ Submit ]
+
+However, even if we assume this is the most logical order, an end user might want to change the way how these elements
+are laid on the view port.
+
+For instance, we could say that the end user wants the "age" field to be BEFORE than the "name" field, we could also 
+say, to make a completely idiotic example, that the title would be between the name and the submit button.
+
+According to the previously (stupid) described example, our form would look like this:
+
+
+	Age  [                   ]
+	Name [                   ]
+
+	Title
+	--------------------------
+
+	[ Submit ]
+
+Form Element Layouts
+---------------------------------------------------
+
+Assume we would like to specify that the label of a field is at the right of said form element, like this:
+
+	Title
+	--------------------------
+
+	[                   ] Name
+	[                   ] Age
+
+	[ Submit ]
+
+Example conclussions:
+--------------------------------------------------
+
+We can conclude that: 
+
+A) A form has a Layout class, which is simply a way of organizing it's elements, their disposition on the view port.
+B) A form element has a Layout class, which enables us to dispose the order of an element's attributes when showing said element.
+
+
+\apf\ui\Layout (Main Layout class)
+--------------------------------------------------
+
+The main layout class is \apf\ui\Layout, is an abstract class which implements the \apf\iface\ui\Layout interface.
+
+This class is common to Form Layouts and Form Element Layouts.
+
+All derived Layout classes, regardless of it's user interface (web, cli, gtk) and regardless of the type of Form Element 
+(form, form element [input,select, etc]) extend to this class. 
+
+For instance, the \apf\ui\cli\element\Layout class, extends to \apf\ui\Layout class.
+
+Layout parser
+--------------------------------------------------
+
+
+What is a Layout parser?
+--------------------------------------------------
+
+A Layout class has a Layout Parser. 
+
+A Layout parser is a class which is able to receive a simple string containing the layout format for a form or a form element.
+
+A Layout Parser is needed to be able to initialize a Layout from a configuration string.
+
+
+Now, suppose we have the following form:
+
+	Title
+	--------------------------
+
+	Name [                   ]
+	Age  [                   ]
+
+	[ Submit ]
+
+The string to initialize the layout of the previous form would pretty much look something like this:
+
+"%title% \n %name% \n %age% %submit%"
+
+Everything seems to be pretty much simple, right? But! ...
+
+Of course! Maybe you'd like to customize said form in the following way!
+
+Set the title in blue
+Set the name and age in black 
+Set the submit button in a cool green color.
+
+So, things DO get a little bit more complex ...
+
+First, there are some questions we need to figure out:
+------------------------------------------------------
+
+What about the different user interfaces we have? Cli, Web ....
+
+A) What about coloring output in a console?
+
+B) What about adding a particular CSS class ?
+
+C) What about coloring a certain input field red on a gtk user interface?
+
+For this very reason: 
+*********************
+
+									A CLI Layout Parser exists
+									A WEB Layout Parser exists
+									A GTK Layout Parser (will, I think, exist)	
+
+
+The apf\ui\layout\Parser class:
+-----------------------------------------------------
+
+This is the base class all layout parsers extend to, this class implements the \apf\iface\ui\layout\Parser interface.
+
+The base class is able to *parse* the order in which elements are laid on a form or in a form element, however
+it let's the corresponding implementation (Cli, Web, Gtk, etc) to parse 
+
+
+
+

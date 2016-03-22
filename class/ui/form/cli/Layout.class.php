@@ -5,10 +5,11 @@
 		use \apf\ui\form\Layout;
 		use \apf\ui\form\cli\base\Layout		as	BaseCliLayout;
 		use \apf\ui\form\cli\layout\Parser	as	CliLayoutParser;
+		use \apf\ui\layout\Parser				as	LayoutParser;
 
 		class Layout extends BaseCliLayout{
 
-			public function __construct(FormInterface	&$form,CliLayoutParser $parser=NULL){
+			public function __construct(FormInterface	&$form,LayoutParser $parser=NULL){
 
 				if($parser===NULL){
 
