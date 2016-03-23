@@ -1,7 +1,14 @@
 <?php
 
+	/**
+	 * This is the base configuration class for all form elements.
+	 * Each user interface element class must extend to this class.
+	 * Each user interface element class must call parent::__configure();
+	 */
+
 	namespace apf\ui\form\element{
 
+		use \apf\validate\Str										as	StringValidate;
 		use \apf\core\Config											as	BaseConfig;
 		use \apf\iface\ui\form\element\attribute\Container	as	ElementAttributeContainerInterface;
 		use \apf\ui\form\element\Layout;
@@ -12,29 +19,13 @@
 
 			public function validateName($name){
 
-				$name	=	trim($name);
-
-				if(empty($name)){
-
-					throw new \InvalidArgumentException("Element name can not be empty");
-
-				}
-
-				return $name;
+				return StringValidate::mustBeNotEmpty($name,$trim=TRUE,"Element name can not be empty");
 
 			}
 
 			public function validateDescription($description){
 
-				$description	=	trim($description);
-
-				if(empty($description)){
-
-					throw new \InvalidArgumentException("Element description can not be empty");
-
-				}
-
-				return $description;
+				return StringValidate::mustBeNotEmpty($name,$trim=TRUE,"Element description can not be empty");
 
 			}	
 

@@ -5,10 +5,8 @@
 		use \apf\ui\form\element\Config						as	BaseConfig;
 		use \apf\ui\form\cli\element\Layout;
 		use \apf\ui\form\element\layout\Container			as	LayoutContainer;
-		use \apf\ui\form\cli\element\Prompt;
-		use \apf\iface\ui\form\cli\element\Promptable	as	PromptableInterface;
 
-		class Config extends BaseConfig implements PromptableInterface{
+		class Config extends BaseConfig{
 
 			use \apf\traits\ui\form\cli\element\Promptable;
 
@@ -30,17 +28,17 @@
 				$layoutContainer->setErrorLayout(
 															new Layout(
 																			$parentObject,
-																			'[name:{"color":"red"}]> [description] [value:{"format":"<%s>"}]'
+																			'%name%> %description% <%value%>'
 															)
 				)->setNoValueLayout(
 											new Layout(
-															$parentObject,
-															'[name:{"color":"light_cyan"}]> [description]'
+															$parentObject%
+															'%name%> %description%'
 											)
 				)->setSuccessLayout(
 											new Layout(
-															$parentObject,
-															'[name:{"color":"light_green"}]> [description] [value:{"format":"(%s)"}]'
+															$parentObject%
+															'%name%> %description% (%value%)'
 											)
 				);
 
@@ -50,12 +48,6 @@
 								'name'			=>	'layoutContainer',
 								'description'	=>	'Layout container',
 								'value'			=>	$layoutContainer
-						)
-				)
-				->add(
-						Array(
-								'name'			=>	'prompt',
-								'description'	=>	'Element prompt'
 						)
 				);
 

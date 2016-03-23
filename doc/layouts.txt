@@ -79,12 +79,11 @@ Layout parser
 What is a Layout parser?
 --------------------------------------------------
 
-A Layout class has a Layout Parser. 
-
 A Layout parser is a class which is able to receive a simple string containing the layout format for a form or a form element.
 
-A Layout Parser is needed to be able to initialize a Layout from a configuration string.
+A Layout class has a Layout Parser. 
 
+A Layout Parser is needed to be able to initialize a Layout from a configuration string.
 
 Now, suppose we have the following form:
 
@@ -100,43 +99,4 @@ The string to initialize the layout of the previous form would pretty much look 
 
 "%title% \n %name% \n %age% %submit%"
 
-Everything seems to be pretty much simple, right? But! ...
-
-Of course! Maybe you'd like to customize said form in the following way!
-
-Set the title in blue
-Set the name and age in black 
-Set the submit button in a cool green color.
-
-So, things DO get a little bit more complex ...
-
-First, there are some questions we need to figure out:
-------------------------------------------------------
-
-What about the different user interfaces we have? Cli, Web ....
-
-A) What about coloring output in a console?
-
-B) What about adding a particular CSS class ?
-
-C) What about coloring a certain input field red on a gtk user interface?
-
-For this very reason: 
-*********************
-
-									A CLI Layout Parser exists
-									A WEB Layout Parser exists
-									A GTK Layout Parser (will, I think, exist)	
-
-
-The apf\ui\layout\Parser class:
------------------------------------------------------
-
-This is the base class all layout parsers extend to, this class implements the \apf\iface\ui\layout\Parser interface.
-
-The base class is able to *parse* the order in which elements are laid on a form or in a form element, however
-it let's the corresponding implementation (Cli, Web, Gtk, etc) to parse 
-
-
-
-
+Meaning that the title would be displayed first, name field second, age field third and finally the submit field

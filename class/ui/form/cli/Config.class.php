@@ -20,6 +20,19 @@
 
 			}
 
+			public function __configure(){
+
+				$this->getAttributeContainer()
+				->add(
+						Array(
+								'name'			=>	'layoutContainer',
+								'description'	=>	'Layout container',
+								'value'			=>	$layoutContainer
+						)
+				);
+
+			}
+
 		}
 
 	}
